@@ -1,11 +1,10 @@
 # sails
 sails wallet 
-#install info
+# install info
 - use --recursive flag when cloning the rep
 - npm i 
-- go to ./bc_node/gosafex/pkg/json_rpc and run command go build ( you will need go tool, latest version)
 - npm run electron-dev (or npm run electron-dev-browser)
-#project structure
+# project structure
 sails - main folder
 1. bc_node - blockchain part written in golang
 2. public - static documents
@@ -21,7 +20,7 @@ sails - main folder
     5. reducers - folder reserved for redux reducers
     6. store - folder reserved for redux store wich contains only one file - store.js
 
-#dev guildelines
+# dev guildelines
 - if its possible use one component per file
 - Use PascalCase for component classes and camelCase for component instances and function names
 - Use the filename as the component name
