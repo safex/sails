@@ -3,19 +3,38 @@
         {
           "target_name": "build_rpc",
           "type": "none",
-          "actions": [
+          'conditions': [
+            ['OS=="win"', {
+               "actions": [
             {
-              "action_name": "build_golang_rpc",
+              "action_name": "build_golang_rpc_win",
               "inputs": ["bc_node/gosafex/pkg/json_rpc/json_rpc.go"],
               "outputs": [
                 "bc_node/gosafex/pkg/json_rpc/json_rpc",
               ],
               "action": [
-                "make", "--directory=bc_node/gosafex/pkg/json_rpc/"
+                "cd ..\\bc_node\gosafex\pkg\json_rpc\ && go build && move json_rpc.exe ..\..\..\..\\"
               ],
-              "message": "Building safex libraries"
+              "message": "Building safex libraries windows"
             }
           ]
+           },
+           { 
+             "actions": [
+            {
+              "action_name": "build_golang_rpc_lin_mac",
+              "inputs": ["bc_node/gosafex/pkg/json_rpc/json_rpc.go"],
+              "outputs": [
+                "./json_rpc",
+              ],
+              "action": [
+                "make", "--directory=bc_node/gosafex/pkg/json_rpc/"
+              ],
+              "message": "Building safex libraries linux"
+            }
+          ]
+          }],
+          ],
         }
     ]
 }
