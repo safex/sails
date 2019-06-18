@@ -9,17 +9,17 @@ sails wallet
 sails - main folder
 1. bc_node - blockchain part written in golang
 2. public - static documents
-    i. css - folder for css
-    ii. img - images
-    iii. js - simple js and json files
+    1. css - folder for css
+    2. img - images
+    3. js - simple js and json files
 3. setups - files thar are used for diferent kind of setups ( routers, env ...)
 4. src
-    i. actions - folder reserved for redux actions
-    4.2 components - folder for react components
-    4.3 libs - additional libs and hellpers that are used in modules
-    4.4 modules - folder for components logic
-    4.5 reducers - folder reserved for redux reducers
-    4.6 store - folder reserved for redux store wich contains only one file - store.js
+    1. actions - folder reserved for redux actions
+    2. components - folder for react components
+    3. libs - additional libs and hellpers that are used in modules
+    4. modules - folder for components logic
+    5. reducers - folder reserved for redux reducers
+    6. store - folder reserved for redux store wich contains only one file - store.js
 
 #dev guildelines
 - if its possible use one component per file
