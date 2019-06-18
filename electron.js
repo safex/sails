@@ -64,12 +64,11 @@ function createWindow() {
 
 function createChild(port){
   var child = require('child_process');
-  var executablePath = "/home/zvrk/workarea/sails/bc_node/gosafex/pkg/json_rpc/json_rpc";
+  var executablePath = process.cwd()+"/bc_node/gosafex/pkg/json_rpc/json_rpc";
   var parameters = ["-port="+port,'-password=1234'];
 
   try {
       child.execFile(executablePath,parameters, function(childProcess){
-        console.log(childProcess);
       });
   } catch (error) {
     console.log(error);

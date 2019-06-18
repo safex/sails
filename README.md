@@ -4,7 +4,7 @@ sails wallet
 - use --recursive flag when cloning the rep
 - npm i 
 - go to ./bc_node/gosafex/pkg/json_rpc and run command go build ( you will need go tool, latest version)
-- npm run electron-dev
+- npm run electron-dev (or npm run electron-dev-browser)
 #project structure
 sails - main folder
 1. bc_node - blockchain part written in golang
