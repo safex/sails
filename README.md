@@ -1,19 +1,20 @@
 # sails
 sails wallet 
 #install info
-npm i
-go to ./bc_node/gosafex/pkg/json_rpc and run command go build ( you will need go tool, latest version)
-npm run electron-dev
+- use --recursive flag when cloning the rep
+- npm i 
+- go to ./bc_node/gosafex/pkg/json_rpc and run command go build ( you will need go tool, latest version)
+- npm run electron-dev
 #project structure
 sails - main folder
 1. bc_node - blockchain part written in golang
 2. public - static documents
-    2.1 css - folder for css
-    2.2 img - images
-    2.3 js - simple js and json files
+    i. css - folder for css
+    ii. img - images
+    iii. js - simple js and json files
 3. setups - files thar are used for diferent kind of setups ( routers, env ...)
 4. src
-    4.1 actions - folder reserved for redux actions
+    i. actions - folder reserved for redux actions
     4.2 components - folder for react components
     4.3 libs - additional libs and hellpers that are used in modules
     4.4 modules - folder for components logic
