@@ -4,3 +4,4 @@ package-lock.json
 build/
 bin/json_rpc
 bc_node/
+dist/
