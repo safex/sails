@@ -1,7 +1,0 @@
-
-
-.PHONY: all
-all:
-	go build && mv json_rpc ../../../../
-
-

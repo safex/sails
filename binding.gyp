@@ -13,7 +13,7 @@
                 "bc_node/gosafex/pkg/json_rpc/json_rpc",
               ],
               "action": [
-                "cd ..\\bc_node\gosafex\pkg\json_rpc\ && go build && move json_rpc.exe ..\..\..\..\\"
+                "cd ..\\bc_node\gosafex\pkg\json_rpc\ && go build && move json_rpc.exe ..\..\..\..\\bin\\"
               ],
               "message": "Building safex libraries windows"
             }

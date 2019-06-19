@@ -19,6 +19,7 @@ sails - main folder
     4. modules - folder for components logic
     5. reducers - folder reserved for redux reducers
     6. store - folder reserved for redux store wich contains only one file - store.js
+5. bin - folder for gosafex executable
 
 # dev guildelines
 - if its possible use one component per file

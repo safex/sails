@@ -50,8 +50,8 @@
   },
   "binary": {
     "module_name": "json_rpc",
-    "module_path": "./bin/",
+    "module_path": "./bin",
     "remote_path": "{version}",
-    "host": "https://github.com/safex/safex-nodejs-libwallet/releases/download/"
+    "host": "https://github.com/safex/sails/"
   }
 }

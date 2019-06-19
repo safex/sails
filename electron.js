@@ -64,7 +64,7 @@ function createWindow() {
 
 function createChild(port){
   var child = require('child_process');
-  var executablePath = process.cwd()+"/json_rpc";
+  var executablePath = process.cwd()+"/bin/json_rpc";
   var parameters = ["-port="+port,'-password=1234'];
 
   try {
@@ -103,8 +103,7 @@ app.on("activate", function() {
   // On OS X it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
   if (mainWindow === null) {
-    createWindow();
-    createChild(4001);
+    initAll()
   }
 });
 

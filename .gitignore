@@ -2,5 +2,5 @@
 node_modules/
 package-lock.json
 build/
-json_rpc
+bin/json_rpc
 bc_node/
