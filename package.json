@@ -1,0 +1,105 @@
+{
+  "name": "sails",
+  "version": "0.1.0",
+  "private": true,
+  "main": "./electron.js",
+  "dependencies": {
+    "@rescripts/cli": "0.0.10",
+    "@rescripts/rescript-env": "0.0.10",
+    "node-pre-gyp": "^0.13.0",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "react-redux": "^7.1.0",
+    "react-router-dom": "^5.0.1",
+    "react-scripts": "3.0.1",
+    "redux": "^4.0.1",
+    "typescript": "^3.5.2",
+    "wait-on": "^3.2.0"
+  },
+  "author": {
+    "name": "Safex Developers",
+    "url": "https://safex.io",
+    "email": "team@safex.io"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "electron-dev": "concurrently \"npm start\" \"wait-on http://localhost:3000 && electron .\"",
+    "electron-dev-browser": "concurrently \"BROWSER=none npm start\" \"wait-on http://localhost:3000 && electron .\"",
+    "electron-only": "electron .",
+    "make-mac-installer": "npm run build && electron-builder build -m",
+    "make-win-installer": "npm run build && electron-builder build -w --x64 --ia32",
+    "make-linux-installer": "npm run build && electron-builder build -l",
+    "make-all-installers": "npm run build && electron-builder build -ml && electron-builder build -w --x64 --ia32"
+  },
+  "build": {
+    "appId": "com.electron.sails",
+    "extends": null,
+    "files": [
+      "**/*",
+      "build/*.*",
+      "build/css/*.*",
+      "build/fonts/*.*",
+      "build/images/*.*",
+      "build/images/migration/*.*",
+      "build/static/css/*.*",
+      "build/static/js/*.*",
+      "build/static/img/*.*"
+    ],
+    "mac": {
+      "category": "public.app-category.business",
+      "icon": "public/images/icons/wallet-icon2.icns",
+      "type": "distribution",
+      "target": [
+        "dmg"
+      ]
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "public/images/icons/wallet-icon2.ico",
+      "certificateFile": "../../../safexDevelopersCertificate.p12",
+      "certificatePassword": ""
+    },
+    "linux": {
+      "target": [
+        "deb",
+        "rpm"
+      ],
+      "category": "Utility",
+      "icon": "public/images/icons/"
+    }
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "concurrently": "^4.1.0",
+    "debug": "^4.1.1",
+    "electron": "^5.0.1",
+    "electron-builder": "^20.40.2",
+    "electron-context-menu": "^0.12.1",
+    "electron-packager": "^13.1.1",
+    "morgan": "^1.9.1",
+    "tslint": "^5.17.0"
+  },
+  "binary": {
+    "module_name": "json_rpc",
+    "module_path": "./bin",
+    "remote_path": "{version}",
+    "host": "https://github.com/safex/sails/"
+  }
+}

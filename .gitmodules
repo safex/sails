@@ -1,0 +1,4 @@
+[submodule "gosafex"]
+	path = bc_node/gosafex
+	url = https://github.com/safex/gosafex.git
+	branch = develop
