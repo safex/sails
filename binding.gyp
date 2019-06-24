@@ -18,8 +18,9 @@
               "message": "Building safex libraries windows"
             }
           ]
-           },
-           { 
+           }],
+           
+           ['OS!="win"',{ 
              "actions": [
             {
               "action_name": "build_golang_rpc_lin_mac",
@@ -28,7 +29,7 @@
                 "./json_rpc",
               ],
               "action": [
-                "make", "--directory=bc_node/gosafex/pkg/json_rpc/"
+                "make", "--directory=./"
               ],
               "message": "Building safex libraries linux"
             }
