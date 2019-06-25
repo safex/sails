@@ -8,6 +8,7 @@ if (setupEvents.handleSquirrelEvent()) {
 const electron = require("electron");
 // Module to create native browser window.
 const app= electron.app;
+process.env['APP_PATH'] = app.getAppPath();
 const Menu= electron.Menu;
 const BrowserWindow = electron.BrowserWindow;
 
@@ -35,15 +36,12 @@ function createWindow() {
   });
 
  // and load the index.html of the app.
-  let startUrl =
-    process.env.ELECTRON_START_URL ||
-    "http://localhost:3000/" 
-    // ||
-    // url.format({
-    //   pathname: path.join(__dirname, "/../build/index.html"),
-    //   protocol: "file:",
-    //   slashes: true
-    // })
+  let startUrl = 
+    url.format({
+      pathname: path.join(__dirname, "/build/index.html"),
+      protocol: "file:",
+      slashes: true
+    })
     ;
 
   
@@ -64,12 +62,11 @@ function createWindow() {
 
 function createChild(port){
   var child = require('child_process');
-  var executablePath = process.cwd()+"/bin/json_rpc";
+  var executablePath =path.join(__dirname, "/bin/json_rpc");
   var parameters = ["-port="+port,'-password=1234'];
 
   try {
-      child.execFile(executablePath,parameters, function(childProcess){
-      });
+      child.execFile(executablePath,parameters, function(cerr,hildProcess){});
   } catch (error) {
     console.log(error);
   }

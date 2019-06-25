@@ -2,7 +2,7 @@
   "name": "sails",
   "version": "0.1.0",
   "private": true,
-  "main": "./electron.js",
+  "main": "electron.js",
   "dependencies": {
     "@rescripts/cli": "0.0.10",
     "@rescripts/rescript-env": "0.0.10",
@@ -34,6 +34,7 @@
     "make-linux-installer": "npm run build && electron-builder build -l",
     "make-all-installers": "npm run build && electron-builder build -ml && electron-builder build -w --x64 --ia32"
   },
+  "homepage": "./",
   "build": {
     "appId": "com.electron.sails",
     "extends": null,
@@ -46,7 +47,8 @@
       "build/images/migration/*.*",
       "build/static/css/*.*",
       "build/static/js/*.*",
-      "build/static/img/*.*"
+      "build/static/img/*.*",
+      "bin/json_rpc"
     ],
     "mac": {
       "category": "public.app-category.business",
@@ -64,8 +66,7 @@
     },
     "linux": {
       "target": [
-        "deb",
-        "rpm"
+        "deb"
       ],
       "category": "Utility",
       "icon": "public/images/icons/"
