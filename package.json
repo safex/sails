@@ -9,6 +9,8 @@
     "node-pre-gyp": "^0.13.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
+    "react-i18next": "^10.11.2",
+    "react-multi-lang": "^1.0.6",
     "react-redux": "^7.1.0",
     "react-router-dom": "^5.0.1",
     "react-scripts": "3.0.1",
@@ -26,8 +28,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "electron-dev": "concurrently \"npm start\" \"wait-on http://localhost:3000 && electron .\"",
-    "electron-dev-browser": "concurrently \"BROWSER=none npm start\" \"wait-on http://localhost:3000 && electron .\"",
+    "electron-dev": "concurrently \"npm start\" \"wait-on http://localhost:3000 && NODE_ENV=development electron .\"",
+    "electron-dev-browser": "concurrently \"BROWSER=none npm start\" \"wait-on http://localhost:3000 && NODE_ENV=development electron .\"",
     "electron-only": "electron .",
     "make-mac-installer": "npm run build && electron-builder build -m",
     "make-win-installer": "npm run build && electron-builder build -w --x64 --ia32",
@@ -61,7 +63,7 @@
     "win": {
       "target": "nsis",
       "icon": "public/images/icons/wallet-icon2.ico",
-      "certificateFile": "../../../safexDevelopersCertificate.p12",
+      "certificateFile": "",
       "certificatePassword": ""
     },
     "linux": {

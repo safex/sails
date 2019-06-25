@@ -1,12 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {Provider} from 'react-redux';
-import App from './components/shared/App';
 import * as serviceWorker from './serviceWorker';
-import store from './store/store'
+import store from './store/store';
+import routes from './setups/routes';
 
-
-let el=<Provider store={store}><App /></Provider>; //not necessary at the moment
+let el=<Provider store={store}><div>{routes}</div></Provider>; //not necessary at the moment
 
 ReactDOM.render(el, document.getElementById('root'));
 

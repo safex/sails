@@ -8,7 +8,6 @@ if (setupEvents.handleSquirrelEvent()) {
 const electron = require("electron");
 // Module to create native browser window.
 const app= electron.app;
-process.env['APP_PATH'] = app.getAppPath();
 const Menu= electron.Menu;
 const BrowserWindow = electron.BrowserWindow;
 
@@ -29,25 +28,25 @@ function createWindow() {
     minWidth: 1024,
     minHeight: 650,
     webPreferences: {
-      webSecurity: false
+      webSecurity: false,
+      nodeIntegration: true
     },
     useContentSize: true,
     frame: false
   });
 
  // and load the index.html of the app.
-  let startUrl = 
-    url.format({
-      pathname: path.join(__dirname, "/build/index.html"),
-      protocol: "file:",
-      slashes: true
-    })
-    ;
+  let startUrl = (process.env.NODE_ENV != "development" ?   url.format({
+    pathname: path.join(__dirname, "/build/index.html"),
+    protocol: "file:",
+    slashes: true
+  }): 'http://localhost:3000/') ;
+
 
   
     mainWindow.loadURL(startUrl);
-//   if (process.env.NODE_ENV === "development")
-    mainWindow.webContents.openDevTools();
+    if (process.env.NODE_ENV === "development")
+      mainWindow.webContents.openDevTools();
 
   // Emitted when the window is closed.
   mainWindow.on("closed", function() {
