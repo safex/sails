@@ -1,7 +1,7 @@
 import React,{Component} from 'react';
 import {connect} from 'react-redux';
 import {Link} from 'react-router-dom'
-let sharedM = require('../../modules/shared.module');
+let sharedM = require('../../modules/shared.module.js');
 
 const mapStateToProps = (state) => {
   return {

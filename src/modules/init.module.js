@@ -23,11 +23,21 @@ module.exports.setWalletExistsToTrue= function (that){
     that.props.dispatch(walletExistActions.setWalletExistsStatus(true));
 }
 
-module.exports.login= function(that){
+module.exports.login= function(that, value){
+    if(value!=''){
+        //call golang
+    }
+    else{
+        //error
+    }
+}
+module.exports.createNew= function(that, filepath,pwd){
 
 }
-module.exports.createNew= function(){}
 
+module.exports.open= function(that, filepath, pwd){
+    console.log(filepath,pwd);
+}
 module.exports.restoreFromKeys= function(){}
 
 module.exports.restoreFromSeeds= function(){}

@@ -1,6 +1,8 @@
 import React,{Component} from 'react';
 import {connect} from 'react-redux';
-import {Link} from 'react-router-dom'
+import {Link} from 'react-router-dom';
+import LanguageMenu from '../shared/LanguageMenu';
+import { withTranslation } from 'react-i18next';
 let initM = require('../../modules/init.module');
 
 const mapStateToProps = (state) => {
@@ -17,7 +19,15 @@ class Login extends Component {
 } 
 
   render() {
-   return   <div> <label>Pwd</label> <input type="password"/> <button onClick={()=>{initM.login(this)}}>Login</button><Link to='/'><button>Back</button></Link></div>
+    return   <div>
+                <LanguageMenu/>
+                <div>
+                    <label >{this.props.t('login.form.label')}</label>
+                    <input id="login_pwd" type="password" onChange = {()=>{}}/>
+                    <button onClick={()=>{initM.login(this, document.getElementById('login_pwd').value)}}>{this.props.t('login.form.button')}</button>
+                    <Link to='/'><button>{this.props.t('back_button')}</button></Link>
+                </div>
+            </div>
   }
 }
-export default connect(mapStateToProps)(Login);
+export default  withTranslation('init')(connect(mapStateToProps)(Login));

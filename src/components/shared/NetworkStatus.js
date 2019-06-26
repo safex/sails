@@ -1,14 +1,10 @@
 import React,{Component} from 'react';
 import {connect} from 'react-redux';
 import {Link} from 'react-router-dom'
-let sharedM = require('../../modules/shared.module');
+let sharedM = require('../../modules/shared.module.js');
 
 const mapStateToProps = (state) => {
   return {
-    active_account: state.active_account,
-    active_tab:state.active_tab,
-    lang:state.language,
-    accounts: state.accounts
   };
 };
 
@@ -20,9 +16,7 @@ class NetworkStatus extends Component {
 
   render() {
     
-   return   <div>
-               
-            </div>
+   return   <div></div>
   }
 }
 export default connect(mapStateToProps)(NetworkStatus);

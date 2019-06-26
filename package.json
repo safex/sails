@@ -6,11 +6,11 @@
   "dependencies": {
     "@rescripts/cli": "0.0.10",
     "@rescripts/rescript-env": "0.0.10",
+    "i18next": "^17.0.4",
     "node-pre-gyp": "^0.13.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-i18next": "^10.11.2",
-    "react-multi-lang": "^1.0.6",
     "react-redux": "^7.1.0",
     "react-router-dom": "^5.0.1",
     "react-scripts": "3.0.1",
