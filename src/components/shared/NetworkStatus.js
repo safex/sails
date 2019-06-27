@@ -1,22 +1,21 @@
 import React,{Component} from 'react';
 import {connect} from 'react-redux';
-import {Link} from 'react-router-dom'
-let sharedM = require('../../modules/shared.module.js');
+import { withTranslation } from 'react-i18next';
 
 const mapStateToProps = (state) => {
   return {
+    active_account: state.active_account
   };
 };
 
-
 class NetworkStatus extends Component {
-  componentDidMount() {
-
-   } 
 
   render() {
-    
-   return   <div></div>
+    return <div>
+      <p>{this.props.t("network_status")} : {this.props.t("connected")}</p>
+      <p>{this.props.t("bitcoin_network_status")} :  {this.props.t("disconnected")} </p>
+      <p>{this.props.t("chain_sync")} : 123/456</p> 
+    </div>
   }
 }
-export default connect(mapStateToProps)(NetworkStatus);
+export default withTranslation('network_status')(connect(mapStateToProps)(NetworkStatus));

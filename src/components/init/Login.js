@@ -1,26 +1,23 @@
 import React,{Component} from 'react';
 import {connect} from 'react-redux';
 import {Link} from 'react-router-dom';
-import LanguageMenu from '../shared/LanguageMenu';
 import { withTranslation } from 'react-i18next';
 let initM = require('../../modules/init.module');
 
 const mapStateToProps = (state) => {
   return {
-    wallet_exists: state.wallet_exists,
-    wallet:state.wallet
+    wallet_exists: state.wallet_exists
   };
 };
 
 
 class Login extends Component {
-  componentDidMount() {
-
-} 
+  constructor(props){
+    super(props);
+ }
 
   render() {
     return   <div>
-                <LanguageMenu/>
                 <div>
                     <label >{this.props.t('login.form.label')}</label>
                     <input id="login_pwd" type="password" onChange = {()=>{}}/>

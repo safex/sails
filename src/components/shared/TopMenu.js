@@ -1,40 +1,37 @@
 import React,{Component} from 'react';
 import {connect} from 'react-redux';
 import {Link} from 'react-router-dom'
-let sharedM = require('../../modules/shared.module.js');
+import { withTranslation } from 'react-i18next';
 
 const mapStateToProps = (state) => {
   return {
     active_account: state.active_account,
-    active_tab:state.active_tab
+    active_tab:state.active_tab,
   };
 };
 
 
 class TopMenu extends Component {
-  componentDidMount() {
-
-   } 
-
   render() {
-    let info = <div >Active: {this.props.active_account}</div> 
-    let homeB=<Link to='/home'><button> Home</button></Link>;
-    let sfxB=<Link to='/sfx'><button> SFX</button></Link>;
-    let sftB=<Link to='/sft'><button>SFT</button></Link>;
-    let contactB = <Link to='/contacts'><button>Contacts</button></Link>;
-    let settingsB=<Link to='/settings'><button>Settings</button></Link>;
-    let logoutB=<button onClick={}>Logout</button>
-    let langB=<button onClick={}>Language</button>
+    let info = <div > {this.props.t("active")} : {this.props.active_account?"":"X"}</div> 
+    let homeB=<Link to='/w/home'><button> {this.props.t("home")} </button></Link>;
+    let sfxB=<Link to='/w/sfx'><button> {this.props.t("sfx")} </button></Link>;
+    let sftB=<Link to='/w/sft'><button> {this.props.t("sft")} </button></Link>;
+    let contactB = <Link to='/w/contacts'><button> {this.props.t("contacts")} </button></Link>;
+    let settingsB=<Link to='/w/settings'><button> {this.props.t("settings")} </button></Link>;
+    let migrationB=<Link to='/w/migrations'><button> {this.props.t("migrations")} </button></Link>;
+    let bitcoinB=<Link to='/w/bitcoin'><button> {this.props.t("bitcoin")} </button></Link>;
    return   <div>
                 { info }
                 { homeB }
                 { sfxB }
                 { sftB }
                 { contactB }
+                {this.props.active_account? migrationB:''}
+                {this.props.active_account? bitcoinB:''}
                 { settingsB }
-                { logoutB }
-                { langB }
-            </div>
+           
+            </div>;
   }
 }
-export default connect(mapStateToProps)(TopMenu);
+export default withTranslation('top_menu')( connect(mapStateToProps)(TopMenu));

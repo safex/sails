@@ -23,10 +23,11 @@ function createWindow() {
   // Create the browser window.
   mainWindow = new BrowserWindow({
     backgroundColor: "#243782",
-    width: 1024,
-    height: 650,
-    minWidth: 1024,
-    minHeight: 650,
+    maximizable:true,
+   // width: 1024,
+   // height: 650,
+   // minWidth: 1024,
+   // minHeight: 650,
     webPreferences: {
       webSecurity: false,
       nodeIntegration: true

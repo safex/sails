@@ -1,0 +1,10 @@
+{
+    "accounts":{
+        "add":"Add A New Account",
+        "keys":"From keys",
+        "seed":"From seed",
+        "file":"From file"
+    },
+    "history":"Transaction history",
+    "export":"Export keys"
+}

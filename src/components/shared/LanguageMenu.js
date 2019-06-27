@@ -6,9 +6,7 @@ import { withTranslation } from 'react-i18next';
 let sharedM = require('../../modules/shared.module');
 const mapStateToProps = (state) => {
   return {
-    wallet_exists: state.wallet_exists,
     language:state.language,
-    error:state.error
   };
 };
 
