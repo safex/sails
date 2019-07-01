@@ -1,0 +1,10 @@
+{
+    "address":"Address",
+    "label":"Label",
+    "add": "Add Contact",
+    "copy":"Copy",
+    "send_sfx":"Send SFX",
+    "send_sft":"Send SFT",
+    "update":"Update",
+    "delete":"Delete"
+}

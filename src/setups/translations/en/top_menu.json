@@ -6,5 +6,6 @@
     "migrations":"Migrations",
     "bitcoin":"Bitcoin",
     "settings":"Settings",
-    "active":"Active Account"
+    "active":"Active Account",
+    "logout": "Logout"
 }

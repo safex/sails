@@ -1,6 +1,15 @@
 import React,{Component} from 'react';
 import {connect} from 'react-redux';
 import { withTranslation } from 'react-i18next';
+import AddContact from './AddContact';
+import Contact from './Contact';
+const mapStateToProps = (state) => {
+  return {
+    contacts: state.contacts,
+    active_account:state.active_account
+  };
+};
+
 
 class Contacts extends Component {
   
@@ -9,7 +18,10 @@ class Contacts extends Component {
     }
 
   render() {
-   return   <div><h1> Contacts</h1> </div>
+    let contacts=this.props.contacts.map((x)=>{return <Contact contact={x}/>;});
+   return   <div> <AddContact />
+   {contacts}
+   </div>
   }
 }
-export default withTranslation('contacts')(connect()(Contacts));
+export default withTranslation('contacts')(connect(mapStateToProps)(Contacts));

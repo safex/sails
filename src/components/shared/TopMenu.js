@@ -21,6 +21,7 @@ class TopMenu extends Component {
     let settingsB=<Link to='/w/settings'><button> {this.props.t("settings")} </button></Link>;
     let migrationB=<Link to='/w/migrations'><button> {this.props.t("migrations")} </button></Link>;
     let bitcoinB=<Link to='/w/bitcoin'><button> {this.props.t("bitcoin")} </button></Link>;
+    let logoutB=<Link to='/'><button> {this.props.t("logout")} </button></Link>;
    return   <div>
                 { info }
                 { homeB }
@@ -30,6 +31,7 @@ class TopMenu extends Component {
                 {this.props.active_account? migrationB:''}
                 {this.props.active_account? bitcoinB:''}
                 { settingsB }
+                {logoutB}
            
             </div>;
   }

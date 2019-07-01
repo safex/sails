@@ -6,6 +6,8 @@ import {isGuestReducer} from './is_guest.reducer';
 import {activeAccountReducer} from './active_account.reducer';
 import {accountsReducer} from './accounts.reducer';
 import {historyReducer} from './history.reducer';
+import {contactsReducer} from './contacts.reducer';
+
 export default combineReducers({ 
     wallet_exists:walletExistsReducer,
     language:languageReducer,
@@ -13,5 +15,6 @@ export default combineReducers({
     is_guest:isGuestReducer,
     active_account:activeAccountReducer,
     accounts:accountsReducer,
-    history:historyReducer
+    history:historyReducer,
+    contacts:contactsReducer
 });

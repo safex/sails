@@ -18,8 +18,7 @@
     "react-router-dom": "^5.0.1",
     "react-scripts": "3.0.1",
     "redux": "^4.0.1",
-    "typescript": "^3.5.2",
-    "wait-on": "^3.2.0"
+    "typescript": "^3.5.2"
   },
   "author": {
     "name": "Safex Developers",
@@ -100,7 +99,8 @@
     "electron-context-menu": "^0.12.1",
     "electron-packager": "^13.1.1",
     "morgan": "^1.9.1",
-    "tslint": "^5.17.0"
+    "tslint": "^5.17.0",
+    "wait-on": "^3.2.0"
   },
   "binary": {
     "module_name": "json_rpc",

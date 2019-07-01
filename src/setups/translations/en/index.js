@@ -4,7 +4,10 @@ import top_menu from './top_menu.json';
 import address_info from './address_info';
 import network_status from './network_status';
 import home from './home.json';
-import settings from './settings.json'
+import settings from './settings.json';
+import sfx from './sfx.json';
+import sft from './sft.json';
+import contacts from './contacts.json';
 
 export default {
     init,
@@ -13,5 +16,8 @@ export default {
     address_info,
     network_status,
     home,
-    settings
+    settings,
+    sfx,
+    sft,
+    contacts
 }

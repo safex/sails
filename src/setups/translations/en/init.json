@@ -24,7 +24,15 @@
     },
     "restore": {
         "button": "Restore wallet from keys or seeds",
-        "description": "Enter keys or 25 seed words to restore your Safex wallet."
+        "description": "Enter keys or 25 seed words to restore your Safex wallet.",
+        "form":{
+            "public_view":"View Public Key",
+            "private_view":"View Private Key",
+            "public_spend":"Spend Public Key",
+            "private_spend":"Spend Private Key",
+            "seeds":"Seeds",
+            "button":"Recover"
+        }
     },
     "back": {
         "button": "Open a different wallet",
