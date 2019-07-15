@@ -1,13 +1,60 @@
-let languageAction=require('../actions/language.action.js');
-let activeAccountAction=require('../actions/active_account.action.js');
+let {changeLanguage}=require('../actions/language.action');
+let {addActiveAccount} = require('../actions/active_account.action');
+let {resetApp} = require('../actions/reset.action');
+let {getActiveAccountApi} = require('../api/go/active_account.api');
+let {getAccountsApi, openAccountsApi} = require('../api/go/accounts.api');
+let { processResponse, jsonResponse, errorResponse } = require('../libs/response');
 
-module.exports.changeLanguage= function(that, event){
-    that.props.dispatch(languageAction.changeLanguage(event.target.value));
-    that.props.i18n.changeLanguage(event.target.value);   
+let changeLanguageF= function(that, value){
+    that.props.dispatch(changeLanguage(value));
+    that.props.i18n.changeLanguage(value);   
 }
 
-module.exports.setActiveAccount= function(){  
+let logout = function(dispatch, history){
+    //dispatch(resetApp());
+   // history.push('/');
 }
 
-module.exports.getActiveAccount= function(){  
+let getActiveAccountFromWallet = function(dispatch){
+    getActiveAccountApi()
+    .then(processResponse)
+    .then(jsonResponse)
+    .then((data)=>{
+        if(data.status!=0) throw new Error(data.status);
+        else {
+            if(data.result) openAccounts(dispatch,JSON.parse(data.result.value));
+            else getActiveAccountFromAccounts(dispatch);
+        }
+    })
+    .catch(errorResponse);
+}
+
+let openAccounts = function (dispatch,account){
+    openAccountsApi(account.account.account_name)
+    .then(processResponse)
+    .then(jsonResponse)
+    .then((open)=>{
+        if(open.status!=0) throw new Error(open.status);
+        else dispatch(addActiveAccount(account));
+    })
+    .catch(errorResponse);
+}
+let getActiveAccountFromAccounts = function(dispatch){
+    getAccountsApi()
+    .then(processResponse)
+    .then(jsonResponse)
+    .then((data)=>{
+        if(data.status!=0) throw new Error(data.status);
+        else {
+           //if exists dispatch first
+           //else try and find legacy accounts
+        }
+    })
+    .catch(errorResponse);
+}
+export {
+    changeLanguageF,
+    logout,
+    getActiveAccountFromWallet,
+    getActiveAccountFromAccounts
 }

@@ -8,7 +8,7 @@ class App extends Component {
 
 
   render() {
-    return <div> <LanguageMenu/> {routes_main} <Error/></div>;
+    return <div><Error> <LanguageMenu/> {routes_main} </Error></div>;
   }
 }
 export default withTranslation()(connect()(App));

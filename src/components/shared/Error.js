@@ -1,8 +1,8 @@
 import React,{Component} from 'react';
 import {connect} from 'react-redux';
-
 import { withTranslation } from 'react-i18next';
-import error_types from '../../setups/error_types';
+import error_types from '../../setups/error_types.json';
+import {addError, removeError} from '../../actions/error.action';
 
 let sharedM = require('../../modules/shared.module');
 const mapStateToProps = (state) => {
@@ -14,21 +14,36 @@ const mapStateToProps = (state) => {
 };
 
 
-class LanguageMenu extends Component {
+class Error extends Component {
   
-    constructor(props){
-       super(props);
-    }
-    componentDidMount() {
-
-    } 
+  constructor(props){
+    super(props);
+  }
+   
+  componentDidCatch(error, errorInfo) {
+    this.props.dispatch(addError({
+      error: error,
+      errorInfo: errorInfo
+    }));
+ }
 
 
   render() {
-      let el=this.props.error.map((x)=>{
-          return <p>{this.props.t(x)}</p>
-      });
-   return  <div>{el}</div>;
+    if (this.props.error!=false) {
+      return (
+        <div>
+          <h2>Something went wrong</h2>
+          <details style={{ whiteSpace: 'pre-wrap' }}>
+            {this.props.error.error && this.props.error.error.toString()}
+         
+            {this.props.error.errorInfo && this.props.error.errorInfo.componentStack}
+          </details>
+        </div>
+      );
+    }
+   
+    return this.props.children;
   }
 }
-export default withTranslation('error')(connect(mapStateToProps)(LanguageMenu));
+export default withTranslation('error')(connect(mapStateToProps)(Error));
+

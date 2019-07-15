@@ -1,1 +1,6 @@
-{}
+{
+    "ERR_404":"Page Not Found",
+    "NO_PWD" : "Password field can't be empty",
+    "INVALID_FILE_FORMAT":"Invalid wallet format (expected v1)",
+    "INVALID_JSON":"Invalid password or corrupted wallet data"
+}

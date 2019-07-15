@@ -1,6 +1,7 @@
 import React,{Component} from 'react';
 import {connect} from 'react-redux';
 import { withTranslation } from 'react-i18next';
+let homeM = require('../../modules/home.module');
 
 const mapStateToProps = (state) => {
   return {
@@ -16,8 +17,8 @@ class Account extends Component {
 
 
     render() {
-        let accounts=this.props.account;
-        return   <div> Account X </div>;
+
+        return   <div onClick={homeM.setActiveAccount(this.dispatch,{account:this.props.account, type:this.props.type})}> Account X </div>;
   }
 }
 export default withTranslation('home')(connect(mapStateToProps)(Account));

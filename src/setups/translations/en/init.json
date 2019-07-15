@@ -1,17 +1,45 @@
 {
     "login": {
         "button": "Login",
-        "description": "Your existing safexwallet.dat has been detected",
+        "description": "Your existing safexwallet.dat has been detected. Login to create a new wallet.",
         "form":{
-            "label":"Password",
-            "button":"Login"
+            "password":"Password",
+            "button":"Login",
+            "legacy_detected":"Legacy Wallet Detected",
+            "choose_filepath":"Choose .dat wallet file",
+            "detected":"Detected",
+            "bitcoin_key_sets":"Bitcoin key sets",
+            "bitcoins_on_all_wallets":"Bitcoin on all wallets",
+            "safe_exchange_coins_total":"Safe Exchange Coins Total",
+            "safex_key_sets":"Safex Key Sets",
+            "safex_tokens":"Safex Tokens",
+            "safex_cash":"Safex cash",
+            "view_keys_balance":"View list of keys and balances",
+            "legacy_create_desc":"This will generate a modern wallet file for use in the sails wallet for safex cash and token on the new blockchain, your old .dat file will remain in tact, we recommend backing it up; however, resort to using the new generated wallet file from now on"
         }
     },
     "create": {
         "button": "Setup a new wallet",
         "description": "Choose this option if this is your first time using Safex",
         "form":{
-            "button":"Create"
+            "button":"Create",
+            "choose_filepath":"Choose wallet file location",
+            "file_location":"File location",
+            "wallet_name":"Give a name to your wallet",
+            "wallet_name_label":"Wallet name",
+            "password":"Password",
+            "repeat_password":"Confirm password",
+            "public_address":"Public address",
+            "public_address_desc":"This is where you receive safex cash and safex tokens to: share this to receive funds.",
+            "mnemonic":"Wordphrase backup",
+            "mnemonic_desc": "This exact combination of words will restore your keys in the event you lost your device, or some other corruption happened. This information recreates your keys so do not share it or lose it. Secure this word combination."
+        },
+        "steps":{
+            "choose_path":"Choose path",
+            "set_password":"Set password",
+            "generate_keys":"Generate keys",
+            "final_review":"Final review",
+            "wallet":"Wallet"
         }
     },
     "open": {
@@ -19,13 +47,15 @@
         "description": "Load up your existing wallet file and continue using Safex",
         "form":{
             "label":"Password",
-            "button":"Open"
+            "button":"Open",
+            "choose_filepath":"Open v8 wallet file"
         }
     },
     "restore": {
         "button": "Restore wallet from keys or seeds",
         "description": "Enter keys or 25 seed words to restore your Safex wallet.",
         "form":{
+            "address":"Public address",
             "public_view":"View Public Key",
             "private_view":"View Private Key",
             "public_spend":"Spend Public Key",
@@ -38,5 +68,17 @@
         "button": "Open a different wallet",
         "description": "Load a wallet from a number of options."
     },
-    "back_button":"Back"
+    "legacy":{
+        "button":"Import legacy wallet file v7 and earlier",
+        "description":"Import a safexwallet.dat file here, a new file will be created"
+    },
+    "legacy_detected":{
+        "title":"Legacy Wallet Detected",
+        "description":"To proceed you will create a new v8 wallet file which will become your main wallet file."
+    },
+    "back_button":"Back",
+    "escape_button":"Escape",
+    "proceed_button":"Proceed",
+    "next_button":"Next",
+    "browse_button":"Browse"
 }

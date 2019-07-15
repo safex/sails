@@ -1,11 +1,12 @@
-
-module.exports.errorReducer = function (state = [], action){ 
+import {ADD_ERROR, REMOVE_ERROR} from '../actions/action.types';
+let errorReducer = function (state =false, action){ 
     switch(action.type){
-      case 'SET_ERROR':
-        return  [...state, action.item] ;
-      case 'REMOVE_ERROR':
-        return state.slice(state.indexOf(action.item),1);
+      case ADD_ERROR:
+        return  action.item ;
+      case REMOVE_ERROR:
+        return false;
       default:
         return state;      
     }
 }
+export {errorReducer}

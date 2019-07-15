@@ -106,6 +106,6 @@
     "module_name": "json_rpc",
     "module_path": "./bin",
     "remote_path": "{version}",
-    "host": "https://github.com/safex/sails/"
+    "host": "https://github.com/StefanIsidorovic/gosafex/"
   }
 }

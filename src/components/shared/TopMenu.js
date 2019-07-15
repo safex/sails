@@ -2,6 +2,8 @@ import React,{Component} from 'react';
 import {connect} from 'react-redux';
 import {Link} from 'react-router-dom'
 import { withTranslation } from 'react-i18next';
+import {logout, getActiveAccountFromWallet} from '../../modules/shared.module';
+import store from '../../store/store';
 
 const mapStateToProps = (state) => {
   return {
@@ -12,8 +14,15 @@ const mapStateToProps = (state) => {
 
 
 class TopMenu extends Component {
+  
+  componentDidMount(){
+    if(!this.props.active_account.hasOwnProperty("type"))
+      getActiveAccountFromWallet(this.props.dispatch);
+  }
+  
   render() {
-    let info = <div > {this.props.t("active")} : {this.props.active_account?"":"X"}</div> 
+    
+    let info = <div > {this.props.t("active")} : {this.props.active_account? JSON.stringify(this.props.active_account.account):"No accounts"}</div> 
     let homeB=<Link to='/w/home'><button> {this.props.t("home")} </button></Link>;
     let sfxB=<Link to='/w/sfx'><button> {this.props.t("sfx")} </button></Link>;
     let sftB=<Link to='/w/sft'><button> {this.props.t("sft")} </button></Link>;
@@ -28,8 +37,8 @@ class TopMenu extends Component {
                 { sfxB }
                 { sftB }
                 { contactB }
-                {this.props.active_account? migrationB:''}
-                {this.props.active_account? bitcoinB:''}
+                {this.props.hasOwnProperty("active_account")? (this.props.active_account.type?migrationB:''):''}
+                {this.props.hasOwnProperty("active_account")? (this.props.active_account.type?bitcoinB:''):''}
                 { settingsB }
                 {logoutB}
            
