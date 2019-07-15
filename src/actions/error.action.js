@@ -1,14 +1,18 @@
-const SET_ERROR="SET_ERROR";
-const REMOVE_ERROR="REMOVE_ERROR";
-module.exports.setError = function(type){
+import {ADD_ERROR, REMOVE_ERROR} from './action.types';
+
+let addError = function(error){
     return {
-        type:SET_ERROR,
-        item: type
+        type:ADD_ERROR,
+        item: error
     }
 }
-module.exports.removeError = function(type){
+let removeError = function(){
     return {
-        type:REMOVE_ERROR,
-        item: type
+        type:REMOVE_ERROR
     }
+}
+
+export {
+    addError,
+    removeError
 }

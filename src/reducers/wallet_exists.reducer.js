@@ -1,9 +1,15 @@
+import {WALLET_EXISTS} from '../actions/action.types';
 
-module.exports.walletExistsReducer = function (state = false, action){ 
+
+let walletExistsReducer = function (state = false, action){ 
     switch(action.type){
-      case 'WALLET_EXISTS':
+      case WALLET_EXISTS:
         return action.item;
       default:
         return state ;     
     }
 }
+
+export {
+  walletExistsReducer
+};

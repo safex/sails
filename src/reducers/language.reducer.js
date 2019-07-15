@@ -1,8 +1,12 @@
-module.exports.languageReducer = function (state = "en", action){ 
+import {CHANGE_LANG} from '../actions/action.types'
+let languageReducer = function (state = "en", action){ 
     switch(action.type){
-      case 'CHANGE_LANG':
+      case CHANGE_LANG:
         return action.item;
       default:
         return state      
     }
+}
+export {
+  languageReducer
 }

@@ -6,6 +6,7 @@ if (setupEvents.handleSquirrelEvent()) {
 }
 
 const electron = require("electron");
+var crypto = require("crypto");
 // Module to create native browser window.
 const app= electron.app;
 const Menu= electron.Menu;
@@ -63,7 +64,8 @@ function createWindow() {
 function createChild(port){
   var child = require('child_process');
   var executablePath =path.join(__dirname, "/bin/json_rpc");
-  var parameters = ["-port="+port,'-password=1234'];
+  let password=crypto.randomBytes(20).toString('hex');
+  var parameters = ["-port="+port,'-password='+password];
 
   try {
       child.execFile(executablePath,parameters, function(cerr,hildProcess){});
