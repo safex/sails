@@ -5,7 +5,6 @@ let getStore= function(key){
 }
 
 let setStore= function(obj){
-    console.log(obj);
     return fetch('http://localhost:2905/store/put',{method:'POST',body:JSON.stringify(obj)});
 }
 export {

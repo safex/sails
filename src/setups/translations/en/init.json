@@ -28,7 +28,7 @@
             "wallet_name":"Give a name to your wallet",
             "wallet_name_label":"Wallet name",
             "password":"Password",
-            "repeat_password":"Confirm password",
+            "confirm_password":"Confirm password",
             "public_address":"Public address",
             "public_address_desc":"This is where you receive safex cash and safex tokens to: share this to receive funds.",
             "mnemonic":"Wordphrase backup",
@@ -46,7 +46,7 @@
         "button": "Open your existing wallet file",
         "description": "Load up your existing wallet file and continue using Safex",
         "form":{
-            "label":"Password",
+            "password":"Password",
             "button":"Open",
             "choose_filepath":"Open v8 wallet file"
         }
@@ -69,6 +69,7 @@
         "description": "Load a wallet from a number of options."
     },
     "legacy":{
+        "password":"Password",
         "button":"Import legacy wallet file v7 and earlier",
         "description":"Import a safexwallet.dat file here, a new file will be created"
     },
@@ -80,5 +81,24 @@
     "escape_button":"Escape",
     "proceed_button":"Proceed",
     "next_button":"Next",
-    "browse_button":"Browse"
+    "browse_button":"Browse",
+    "required_field": "This field can't be blank.",
+    "passwords_dont_match":"Password doesn't match",
+    "view_pwd_button":"View Password",
+    "hide_pwd_button":"Hide Password",
+    "print_backup_button":"Print backup",
+    "close_button":"Close",
+    "btc_key_sets":"BTC Key Sets",
+    "safex_key_sets":"Safex Key Sets",
+    "keys_and_balances":"Keys and Balances",
+    "mnemonic":"Seeds",
+    "keys":"Keys",
+    "25_word_mnemonic":"Input 25 word seeds",
+    "required_25_words": "Separate 25 words by space.",
+    "address":"Public address",
+    "private_view":"Private View Key",
+    "private_spend":"Private View Key",
+    "choose_filepath":"Choose wallet file location",
+    "wallet_name_label":"Wallet name"
+
 }

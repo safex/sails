@@ -1,5 +1,5 @@
 import { ADD_CREATE_WIZARD_STEP, ADD_CREATE_WIZARD_DATA, REMOVE_CREATE_WIZARD_STEP, REMOVE_CREATE_WIZARD_DATA, RESET_CREATE_WIZARD_STEP, RESET_CREATE_WIZARD_DATA } from '../actions/action.types';
-let createWizardReducer = function (state = { step: 1, data: {} }, action) {
+let createWizardReducer = function (state = { step: 1, data: {filepath:"", wallet_name:"",password:"", confirm_password:"",validated:false, errors:{}, touched:{}} }, action) {
     switch (action.type) {
         case ADD_CREATE_WIZARD_STEP:
             return { ...state, ...{ step: (state.step + 1) } };  //add upper limit
@@ -14,7 +14,7 @@ let createWizardReducer = function (state = { step: 1, data: {} }, action) {
             curr.data.hasOwnProperty(action.item) && delete curr.data[action.item];
             return { ...curr };
         case RESET_CREATE_WIZARD_DATA:
-            return { ...state, ...{ data: {} } };
+            return { ...state, ...{ data: {filepath:"", wallet_name:"",password:"", confirm_password:"",validated:false, errors:{}, touched:{}} } };
         default:
             return state
     }

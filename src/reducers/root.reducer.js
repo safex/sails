@@ -12,8 +12,8 @@ import {legacyWalletReducer} from './legacy_wallet.reducer';
 import {legacyAccountsReducer} from './legacy_accounts.reducer';
 import {legacyWizardReducer} from './legacy_wizard.reducer';
 import {createWizardReducer} from './create_wizard.reducer';
-import {openReducer} from './open.reducer';
-import {restoreReducer} from './restore.reducer';
+import {openWizardReducer} from './open_wizard.reducer';
+import {restoreWizardReducer} from './restore_wizard.reducer';
 
 let rootReducer = combineReducers({ 
     wallet_exists:walletExistsReducer,
@@ -27,8 +27,8 @@ let rootReducer = combineReducers({
     legacy_wallet:legacyWalletReducer,
     legacy_wizard:legacyWizardReducer,
     create_wizard:createWizardReducer,
-    open:openReducer,
-    restore:restoreReducer
+    open_wizard:openWizardReducer,
+    restore_wizard:restoreWizardReducer
 });
 
 export  {rootReducer};
