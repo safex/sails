@@ -3,8 +3,6 @@ import {connect} from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import error_types from '../../setups/error_types.json';
 import {addError, removeError} from '../../actions/error.action';
-
-let sharedM = require('../../modules/shared.module');
 const mapStateToProps = (state) => {
   return {
     wallet_exists: state.wallet_exists,
@@ -35,7 +33,6 @@ class Error extends Component {
           <h2>Something went wrong</h2>
           <details style={{ whiteSpace: 'pre-wrap' }}>
             {this.props.error.error && this.props.error.error.toString()}
-         
             {this.props.error.errorInfo && this.props.error.errorInfo.componentStack}
           </details>
         </div>
