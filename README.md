@@ -22,6 +22,7 @@ sails - main folder
 5. bin - folder for gosafex executable
 
 # dev guildelines
+- Use git-flow branching model
 - if its possible use one component per file
 - Use PascalCase for component classes and camelCase for component instances and function names
 - Use the filename as the component name

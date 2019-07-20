@@ -1,0 +1,13 @@
+{
+    "ERR_404":"Page Not Found",
+    "NO_PWD" : "Password field can't be empty",
+    "INVALID_FILE_FORMAT":"Invalid wallet format (expected v1)",
+    "INVALID_JSON":"Invalid password or corrupted wallet data",
+    "api_response_error":"Something went wrong",
+    "WALLET_OPENED":"You cant double open wallet",
+    "WALLET_EXISTS":"You override wallet",
+    "ERR_READ_REQ":"Error in api request",
+    "ERR_JSON_REQ_MAL":"JSON request malformed",
+    "ERR_JSON_RES_MAL":"JSON response malformed"
+
+}

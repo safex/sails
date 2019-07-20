@@ -1,0 +1,7 @@
+{
+    "connected":"Connected",
+    "disconnected":"Disconnected",
+    "network_status":"Network Status",
+    "bitcoin_network_status":"Bitcoin Network Status",
+    "chain_sync":"Chain Sync Status"
+}
