@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
-import { addWizardData, addWizardErrors, addWizardTouched, wizardNext, wizardBack, initWizardData, initWizardErrors, initWizardTouched } from '../../modules/init.module';
+import { addWizardData, addWizardErrors, addWizardTouched, wizardNext} from '../../modules/init.module';
 import { Row, Col, Form, Button, Tabs, Tab } from 'react-bootstrap';
 
 
@@ -97,15 +97,17 @@ class WizardData extends Component {
             }
         }
         
-        addWizardData(this.props.dispatch, data, "restore");
-        addWizardErrors(this.props.dispatch, falses, "restore");
-        addWizardTouched(this.props.dispatch, falses, "restore");
+        addWizardData(this.props.dispatch, data, this.props.component);
+        addWizardErrors(this.props.dispatch, falses, this.props.component);
+        addWizardTouched(this.props.dispatch, falses, this.props.component);
     }
 
    
 
 
     render() {
+        console.log("restore wizard data");
+        console.log(this.props.restore_wizard.data);
 
         let names = Object.keys(this.props.prop_names);
         // let address_is_valid =is_valid(names[0], "keys", names[2]).bind(this);
@@ -194,7 +196,7 @@ class WizardData extends Component {
                         </Tabs>
                         <Form.Row>
                             <Form.Group as={Col}>
-                                <Button variant="danger" onClick={() => { wizardBack(this.props.dispatch, names, "restore", (history) => { history.push('/'); }, [this.props.history]) }}>{this.props.t('back_button')}</Button>
+                                <Button variant="danger" onClick={this.props.back}>{this.props.t('back_button')}</Button>
                             </Form.Group>
                             <Form.Group as={Col}>
                                 <Button variant="success" type="submit" >{this.props.t('next_button')}</Button>

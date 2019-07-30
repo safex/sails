@@ -82,12 +82,12 @@
     "proceed_button":"Proceed",
     "next_button":"Next",
     "browse_button":"Browse",
+    "close_button":"Close",
     "required_field": "This field can't be blank.",
     "passwords_dont_match":"Password doesn't match",
     "view_pwd_button":"View Password",
     "hide_pwd_button":"Hide Password",
     "print_backup_button":"Print backup",
-    "close_button":"Close",
     "btc_key_sets":"BTC Key Sets",
     "safex_key_sets":"Safex Key Sets",
     "keys_and_balances":"Keys and Balances",
@@ -99,6 +99,11 @@
     "private_view":"Private View Key",
     "private_spend":"Private View Key",
     "choose_filepath":"Choose wallet file location",
-    "wallet_name_label":"Wallet name"
+    "create_filepath":"New wallet file location",
+    "open_filepath":"Wallet file location",
+    "wallet_name_label":"Wallet name",
+    "create_password": "Password",
+    "create_confirm_password":"Confirm password",
+    "password":"Password"
 
 }

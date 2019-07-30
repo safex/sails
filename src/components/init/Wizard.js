@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
-import { initWizardState } from '../../modules/init.module';
-import {  WizardData, WizardFilepath, WizardConfirmPassword, WizardPassword, WizardReview} from './index';
+import { initWizardState,  wizardNext, wizardBack } from '../../modules/init.module';
+import {  WizardData, WizardFilepath, WizardConfirmPassword, WizardReview} from './index';
 import { Container, Alert} from 'react-bootstrap';
 
 const mapStateToProps = (state) => {
@@ -28,19 +28,44 @@ class Wizard extends Component {
         case 'restore':
             switch(this.props.restore_wizard.step){
                 case 1:
-                    component = <WizardData component="restore" history={this.props.history} prop_names={{"restore_type":"mnemonic", "restore_mnemonic":"", "restore_address":"", "restore_view":"", "restore_spend":""}} back={[]}/>;
+                    component = <WizardData 
+                                    component="restore" 
+                                    history={this.props.history} 
+                                    prop_names={{"restore_type":"mnemonic", "restore_mnemonic":"", "restore_address":"", "restore_view":"", "restore_spend":""}} 
+                                    back={()=>{{ wizardBack(this.props.dispatch,["restore_type","restore_mnemonic","restore_address","restore_view","restore_spend"], "restore", (history) => { history.push('/'); }, [this.props.history]) }}}/>;
                     break;
                 case 2:
-                    component = <WizardFilepath component="restore" history={this.props.history} prop_names={["create_filepath"]} type="create" />;
+                    component = <WizardFilepath 
+                                    component="restore" 
+                                    history={this.props.history} 
+                                    prop_names={{ "create_filepath":""}} 
+                                    type="create" 
+                                    options={{title: this.props.t("choose_filepath")}}
+                                    back={()=>{{ wizardBack(this.props.dispatch,["create_filepath"], "restore") }}}/>;
                     break;
                 case 3:
-                    component=<WizardConfirmPassword component="restore" history={this.props.history} prop_name={["create_password", "create_confirm_password"]}/>;
+                    component=<WizardConfirmPassword 
+                                    component="restore" 
+                                    history={this.props.history} 
+                                    prop_names={{"create_password":"", "create_confirm_password":""}} 
+                                    prev_data = {["create_filepath"]}
+                                    back={()=>{{ wizardBack(this.props.dispatch,["create_password","create_confirm_password"], "restore") }}} />;
                     break;
                 case 4:
-                    component=<WizardReview component="restore" history={this.props.history} prop_name={["create_password", "create_confirm_password"]}/>;
+                    component=<WizardReview 
+                                    component="restore" 
+                                    history={this.props.history} 
+                                    prop_name={["create_password", "create_confirm_password"]}/>;
                     break;
                 default:
-                    component =<Alert variant="danger" history={this.props.history} onClose={() => {}} dismissible> <Alert.Heading>Oh snap! You got an error!</Alert.Heading><p> Report it to the Safex wallet team :D</p></Alert>;
+                    component =<Alert 
+                                    variant="danger" 
+                                    history={this.props.history} 
+                                    onClose={() => {}} 
+                                    dismissible> 
+                                        <Alert.Heading>Oh snap! You got an error!</Alert.Heading>
+                                        <p> Report it to the Safex wallet team :D</p>
+                                </Alert>;
                     break;
         }
         break;

@@ -1,7 +1,7 @@
 # sails
 sails wallet 
 # install info
-- use --recursive flag when cloning the rep
+- clone repo with command git clone -b develop --recursive https://github.com/safex/sails
 - npm i 
 - npm run electron-dev (or npm run electron-dev-browser)
 # project structure

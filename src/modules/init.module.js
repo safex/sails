@@ -6,7 +6,6 @@ const CWAction = require('../actions/create_wizard.action');
 const OWAction = require('../actions/open_wizard.action');
 const RWAction = require('../actions/restore_wizard.action');
 const { addActiveAccount } = require('../actions/active_account.action');
-const { addRestoreData } = require('../actions/restore_wizard.action');
 
 //libs
 let { checkFileForFlags, readFilePromise, decryptContent } = require("../libs/legacy_wallet");
@@ -205,7 +204,7 @@ let restore = function (dispatch, history, form) {
 }
 
 let addRestoreDataF = function (dispatch, data) {
-    dispatch(addRestoreData(data));
+    dispatch(RWAction.addRestoreData(data));
 }
 
 
@@ -268,7 +267,8 @@ let addRestoreDataF = function (dispatch, data) {
 
 //DIALOG FILE PICKERS
 
-//common use for v8(default) and from legacy :: create
+//:::DISCARD ::: ///
+//common use for v8(default) and from legacy :: create -- soon to be discarded
 let chooseCreateFilepath = function (dispatch, options = null, type = "default", _touched = false, _errors = false) {
     dialog.showSaveDialog(options, (path) => {
         if (_touched) {
@@ -288,6 +288,7 @@ let chooseCreateFilepath = function (dispatch, options = null, type = "default",
         }
     });
 }
+
 
 //common use for v8(default) and legacy :: open
 let chooseWalletFile = function (dispatch, options = null, type = "default", _touched = false, _errors = false) {
@@ -311,9 +312,65 @@ let chooseWalletFile = function (dispatch, options = null, type = "default", _to
 }
 
 
+//OVERIDE -> NEW -> TO BE USED
+//universal wizard
+let walletFile = function (dispatch, options = null, component = "create", type="create", name="create_filepath", _touched = false, _errors = false) {
+    let name_var={};
+    name_var[name]=true;
+    if(type=="create"){
+        dialog.showSaveDialog(options, (path) => {
+            if (_touched) {
+                addWizardTouched(dispatch, { ..._touched, ...name_var }, component);
+            }
+            name_var[name]= path;
+            addWizardData(dispatch, name_var, component);
+            if (_errors) {
+                let errors = { ..._errors };
+                if (!path) {
+                    errors[name] = true;
+                }
+                else {
+                  errors[name]= false;
+                }
+                addWizardErrors(dispatch, errors, component);
+    
+            }
+        });
+    }
+    else{
+        dialog.showOpenDialog(options, (files) => {
+            if (_touched) {
+               addWizardTouched(dispatch, { ..._touched, ...name_var }, component);
+            }
+            if (files != undefined && files.length > 0) {
+                name_var[name]= files[0];
+                addWizardData(dispatch, name_var, component) ;
+    
+                if (_errors) {
+                    let errors = { ..._errors };
+                    errors[name]=false;
+                   addWizardErrors(dispatch, errors, component) ;
+                }
+            }
+            if (files == undefined) {
+                if (_errors) {
+                    name_var[name]= '';
+                    addWizardData(dispatch, name_var, component) ;
+                    let errors = { ..._errors };
+                    errors[name]=true;
+                   addWizardErrors(dispatch, errors, component);
+                }
+            }
+        });
+    }
+   
+}
+
+
+
 
 //@note al si ujebala ovo, trebalo je sve da bude jedan state 
-
+//@note - premosti na jedan wizard state
 //wizard 
 let initWizardState = function (dispatch, component = "create") {
     switch (component) {
@@ -567,7 +624,6 @@ let initWizardTouched= function (dispatch, data) {
     dispatch(RWAction.initRestoreWizardTouched(data));
 }
 
-let wizardFilepath = function (dispatch, options=null,){}
 
 
 
@@ -632,6 +688,8 @@ export {
     wizardNext,
     initWizardData,
     initWizardErrors,
-    initWizardTouched
+    initWizardTouched,
+    //to be left
+    walletFile
 
 }
