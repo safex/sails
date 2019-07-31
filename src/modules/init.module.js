@@ -1,17 +1,13 @@
 //actions
 const { addWalletExistsStatus } = require('../actions/wallet_exists.action.js');
 const { addLegacyWallet } = require('../actions/legacy_wallet.action');
-const LWAction = require('../actions/legacy_wizard.action');
-const CWAction = require('../actions/create_wizard.action');
-const OWAction = require('../actions/open_wizard.action');
-const RWAction = require('../actions/restore_wizard.action');
+const WizardActions = require('../actions/wizard.action');
 const { addActiveAccount } = require('../actions/active_account.action');
-const { addRestoreData } = require('../actions/restore_wizard.action');
 
 //libs
 let { checkFileForFlags, readFilePromise, decryptContent } = require("../libs/legacy_wallet");
 let { processResponse, jsonResponse, errorResponse } = require('../libs/response');
-let {addError} = require('../actions/error.action');
+let { addError } = require('../actions/error.action');
 
 //api
 let { initApi, accountsApi, activeAccountApi } = require("../api/go");
@@ -26,7 +22,7 @@ let checkIfFileExists = function (dispatch) {
     readFilePromise(LEGACY_DEFAULT_WALLET_PATH)
         .then(checkFileForFlags)
         .then((status) => { setWalletExistsStatus(dispatch, status) })
-        .catch((error) => { throw new Error(error) });
+        .catch((error) => { dispatch(addError(error)) });
 
 }
 
@@ -34,10 +30,8 @@ let setWalletExistsStatus = function (dispatch, status) {
     dispatch(addWalletExistsStatus(status))
 }
 
-
-//callback HELLLLLLLLLL!!!!!!!!!!!!!!!!!!!
-let create = function (dispatch, form) {
-    initApi.createApi({ path: form.filepath, password: form.password, name: form.wallet_name, nettype: NET_TYPE })
+let create = function (dispatch, form, names = ['filepath', 'password']) {
+    initApi.createApi({ path: form[names[0]], password: form[names[1]], nettype: NET_TYPE })
         .then(processResponse)
         .then(jsonResponse)
         .then((create) => {
@@ -81,8 +75,8 @@ let create = function (dispatch, form) {
 
 
 
-let createLegacy = function (dispatch, form, legacy= null) {
-    initApi.createApi({ path: form.create_filepath, password: form.create_password, name: form.create_wallet_name, nettype: NET_TYPE })
+let createLegacy = function (dispatch, form, names = ["create_filepath", "create_password"], legacy = null) {
+    initApi.createApi({ path: form[names[0]], password: form[names[1]], nettype: NET_TYPE })
         .then(processResponse)
         .then(jsonResponse)
         .then((create) => {
@@ -126,8 +120,8 @@ let createLegacy = function (dispatch, form, legacy= null) {
         .catch(errorResponse);
 }
 
-let open = function (dispatch,history, form) {
-    initApi.openApi({ path: form.filepath.trim(), password: form.password.trim(), nettype: NET_TYPE })
+let open = function (dispatch, history, form, names = ["filepath", "password"]) {
+    initApi.openApi({ path: form[names[0]].trim(), password: form[names[1]].trim(), nettype: NET_TYPE })
         .then(processResponse)
         .then(jsonResponse)
         .then((open) => {
@@ -139,9 +133,9 @@ let open = function (dispatch,history, form) {
         .catch(errorResponse);
 }
 
-let openLegacy = function (dispatch, form) {
-    readFilePromise(form.legacy_filepath.trim())
-        .then((data) => { return decryptContent(data, form.legacy_password.trim()) })
+let openLegacy = function (dispatch, form, names = ["legacy_filepath", "legacy_password"]) {
+    readFilePromise(form[names[0]].trim())
+        .then((data) => { return decryptContent(data, form[names[1]].trim()) })
         .then((content) => { dispatch(addLegacyWallet(content)); })
         .catch((error) => { dispatch(addError(error)); });
 }
@@ -151,405 +145,213 @@ let openLegacy = function (dispatch, form) {
 
 //restore
 
-let restore = function (dispatch, history, form) {
-    let call;
-    if (form.hasOwnProperty('seed') && form.seed.trim().split(' ').length == 20) {
-        call = initApi.restoreSeedsApi({ path: form.create_filepath.trim(), password: form.create_password.trim(), nettype: NET_TYPE, seed: form.seeds });
+let restore = function (dispatch, form, names) {
+    if (form[names[3]] === "mnemonic") {
+        //&& form[names[1]].trim().split(' ').length === 25
+        initApi.restoreSeedsApi({ path: form[names[0]].trim(), password: form[names[1]].trim(), nettype: NET_TYPE, seed: form[names[4]].trim(), password_mnemonic: "" })
+            .then(processResponse)
+            .then(jsonResponse)
+            .then((create) => {
+                if (create.status != 0) dispatch(addError(create.status));
+                else {
+                    return accountsApi.openAccountsApi("primary")
+                        .then(processResponse)
+                        .then(jsonResponse)
+                        .then((open) => {
+                            if (open.status != 0) dispatch(addError(open.status));
+                            else {
+                                return accountsApi.infoAccountsApi("primary") //izmeniti kad Steva upgrade
+                                    .then(processResponse)
+                                    .then(jsonResponse)
+                                    .then((info) => {
+                                        if (info.status != 0) dispatch(addError(info.status));
+                                        else {
+                                            return activeAccountApi.setActiveAccountApi({ account: info.result, type: 0 })
+                                                .then(processResponse)
+                                                .then(jsonResponse)
+                                                .then((active) => {
+                                                    if (active.status != 0) dispatch(addError(active.status));
+                                                    else {
+                                                        dispatch(addActiveAccount({ account: info.result, type: 0 }));
+                                                    }
+                                                })
+                                                .catch(errorResponse)
+                                        }
+                                    })
+                                    .catch(errorResponse);
+                            }
+
+                        })
+                        .catch(errorResponse);
+                }
+
+
+            })
+            .catch(errorResponse);;
 
     }
     else {
-        call = initApi.restoreKeysApi({ path: form.create_filepath.trim(), password: form.create_password.trim(), nettype: NET_TYPE, address: form.address, spendkey: form.spend_private, viewkey: form.view_private });
+        initApi.restoreKeysApi({ path: form[names[0]].trim(), password: form[names[1]].trim(), nettype: NET_TYPE, address: form[names[5]].trim(), spendkey: form[names[7]].trim(), viewkey: form[names[6]].trim() })
+            .then(processResponse)
+            .then(jsonResponse)
+            .then((create) => {
+                if (create.status != 0) dispatch(addError(create.status));
+                else {
+                    return accountsApi.openAccountsApi("primary")
+                        .then(processResponse)
+                        .then(jsonResponse)
+                        .then((open) => {
+                            if (open.status != 0) dispatch(addError(open.status));
+                            else {
+                                return accountsApi.infoAccountsApi("primary") //izmeniti kad Steva upgrade
+                                    .then(processResponse)
+                                    .then(jsonResponse)
+                                    .then((info) => {
+                                        if (info.status != 0) dispatch(addError(info.status));
+                                        else {
+                                            return activeAccountApi.setActiveAccountApi({ account: info.result, type: 0 })
+                                                .then(processResponse)
+                                                .then(jsonResponse)
+                                                .then((active) => {
+                                                    if (active.status != 0) dispatch(addError(active.status));
+                                                    else {
+                                                        dispatch(addActiveAccount({ account: info.result, type: 0 }));
+                                                    }
+                                                })
+                                                .catch(errorResponse)
+                                        }
+                                    })
+                                    .catch(errorResponse);
+                            }
+
+                        })
+                        .catch(errorResponse);
+                }
+
+
+            })
+            .catch(errorResponse);;
     }
-    call
-        .then(processResponse)
-        .then(jsonResponse)
-        .then((create) => {
-            if (create.status != 0) throw new Error(create.status);
-            else {
-                return accountsApi.openAccountsApi("primary")
-                    .then(processResponse)
-                    .then(jsonResponse)
-                    .then((open) => {
-                        if (open.status != 0) throw new Error(open.status);
-                        else {
-                            return accountsApi.infoAccountsApi("primary") //izmeniti kad Steva upgrade
-                                .then(processResponse)
-                                .then(jsonResponse)
-                                .then((info) => {
-                                    if (info.status != 0) throw new Error(info.status);
-                                    else {
-                                        return activeAccountApi.setActiveAccountApi({ account: info.result, type: 0 })
-                                            .then(processResponse)
-                                            .then(jsonResponse)
-                                            .then((active) => {
-                                                if (active.status != 0) throw new Error(active.status);
-                                                else {
-                                                    dispatch(addActiveAccount({ account: info.result, type: 0 }));
-                                                    history.push("/w/home");
-                                                }
-                                            })
-                                            .catch(errorResponse)
-                                    }
-                                })
-                                .catch(errorResponse);
-                        }
-
-                    })
-                    .catch(errorResponse);
-            }
-
-
-        })
-        .catch(errorResponse);
 
 }
 
-let addRestoreDataF = function (dispatch, data) {
-    dispatch(addRestoreData(data));
-}
-
-
-
-// //legacy wizard
-// let initLegacyWizardState = function (dispatch) {
-//     dispatch(LWAction.resetLegacyWizardStep());
-//     dispatch(LWAction.resetLegacyWizardData());
-//     dispatch(LWAction.resetLegacyWizardErrors());
-//     dispatch(LWAction.resetLegacyWizardTouched());
-// }
-
-
-
-
-
-// let addLegacyWizardData = function (dispatch, data) {
-//     dispatch(LWAction.addLegacyWizardData(data));
-// }
-
-// let addLegacyWizardErrors = function (dispatch, data) {
-//     dispatch(LWAction.addLegacyWizardErrors(data));
-// }
-
-// let addLegacyWizardTouched = function (dispatch, data) {
-//     dispatch(LWAction.addLegacyWizardTouched(data));
-//}
-// let removeLegacyWizardData = function (dispatch, data = [], type = "data") {
-//     data.forEach((x) => {
-//         switch (type) {
-//             case 'data':
-//                 dispatch(LWAction.removeLegacyWizardData(x));
-//                 break;
-//             case "errors":
-//                 dispatch(LWAction.removeLegacyWizardErrors(x));
-//                 break;
-//             case "touched":
-//                 dispatch(LWAction.removeLegacyWizardTouched(x));
-//                 break;
-//             default:
-//                 dispatch(LWAction.removeLegacyWizardData(x));
-//                 break;
-//         }
-
-//     });
-// }
-
-
-// let legacyWizardBack = function (dispatch, props, callback = null, args = []) {
-//     removeLegacyWizardData(dispatch, props, 'data');
-//     removeLegacyWizardData(dispatch, props, 'errors');
-//     removeLegacyWizardData(dispatch, props, 'touched');
-//     dispatch(LWAction.removeLegacyWizardStep());
-//     if (callback) {
-//         callback(...args);
-//     }
-// }
-
-
-
-//DIALOG FILE PICKERS
-
-//common use for v8(default) and from legacy :: create
-let chooseCreateFilepath = function (dispatch, options = null, type = "default", _touched = false, _errors = false) {
-    dialog.showSaveDialog(options, (path) => {
-        if (_touched) {
-            type != "default" ? addWizardTouched(dispatch, { ..._touched, ...{ create_filepath: true } }, "legacy") : addWizardData(dispatch, { touched: { ..._touched, ...{ filepath: true } } }, "create");;
-        }
-        type != "default" ? addWizardData(dispatch, { create_filepath: path }, "legacy") : addWizardData(dispatch, { filepath: path }, "create");
-        if (_errors) {
-            let errors = { ..._errors };
-            if (!path) {
-                type != "default" ? errors.create_filepath = true : errors.filepath = true;
+let walletFile = function (dispatch, options = null, type = "create", name = "create_filepath", _touched = false, _errors = false) {
+    let name_var = {};
+    name_var[name] = true;
+    if (type === "create") {
+        dialog.showSaveDialog(options, (path) => {
+            let path_ext = path;
+            if (path && !path_ext.endsWith('.sails')) {
+                path_ext += ".sails";
             }
-            else {
-                type != "default" ? errors.create_filepath = false : errors.filepath = false;
+            if (_touched) {
+                addWizardTouched(dispatch, { ..._touched, ...name_var });
             }
-            type != "default" ? addWizardErrors(dispatch, errors, "legacy") : addWizardData(dispatch, { errors: errors }, "create");
-
-        }
-    });
-}
-
-//common use for v8(default) and legacy :: open
-let chooseWalletFile = function (dispatch, options = null, type = "default", _touched = false, _errors = false) {
-    dialog.showOpenDialog(options, (files) => {
-        if (_touched) {
-            type != "default" ? addWizardTouched(dispatch, { ..._touched, ...{ legacy_filepath: true } }, "legacy") : addWizardTouched(dispatch, { ..._touched, ...{ filepath: true } }, "open");
-        }
-        if (files != undefined && files.length > 0) {
-            type != "default" ? addWizardData(dispatch, { legacy_filepath: files[0] }, "legacy") : addWizardData(dispatch, { filepath: files[0] }, "open");
-
+            name_var[name] = path_ext;
+            addWizardData(dispatch, name_var);
             if (_errors) {
-                type != "default" ? addWizardErrors(dispatch, { ..._errors, ...{ legacy_filepath: false } }, "legacy") : addWizardErrors(dispatch, { ..._errors, ...{ filepath: false } }, "open");
+                let errors = { ..._errors };
+                if (!path) {
+                    errors[name] = true;
+                }
+                else {
+                    errors[name] = false;
+                }
+                addWizardErrors(dispatch, errors);
+
             }
-        }
-        if (files == undefined) {
-            if (_errors) {
-                type != "default" ? addWizardErrors(dispatch, { ..._errors, ...{ legacy_filepath: true } }, "legacy") : addWizardErrors(dispatch, { ..._errors, ...{ filepath: true } }, "open");
+        });
+    }
+    else {
+        dialog.showOpenDialog(options, (files) => {
+            if (_touched) {
+                addWizardTouched(dispatch, { ..._touched, ...name_var });
             }
-        }
-    });
+            if (files != undefined && files.length > 0) {
+                name_var[name] = files[0];
+                addWizardData(dispatch, name_var);
+
+                if (_errors) {
+                    let errors = { ..._errors };
+                    errors[name] = false;
+                    addWizardErrors(dispatch, errors);
+                }
+            }
+            if (files === undefined) {
+                if (_errors) {
+                    name_var[name] = '';
+                    addWizardData(dispatch, name_var);
+                    let errors = { ..._errors };
+                    errors[name] = true;
+                    addWizardErrors(dispatch, errors);
+                }
+            }
+        });
+    }
+
 }
-
-
-
-//@note al si ujebala ovo, trebalo je sve da bude jedan state 
 
 //wizard 
-let initWizardState = function (dispatch, component = "create") {
-    switch (component) {
-        case "create":
-            dispatch(CWAction.resetCreateWizardStep());
-            dispatch(CWAction.resetCreateWizardData());
-            // dispatch(CWAction.resetCreateWizardErrors());
-            // dispatch(CWAction.resetCreateWizardTouched());
-            break;
-        case "open":
-            dispatch(OWAction.resetOpenWizardStep());
-            dispatch(OWAction.resetOpenWizardData());
-            dispatch(OWAction.resetOpenWizardErrors());
-            dispatch(OWAction.resetOpenWizardTouched());
-            break;
-        case "legacy":
-            dispatch(LWAction.resetLegacyWizardStep());
-            dispatch(LWAction.resetLegacyWizardData());
-            dispatch(LWAction.resetLegacyWizardErrors());
-            dispatch(LWAction.resetLegacyWizardTouched());
-            break;
-        case "restore":
-            dispatch(RWAction.resetRestoreWizardStep());
-            dispatch(RWAction.resetRestoreWizardData());
-            dispatch(RWAction.resetRestoreWizardErrors());
-            dispatch(RWAction.resetRestoreWizardTouched());
-            break;
-        default:
-            dispatch(CWAction.resetCreateWizardStep());
-            dispatch(CWAction.resetCreateWizardData());
-            // dispatch(CWAction.resetCreateWizardErrors());
-            // dispatch(CWAction.resetCreateWizardTouched());
-            break;
+let initWizardState = function (dispatch) {
 
-    }
+    dispatch(WizardActions.resetWizardStep());
+    dispatch(WizardActions.resetWizardData());
+    dispatch(WizardActions.resetWizardErrors());
+    dispatch(WizardActions.resetWizardTouched());
+
 }
 
-let addWizardData = function (dispatch, data, component = "create") {
-    switch (component) {
-        case "create":
-            dispatch(CWAction.addCreateWizardData(data));
-            break;
-        case "open":
-            dispatch(OWAction.addOpenWizardData(data));
-            break;
-        case "legacy":
-            dispatch(LWAction.addLegacyWizardData(data));
-            break;
-        case "restore":
-            dispatch(RWAction.addRestoreWizardData(data));
-            break;
-        default:
-            dispatch(CWAction.addCreateWizardData(data));
-            break;
-
-    }
+let addWizardData = function (dispatch, data) {
+    dispatch(WizardActions.addWizardData(data));
 }
 
-let addWizardErrors = function (dispatch, data, component = "create") {
-    switch (component) {
-        case "create":
-            // dispatch(CWAction.addCreateWizardErrors(data));
-            break;
-        case "open":
-            dispatch(OWAction.addOpenWizardErrors(data));
-            break;
-        case "legacy":
-            dispatch(LWAction.addLegacyWizardErrors(data));
-            break;
-        case "restore":
-            dispatch(RWAction.addRestoreWizardErrors(data));
-            break;
-        default:
-            // dispatch(CWAction.addCreateWizardErrors(data));
-            break;
-
-    }
+let addWizardErrors = function (dispatch, data) {
+    dispatch(WizardActions.addWizardErrors(data));
 }
 
-let addWizardTouched = function (dispatch, data, component = "create") {
-    switch (component) {
-        case "create":
-            // dispatch(CWAction.addCreateWizardTouched(data));
-            break;
-        case "open":
-            dispatch(OWAction.addOpenWizardTouched(data));
-            break;
-        case "legacy":
-            dispatch(LWAction.addLegacyWizardTouched(data));
-            break;
-        case "restore":
-            dispatch(RWAction.addRestoreWizardTouched(data));
-            break;
-        default:
-            // dispatch(CWAction.addCreateWizardTouched(data));
-            break;
-
-    }
+let addWizardTouched = function (dispatch, data) {
+    dispatch(WizardActions.addWizardTouched(data));
 }
 
 
 
 
-let removeWizardData = function (dispatch, data = [], type = "data", component = "create") {
+let removeWizardData = function (dispatch, data = [], type = "data") {
     data.forEach((x) => {
         switch (type) {
             case "data":
-                switch (component) {
-                    case "create":
-                        dispatch(CWAction.removeCreateWizardData(x));
-                        break;
-                    case "open":
-                        dispatch(OWAction.removeOpenWizardData(x));
-                        break;
-                    case "legacy":
-                        dispatch(LWAction.removeLegacyWizardData(x));
-                        break;
-                    case "restore":
-                        dispatch(RWAction.removeRestoreWizardData(x));
-                        break;
-                    default:
-                        dispatch(CWAction.removeCreateWizardData(x));
-                        break;
-
-                }
+                dispatch(WizardActions.removeWizardData(x));
                 break;
             case "errors":
-                switch (component) {
-                    case "create":
-                        // dispatch(CWAction.removeCreateWizardErrors(x));
-                        break;
-                    case "open":
-                        dispatch(OWAction.removeOpenWizardErrors(x));
-                        break;
-                    case "legacy":
-                        dispatch(LWAction.removeLegacyWizardErrors(x));
-                        break;
-                    case "restore":
-                        dispatch(RWAction.removeRestoreWizardErrors(x));
-                        break;
-                    default:
-                        // dispatch(CWAction.removeCreateWizardErrors(x));
-                        break;
-
-                }
+                dispatch(WizardActions.removeWizardErrors(x));
                 break;
             case "touched":
-                switch (component) {
-                    case "create":
-                        // dispatch(CWAction.removeCreateWizardTouched(x));
-                        break;
-                    case "open":
-                        dispatch(OWAction.removeOpenWizardTouched(x));
-                        break;
-                    case "legacy":
-                        dispatch(LWAction.removeLegacyWizardTouched(x));
-                        break;
-                    case "restore":
-                        dispatch(RWAction.removeRestoreWizardTouched(x));
-                        break;
-                    default:
-                        // dispatch(CWAction.removeCreateWizardTouched(x));
-                        break;
-
-                }
+                dispatch(WizardActions.removeWizardTouched(x));
                 break;
             default:
-                switch (component) {
-                    case "create":
-                        // dispatch(CWAction.removeCreateWizardData(x));
-                        break;
-                    case "open":
-                        dispatch(OWAction.removeOpenWizardData(x));
-                        break;
-                    case "legacy":
-                        dispatch(LWAction.removeLegacyWizardData(x));
-                        break;
-                    case "restore":
-                        dispatch(RWAction.removeRestoreWizardData(x));
-                        break;
-                    default:
-                        // dispatch(CWAction.removeCreateWizardData(x));
-                        break;
+                dispatch(WizardActions.removeWizardData(x));
 
-                }
                 break;
         }
 
     });
 }
 
-let wizardBack = function (dispatch, props, component = "create", callback = null, args = []) {
+let wizardBack = function (dispatch, props, callback = null, args = []) {
     removeWizardData(dispatch, props, 'data');
     removeWizardData(dispatch, props, 'errors');
     removeWizardData(dispatch, props, 'touched');
-    switch (component) {
-        case "create":
-            dispatch(CWAction.removeCreateWizardStep());
-            break;
-        case "open":
-            dispatch(OWAction.removeOpenWizardStep());
-            break;
-        case "legacy":
-            dispatch(LWAction.removeLegacyWizardStep());
-            break;
-        case "restore":
-            dispatch(RWAction.removeRestoreWizardStep());
-            break;
-        default:
-            dispatch(CWAction.removeCreateWizardStep());
-            break;
-    }
+
+    dispatch(WizardActions.removeWizardStep());
 
     if (callback) {
         callback(...args);
     }
 }
 
-let wizardNext = function (dispatch, component = "create", callback = null, args = []) {
-    switch (component) {
-        case "create":
-            dispatch(CWAction.addCreateWizardStep());
-            break;
-        case "open":
-            dispatch(OWAction.addOpenWizardStep());
-            break;
-        case "legacy":
-            dispatch(LWAction.addLegacyWizardStep());
-            break;
-        case "restore":
-            dispatch(RWAction.addRestoreWizardStep());
-            break;
-        default:
-            dispatch(CWAction.addCreateWizardStep());
-            break;
-    }
+let wizardNext = function (dispatch, callback = null, args = []) {
+
+    dispatch(WizardActions.addWizardStep());
 
     if (callback) {
         callback(...args);
@@ -558,52 +360,18 @@ let wizardNext = function (dispatch, component = "create", callback = null, args
 }
 
 let initWizardData = function (dispatch, data) {
-    dispatch(RWAction.initRestoreWizardData(data));
+    dispatch(WizardActions.initWizardData(data));
 }
 let initWizardErrors = function (dispatch, data) {
-    dispatch(RWAction.initRestoreWizardErrors(data));
+    dispatch(WizardActions.initWizardErrors(data));
 }
-let initWizardTouched= function (dispatch, data) {
-    dispatch(RWAction.initRestoreWizardTouched(data));
+let initWizardTouched = function (dispatch, data) {
+    dispatch(WizardActions.initWizardTouched(data));
 }
 
-let wizardFilepath = function (dispatch, options=null,){}
-
-
-
-//open wizard 
-// let initOpenWizardState = function (dispatch, component = "create") {
-//     dispatch(OWAction.resetOpenWizardStep());
-//     dispatch(OWAction.resetOpenWizardData());
-//     dispatch(OWAction.resetOpenWizardErrors());
-//     dispatch(OWAction.resetOpenWizardTouched());
-// }
-
-// let addOpenWizardData = function (dispatch, data) {
-//     dispatch(OWAction.addOpenWizardData(data));
-// }
-// let addOpenWizardErrors = function (dispatch, data) {
-//     dispatch(OWAction.addOpenWizardErrors(data));
-// }
-// let addOpenWizardTouched = function (dispatch, data) {
-//     dispatch(OWAction.addOpenWizardTouched(data));
-// }
-
-// let removeOpenWizardData = function (dispatch, data = [], type = "data") {
-//     data.forEach((x) => {
-//         switch (type) {
-//             case "data":
-//                 dispatch(OWAction.removeOpenWizardData(x));
-//             case "errors":
-//                 dispatch(OWAction.removeOpenWizardErrors(x));
-//             case "touched":
-//                 dispatch(OWAction.removeOpenWizardTouched(x));
-//             default:
-//                 dispatch(OWAction.removeOpenWizardData(x));
-//         }
-
-//     });
-// }
+let initLegacyWallet = function (dispatch) {
+    dispatch(addLegacyWallet({}));
+}
 
 
 
@@ -611,8 +379,7 @@ export {
     //files
     checkIfFileExists,
     setWalletExistsStatus,
-    chooseCreateFilepath,
-    chooseWalletFile,
+    walletFile,
     //create
     create,
     createLegacy,
@@ -620,18 +387,21 @@ export {
     open,
     openLegacy,
     //restore
-    addRestoreDataF,
     restore,
     //wizard
     initWizardState,
+    initWizardData,
+    initWizardErrors,
+    initWizardTouched,
+    initLegacyWallet,
     addWizardData,
     addWizardErrors,
     addWizardTouched,
     removeWizardData,
     wizardBack,
-    wizardNext,
-    initWizardData,
-    initWizardErrors,
-    initWizardTouched
+    wizardNext
+    
+    
+   
 
 }

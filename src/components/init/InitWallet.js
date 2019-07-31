@@ -25,7 +25,7 @@ class InitWallet extends Component {
 
   render() {
    return   <div>
-                { this.props.wallet_exists? <Legacy/> : <Main/>}
+                { this.props.wallet_exists? <Legacy key="legacy" /> : <Main key="main" />}
                 <Link to='/w/home'><button>Wallet</button></Link>
             </div>
   }
