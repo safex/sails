@@ -2,6 +2,7 @@
 sails wallet 
 # install info
 - clone repo with command git clone -b develop --recursive https://github.com/safex/sails
+- checkout develop branch on gosafex submodule (in bc_node folder)
 - npm i 
 - npm run electron-dev (or npm run electron-dev-browser)
 # project structure
