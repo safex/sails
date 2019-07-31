@@ -11,10 +11,10 @@ class Legacy extends Component {
       <Row>
         <Col md={{ span: 6, offset: 3 }}>
         <Card>
-          <Card.Header>{this.props.t("legacy_detected.title")} </Card.Header>
+          <Card.Header>{this.props.t("legacy_detected_title")} </Card.Header>
           <Card.Body>
           <Card.Text>
-              {this.props.t("legacy_detected.description")}
+              {this.props.t("legacy_detected_description")}
           </Card.Text>
             <Row>
               <Col><Button variant="primary" onClick={()=>{setWalletExistsStatus(this.props.dispatch, false)}}>{this.props.t("escape_button")}</Button></Col>
