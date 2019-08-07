@@ -4,11 +4,6 @@ import { withTranslation } from 'react-i18next';
 
 
 class Transaction extends Component {
-  
-    constructor(props){
-       super(props);
-    }
-
 
     render() {
         let transaction=this.props.transaction;

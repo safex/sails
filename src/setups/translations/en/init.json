@@ -20,6 +20,7 @@
     "address": "Public address",
     "private_view": "Private View Key",
     "private_spend": "Private View Key",
+    "private_key":"Private Key",
     "choose_filepath": "Choose wallet file location",
     "create_filepath": "New wallet file location",
     "open_filepath": "Wallet file location",
@@ -44,6 +45,11 @@
     "safe_exchange_coins_total": "Safe Exchange Coins Total",
     "safex_tokens": "Safex Tokens",
     "safex_cash": "Safex cash",
+    "balance":"Balance",
+    "btc_balance":"BTC Balance",
+    "pending_balance":"Pending balance",
+    "pending_btc_balance":"Pending BTC balance",
     "view_keys_balance": "View list of keys and balances",
-    "legacy_create_desc": "This will generate a modern wallet file for use in the sails wallet for safex cash and token on the new blockchain, your old .dat file will remain in tact, we recommend backing it up; however, resort to using the new generated wallet file from now on"
+    "legacy_create_desc": "This will generate a modern wallet file for use in the sails wallet for safex cash and token on the new blockchain, your old .dat file will remain in tact, we recommend backing it up; however, resort to using the new generated wallet file from now on",
+    "unmigrated":"unmigrated"
 }

@@ -1,5 +1,5 @@
-import React,{Component} from 'react';
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 
 const mapStateToProps = (state) => {
@@ -14,7 +14,7 @@ class NetworkStatus extends Component {
     return <div>
       <p>{this.props.t("network_status")} : {this.props.t("connected")}</p>
       <p>{this.props.t("bitcoin_network_status")} :  {this.props.t("disconnected")} </p>
-      <p>{this.props.t("chain_sync")} : 123/456</p> 
+      <p>{this.props.t("chain_sync")} : 123/456</p>
     </div>
   }
 }

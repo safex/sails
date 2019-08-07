@@ -1,6 +1,7 @@
 //actions
 const { addWalletExistsStatus } = require('../actions/wallet_exists.action.js');
 const { addLegacyWallet } = require('../actions/legacy_wallet.action');
+const { addLegacyAccounts, resetAllBalances, addLegacyBalance, addLegacyBTCBalance, addLegacyBTCBalancePending } = require('../actions/legacy_accounts.action');
 const WizardActions = require('../actions/wizard.action');
 const { addActiveAccount } = require('../actions/active_account.action');
 
@@ -9,8 +10,11 @@ let { checkFileForFlags, readFilePromise, decryptContent } = require("../libs/le
 let { processResponse, jsonResponse, errorResponse } = require('../libs/response');
 let { addError } = require('../actions/error.action');
 
-//api
+// go api
 let { initApi, accountsApi, activeAccountApi } = require("../api/go");
+
+//v7 api
+let { balancesApi } = require("../api/legacy");
 
 //setups
 let { LEGACY_DEFAULT_WALLET_PATH, NET_TYPE } = require('../setups/conf');
@@ -35,25 +39,25 @@ let create = function (dispatch, form, names = ['filepath', 'password']) {
         .then(processResponse)
         .then(jsonResponse)
         .then((create) => {
-            if (create.status != 0) dispatch(addError(create.status));
+            if (create.status !== 0) dispatch(addError(create.status));
             else {
                 return accountsApi.openAccountsApi(create.result.accounts[0])
                     .then(processResponse)
                     .then(jsonResponse)
                     .then((open) => {
-                        if (open.status != 0) dispatch(addError(open.status));
+                        if (open.status !== 0) dispatch(addError(open.status));
                         else {
                             return accountsApi.infoAccountsApi("primary") // @note izmeniti kad Steva upgrade
                                 .then(processResponse)
                                 .then(jsonResponse)
                                 .then((info) => {
-                                    if (info.status != 0) dispatch(addError(info.status));
+                                    if (info.status !== 0) dispatch(addError(info.status));
                                     else {
                                         return activeAccountApi.setActiveAccountApi({ account: info.result, type: 0 })
                                             .then(processResponse)
                                             .then(jsonResponse)
                                             .then((active) => {
-                                                if (active.status != 0) dispatch(addError(active.status));
+                                                if (active.status !== 0) dispatch(addError(active.status));
                                                 else {
                                                     dispatch(addActiveAccount({ account: info.result, type: 0 }));
                                                 }
@@ -80,25 +84,25 @@ let createLegacy = function (dispatch, form, names = ["create_filepath", "create
         .then(processResponse)
         .then(jsonResponse)
         .then((create) => {
-            if (create.status != 0) dispatch(addError(create.status));
+            if (create.status !== 0) dispatch(addError(create.status));
             else {
                 return accountsApi.openAccountsApi("primary")
                     .then(processResponse)
                     .then(jsonResponse)
                     .then((open) => {
-                        if (open.status != 0) dispatch(addError(open.status));
+                        if (open.status !== 0) dispatch(addError(open.status));
                         else {
                             return accountsApi.infoAccountsApi("primary") //izmeniti kad Steva upgrade
                                 .then(processResponse)
                                 .then(jsonResponse)
                                 .then((info) => {
-                                    if (info.status != 0) dispatch(addError(info.status));
+                                    if (info.status !== 0) dispatch(addError(info.status));
                                     else {
                                         return activeAccountApi.setActiveAccountApi({ account: info.result, type: 0 })
                                             .then(processResponse)
                                             .then(jsonResponse)
                                             .then((active) => {
-                                                if (active.status != 0) dispatch(addError(active.status));
+                                                if (active.status !== 0) dispatch(addError(active.status));
                                                 else {
                                                     dispatch(addActiveAccount({ account: info.result, type: 0 }));
                                                     //add legacy accounts;
@@ -125,7 +129,7 @@ let open = function (dispatch, history, form, names = ["filepath", "password"]) 
         .then(processResponse)
         .then(jsonResponse)
         .then((open) => {
-            if (open.status != 0) dispatch(addError(open.status));
+            if (open.status !== 0) dispatch(addError(open.status));
             else {
                 history.push('/w/home');
             }
@@ -136,7 +140,35 @@ let open = function (dispatch, history, form, names = ["filepath", "password"]) 
 let openLegacy = function (dispatch, form, names = ["legacy_filepath", "legacy_password"]) {
     readFilePromise(form[names[0]].trim())
         .then((data) => { return decryptContent(data, form[names[1]].trim()) })
-        .then((content) => { dispatch(addLegacyWallet(content)); })
+        .then((content) => { //
+            dispatch(addLegacyWallet(content));
+            dispatch(addLegacyAccounts(content.keys));
+           // content.forEach(x => {
+                // dispatch(resetAllBalances(x.public_key));
+                // balancesApi.getBalanceApi(x.public_key)
+                //     .then(processResponse)
+                //     .then(jsonResponse)
+                //     .then((oldones) => {
+                //         dispatch(addLegacyBalance(x.public_key, oldones.balance));
+                //     })
+                //     .catch((error) => { dispatch(addError(error)); });
+                // balancesApi.getBTCBalanceApi(x.public_key)
+                //     .then(processResponse)
+                //     .then((res) => { res.text() })
+                //     .then((amount) => {
+                //         dispatch(addLegacyBTCBalance(x.public_key, amount));
+                //     })
+                //     .catch((error) => { dispatch(addError(error)); });
+                // balancesApi.getBTCBalancePendingApi(x.public_key)
+                //     .then(processResponse)
+                //     .then((res) => { res.text() })
+                //     .then((amount) => {
+                //         dispatch(addLegacyBTCBalance(x.public_key, amount));
+                //     })
+                //     .catch((error) => { dispatch(addError(error)); });
+
+           // });
+        })
         .catch((error) => { dispatch(addError(error)); });
 }
 
@@ -152,25 +184,25 @@ let restore = function (dispatch, form, names) {
             .then(processResponse)
             .then(jsonResponse)
             .then((create) => {
-                if (create.status != 0) dispatch(addError(create.status));
+                if (create.status !== 0) dispatch(addError(create.status));
                 else {
                     return accountsApi.openAccountsApi("primary")
                         .then(processResponse)
                         .then(jsonResponse)
                         .then((open) => {
-                            if (open.status != 0) dispatch(addError(open.status));
+                            if (open.status !== 0) dispatch(addError(open.status));
                             else {
                                 return accountsApi.infoAccountsApi("primary") //izmeniti kad Steva upgrade
                                     .then(processResponse)
                                     .then(jsonResponse)
                                     .then((info) => {
-                                        if (info.status != 0) dispatch(addError(info.status));
+                                        if (info.status !== 0) dispatch(addError(info.status));
                                         else {
                                             return activeAccountApi.setActiveAccountApi({ account: info.result, type: 0 })
                                                 .then(processResponse)
                                                 .then(jsonResponse)
                                                 .then((active) => {
-                                                    if (active.status != 0) dispatch(addError(active.status));
+                                                    if (active.status !== 0) dispatch(addError(active.status));
                                                     else {
                                                         dispatch(addActiveAccount({ account: info.result, type: 0 }));
                                                     }
@@ -195,25 +227,25 @@ let restore = function (dispatch, form, names) {
             .then(processResponse)
             .then(jsonResponse)
             .then((create) => {
-                if (create.status != 0) dispatch(addError(create.status));
+                if (create.status !== 0) dispatch(addError(create.status));
                 else {
                     return accountsApi.openAccountsApi("primary")
                         .then(processResponse)
                         .then(jsonResponse)
                         .then((open) => {
-                            if (open.status != 0) dispatch(addError(open.status));
+                            if (open.status !== 0) dispatch(addError(open.status));
                             else {
                                 return accountsApi.infoAccountsApi("primary") //izmeniti kad Steva upgrade
                                     .then(processResponse)
                                     .then(jsonResponse)
                                     .then((info) => {
-                                        if (info.status != 0) dispatch(addError(info.status));
+                                        if (info.status !== 0) dispatch(addError(info.status));
                                         else {
                                             return activeAccountApi.setActiveAccountApi({ account: info.result, type: 0 })
                                                 .then(processResponse)
                                                 .then(jsonResponse)
                                                 .then((active) => {
-                                                    if (active.status != 0) dispatch(addError(active.status));
+                                                    if (active.status !== 0) dispatch(addError(active.status));
                                                     else {
                                                         dispatch(addActiveAccount({ account: info.result, type: 0 }));
                                                     }
@@ -267,7 +299,7 @@ let walletFile = function (dispatch, options = null, type = "create", name = "cr
             if (_touched) {
                 addWizardTouched(dispatch, { ..._touched, ...name_var });
             }
-            if (files != undefined && files.length > 0) {
+            if (files !== undefined && files.length > 0) {
                 name_var[name] = files[0];
                 addWizardData(dispatch, name_var);
 
@@ -400,8 +432,8 @@ export {
     removeWizardData,
     wizardBack,
     wizardNext
-    
-    
-   
+
+
+
 
 }

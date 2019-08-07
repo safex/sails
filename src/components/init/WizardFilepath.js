@@ -65,7 +65,7 @@ class WizardFilepath extends Component {
             if ((!this.props.wizard.data.hasOwnProperty(names[0]))) {
                 addWizardData(this.props.dispatch, leg);
             }
-            else if (this.props.wizard.data[names[0]]  != LEGACY_DEFAULT_WALLET_PATH) {
+            else if (this.props.wizard.data[names[0]]  !== LEGACY_DEFAULT_WALLET_PATH) {
                 addWizardData(this.props.dispatch, leg);
             }
         }

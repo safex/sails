@@ -1,5 +1,5 @@
-import React,{Component} from 'react';
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 
 const mapStateToProps = (state) => {
@@ -8,7 +8,6 @@ const mapStateToProps = (state) => {
   };
 };
 
-
 class AddressInfo extends Component {
 
   render() {
@@ -16,7 +15,7 @@ class AddressInfo extends Component {
       <button>{this.props.t("copy")}</button>
       <button>{this.props.t("qr_code")}</button>
       <p>{this.props.t("receive")}</p>
-      <p>{this.props.active_account?"":"X"}</p>
+      <p>{this.props.active_account ? "" : "X"}</p>
     </div>;
   }
 }

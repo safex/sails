@@ -5,9 +5,6 @@ import { withTranslation } from 'react-i18next';
 import {Card, Row, Col} from 'react-bootstrap'
 
 class CardMain extends Component {
-  constructor(props){
-    super(props);
-  }
   render(){
     return (
       <Link to={this.props.to}>

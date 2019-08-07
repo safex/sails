@@ -10,9 +10,6 @@ import {historyReducer} from './history.reducer';
 import {contactsReducer} from './contacts.reducer';
 import {legacyWalletReducer} from './legacy_wallet.reducer';
 import {legacyAccountsReducer} from './legacy_accounts.reducer';
-import {legacyWizardReducer} from './legacy_wizard.reducer';
-import {createWizardReducer} from './create_wizard.reducer';
-import {openWizardReducer} from './open_wizard.reducer';
 import {wizardReducer} from './wizard.reducer';
 
 let rootReducer = combineReducers({ 
@@ -25,10 +22,8 @@ let rootReducer = combineReducers({
     history:historyReducer,
     contacts:contactsReducer,
     legacy_wallet:legacyWalletReducer,
-    legacy_wizard:legacyWizardReducer,
-    create_wizard:createWizardReducer,
-    open_wizard:openWizardReducer,
-    wizard:wizardReducer
+    wizard:wizardReducer,
+    legacy_accounts:legacyAccountsReducer
 });
 
 export  {rootReducer};
