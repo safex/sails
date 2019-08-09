@@ -1,6 +1,9 @@
-module.exports.historyReducer = function (state = [] , action){ 
-    switch(action.type){
+let historyReducer = function (state = [], action) {
+    switch (action.type) {
         default:
-            return state      
+            return state
     }
+}
+export {
+    historyReducer
 }

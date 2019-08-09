@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
-import { Row, Col, Modal, Table, Button, Container, Card, CardDeck } from 'react-bootstrap';
+import { Row, Col, Modal, Table, Button, Container, Card } from 'react-bootstrap';
 import { addWizardData, wizardNext } from '../../modules/init.module';
-import { currencyFormat } from './../../libs/formatters';
 
 const mapStateToProps = (state) => {
     return {
@@ -62,13 +61,70 @@ class LegacyBTCCard extends Component {
 
 
 }
+class LegacySAFEXCard extends Component {
+    render() {
+        return (
+            <Card>
+                <Card.Body>
+                    <Card.Title>{this.props.account.public_addr}</Card.Title>
+                    <Card.Text>
+                        <Table>
+                            <thead>
+                                <tr>
+                                    <th colSpan="2"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>{this.props.t("private_view")}</td>
+                                    <td>{this.props.account.view.sec}</td>
+                                </tr>
+                                <tr>
+                                    <td>{this.props.t("private_spend")}</td>
+                                    <td>{this.props.account.spend.sec}</td>
+                                </tr>
+                                <tr>
+                                    <td>{this.props.t("public_view")}</td>
+                                    <td>{this.props.account.view.pub}</td>
+                                </tr>
+                                <tr>
+                                    <td>{this.props.t("public_spend")}</td>
+                                    <td>{this.props.account.spend.pub}</td>
+                                </tr>
+                                <tr>
+                                    <td>{this.props.t("safex_tokens")}</td>
+                                    <td>{this.props.t("safex_tokens_pending")}</td>
+                                </tr>
+                                <tr>
+                                    <td>0</td>
+                                    <td>0</td>
+                                </tr>
+                                <tr>
+                                    <td>{this.props.t("safex_cash")}</td>
+                                    <td>{this.props.t("safex_cash_pending")}</td>
+                                </tr>
+                                <tr>
+                                    <td>0</td>
+                                    <td>0</td>
+                                </tr>
+
+                            </tbody>
+                        </Table>
+                    </Card.Text>
+                </Card.Body>
+
+            </Card>);
+    }
+
+
+}
 
 class WizardLegacy extends Component {
     render() {
-        let btcs = this.props.legacy_accounts ? Object.values(this.props.legacy_accounts) : [];
-        let btc_card = btcs.map(x => { return <LegacyBTCCard account={x} t={this.props.t} /> });
-        let btc_bal = Object.values(this.props.legacy_accounts) != [] ? Object.values(this.props.legacy_accounts).reduce((s, x) => { return s + x.btc_bal; },0) : 0;
-        let safex_bal = Object.values(this.props.legacy_accounts) != [] ? Object.values(this.props.legacy_accounts).reduce((s, x) => { return s + x.safex_bal; },0) : 0;
+        let btc_card = this.props.legacy_accounts ? Object.values(this.props.legacy_accounts).map((x, i) => { return <LegacyBTCCard key={`legacy-btc-${i}`} account={x} t={this.props.t} /> }) : [];
+        let safex_card = this.props.accounts ? Object.values(this.props.accounts).map((x, i) => { return <LegacySAFEXCard key={`legacy-safex-${i}`} account={x} t={this.props.t} /> }) : [];
+        let btc_bal = Object.values(this.props.legacy_accounts) !== [] ? Object.values(this.props.legacy_accounts).reduce((s, x) => { return s + Number(x.btc_bal ? x.btc_bal : 0); }, 0) : 0;
+        let safex_bal = Object.values(this.props.legacy_accounts) !== [] ? Object.values(this.props.legacy_accounts).reduce((s, x) => { return s + Number(x.safex_bal ? x.safex_bal : 0); }, 0) : 0;
         let sft = 0;
         let sfx = 0;
         return (
@@ -144,7 +200,7 @@ class WizardLegacy extends Component {
                                     </Row>
                                     <Row>
                                         <Col>
-                                            {this.props.legacy_wallet.hasOwnProperty('safex_keys') ? JSON.stringify(this.props.legacy_wallet.safex_keys) : "None"}
+                                            {safex_card}
                                         </Col>
                                     </Row>
                                 </Container>

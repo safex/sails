@@ -15,7 +15,7 @@ class AddressInfo extends Component {
       <button>{this.props.t("copy")}</button>
       <button>{this.props.t("qr_code")}</button>
       <p>{this.props.t("receive")}</p>
-      <p>{this.props.active_account ? "" : "X"}</p>
+      <p>{this.props.active_account ? this.props.active_account.address : "X"}</p>
     </div>;
   }
 }

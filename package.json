@@ -4,6 +4,9 @@
   "private": true,
   "main": "electron.js",
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.21",
+    "@fortawesome/free-solid-svg-icons": "^5.10.1",
+    "@fortawesome/react-fontawesome": "^0.1.4",
     "@rescripts/cli": "0.0.10",
     "@rescripts/rescript-env": "0.0.10",
     "bootstrap": "^4.3.1",

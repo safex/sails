@@ -1,4 +1,4 @@
-module.exports.isGuestReducer = function (state = true, action){ 
+let isGuestReducer = function (state = true, action){ 
     switch(action.type){
         case 'LOGIN':
             return false;
@@ -7,4 +7,7 @@ module.exports.isGuestReducer = function (state = true, action){
         default:
             return state      
     }
+}
+export {
+    isGuestReducer
 }

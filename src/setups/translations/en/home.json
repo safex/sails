@@ -1,10 +1,11 @@
 {
-    "accounts":{
-        "add":"Add A New Account",
-        "keys":"From keys",
-        "seed":"From seed",
-        "file":"From file"
-    },
-    "history":"Transaction history",
-    "export":"Export keys"
+    "accounts_add": "Add A New Account",
+    "accounts_keys": "From keys",
+    "accounts_seed": "From seed",
+    "accounts_file": "From file",
+    "accounts_new": "Create new",
+    "home": "Home",
+    "history": "Transaction history",
+    "export": "Export keys",
+    "accounts": "Accounts"
 }

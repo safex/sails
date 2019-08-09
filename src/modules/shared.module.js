@@ -1,9 +1,9 @@
 let { changeLanguage } = require('../actions/language.action');
 let { addActiveAccount } = require('../actions/active_account.action');
-let { resetApp } = require('../actions/reset.action');
 let { getActiveAccountApi } = require('../api/go/active_account.api');
 let { getAccountsApi, openAccountsApi } = require('../api/go/accounts.api');
 let { processResponse, jsonResponse, errorResponse } = require('../libs/response');
+let { addError } = require('../actions/error.action');
 
 let changeLanguageF = function (that, value) {
     that.props.dispatch(changeLanguage(value));
@@ -11,8 +11,6 @@ let changeLanguageF = function (that, value) {
 }
 
 let logout = function (dispatch, history) {
-    //dispatch(resetApp());
-    // history.push('/');
 }
 
 let getActiveAccountFromWallet = function (dispatch) {
@@ -20,11 +18,9 @@ let getActiveAccountFromWallet = function (dispatch) {
         .then(processResponse)
         .then(jsonResponse)
         .then((data) => {
-            if (data.status !== 0) throw new Error(data.status);
-            else {
-                if (data.result) openAccounts(dispatch, JSON.parse(data.result.value));
-                else getActiveAccountFromAccounts(dispatch);
-            }
+            if (data.status === 0) { openAccounts(dispatch, JSON.parse(data.result.value)); }
+            else if (data.status === 13) { getActiveAccountFromAccounts(dispatch); }
+            else { dispatch(addError(data.status)) }
         })
         .catch(errorResponse);
 }

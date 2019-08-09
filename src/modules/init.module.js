@@ -1,25 +1,26 @@
 //actions
-const { addWalletExistsStatus } = require('../actions/wallet_exists.action.js');
-const { addLegacyWallet } = require('../actions/legacy_wallet.action');
-const { addLegacyAccounts, resetAllBalances, addLegacyBalance, addLegacyBTCBalance, addLegacyBTCBalancePending } = require('../actions/legacy_accounts.action');
-const WizardActions = require('../actions/wizard.action');
-const { addActiveAccount } = require('../actions/active_account.action');
+import { addWalletExistsStatus } from '../actions/wallet_exists.action.js';
+import { addLegacyWallet } from '../actions/legacy_wallet.action';
+import { addLegacyAccounts, resetAllBalances, addLegacyBalance, addLegacyBTCBalance, addLegacyBTCBalancePending } from '../actions/legacy_accounts.action';
+import * as WizardActions from '../actions/wizard.action';
+import { addActiveAccount } from '../actions/active_account.action';
+import { addError } from '../actions/error.action';
 
 //libs
-let { checkFileForFlags, readFilePromise, decryptContent } = require("../libs/legacy_wallet");
-let { processResponse, jsonResponse, errorResponse } = require('../libs/response');
-let { addError } = require('../actions/error.action');
+import { checkFileForFlags, readFilePromise, decryptContent } from "../libs/legacy_wallet";
+import { processResponse, jsonResponse, errorResponse } from '../libs/response';
+
 
 // go api
-let { initApi, accountsApi, activeAccountApi } = require("../api/go");
+import { initApi, accountsApi, activeAccountApi } from "../api/go";
 
 //v7 api
-let { balancesApi } = require("../api/legacy");
+import { balancesApi } from "../api/legacy";
 
 //setups
 let { LEGACY_DEFAULT_WALLET_PATH, NET_TYPE } = require('../setups/conf');
 
-const { dialog } = window.require("electron").remote;
+let { dialog } = window.require("electron").remote;
 
 
 let checkIfFileExists = function (dispatch) {
@@ -142,32 +143,32 @@ let openLegacy = function (dispatch, form, names = ["legacy_filepath", "legacy_p
         .then((data) => { return decryptContent(data, form[names[1]].trim()) })
         .then((content) => { //
             dispatch(addLegacyWallet(content));
-            dispatch(addLegacyAccounts(content.keys));
-           // content.forEach(x => {
-                // dispatch(resetAllBalances(x.public_key));
-                // balancesApi.getBalanceApi(x.public_key)
-                //     .then(processResponse)
-                //     .then(jsonResponse)
-                //     .then((oldones) => {
-                //         dispatch(addLegacyBalance(x.public_key, oldones.balance));
-                //     })
-                //     .catch((error) => { dispatch(addError(error)); });
-                // balancesApi.getBTCBalanceApi(x.public_key)
-                //     .then(processResponse)
-                //     .then((res) => { res.text() })
-                //     .then((amount) => {
-                //         dispatch(addLegacyBTCBalance(x.public_key, amount));
-                //     })
-                //     .catch((error) => { dispatch(addError(error)); });
-                // balancesApi.getBTCBalancePendingApi(x.public_key)
-                //     .then(processResponse)
-                //     .then((res) => { res.text() })
-                //     .then((amount) => {
-                //         dispatch(addLegacyBTCBalance(x.public_key, amount));
-                //     })
-                //     .catch((error) => { dispatch(addError(error)); });
+            dispatch(addLegacyAccounts(content.keys)); /* --> prebaci ovo dole i dodaj jedan po jedan + address polje */
+            content.keys.forEach(x => {
+                dispatch(resetAllBalances(x.public_key));
+                balancesApi.getBalanceApi(x.public_key)
+                    .then(processResponse)
+                    .then(jsonResponse)
+                    .then((oldones) => {
+                        dispatch(addLegacyBalance(x.public_key, oldones.balance));
+                    })
+                    .catch((error) => { dispatch(addError(error)); });
+                balancesApi.getBTCBalanceApi(x.public_key)
+                    .then(processResponse)
+                    .then((res) => { res.text() })
+                    .then((amount) => {
+                        dispatch(addLegacyBTCBalance(x.public_key, amount));
+                    })
+                    .catch((error) => { dispatch(addError(error)); });
+                balancesApi.getBTCBalancePendingApi(x.public_key)
+                    .then(processResponse)
+                    .then((res) => { res.text() })
+                    .then((amount) => {
+                        dispatch(addLegacyBTCBalancePending(x.public_key, amount));
+                    })
+                    .catch((error) => { dispatch(addError(error)); });
 
-           // });
+            });
         })
         .catch((error) => { dispatch(addError(error)); });
 }

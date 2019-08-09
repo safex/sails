@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom'
 import { withTranslation } from 'react-i18next';
 import { getActiveAccountFromWallet } from '../../modules/shared.module';
+import { Navbar, Nav } from 'react-bootstrap';
 
 const mapStateToProps = (state) => {
   return {
@@ -21,27 +21,25 @@ class TopMenu extends Component {
 
   render() {
 
-    let info = <div > {this.props.t("active")} : {this.props.active_account ? JSON.stringify(this.props.active_account.account) : "No accounts"}</div>
-    let homeB = <Link to='/w/home'><button> {this.props.t("home")} </button></Link>;
-    let sfxB = <Link to='/w/sfx'><button> {this.props.t("sfx")} </button></Link>;
-    let sftB = <Link to='/w/sft'><button> {this.props.t("sft")} </button></Link>;
-    let contactB = <Link to='/w/contacts'><button> {this.props.t("contacts")} </button></Link>;
-    let settingsB = <Link to='/w/settings'><button> {this.props.t("settings")} </button></Link>;
-    let migrationB = <Link to='/w/migrations'><button> {this.props.t("migrations")} </button></Link>;
-    let bitcoinB = <Link to='/w/bitcoin'><button> {this.props.t("bitcoin")} </button></Link>;
-    let logoutB = <Link to='/'><button> {this.props.t("logout")} </button></Link>;
-    return <div>
-      {info}
-      {homeB}
-      {sfxB}
-      {sftB}
-      {contactB}
-      {this.props.hasOwnProperty("active_account") ? (this.props.active_account.type ? migrationB : '') : ''}
-      {this.props.hasOwnProperty("active_account") ? (this.props.active_account.type ? bitcoinB : '') : ''}
-      {settingsB}
-      {logoutB}
-
-    </div>;
+    return (<>
+      <Navbar bg="light" expand="lg">
+        <Navbar.Brand href='/w/home'>{this.props.t("active")}: 
+        {this.props.active_account.hasOwnProperty("account") ? this.props.active_account.account.address : "No accounts"}</Navbar.Brand>
+        <Navbar.Toggle aria-controls="basic-navbar-nav" />
+        <Navbar.Collapse id="basic-navbar-nav">
+          <Nav className="mr-auto">
+            <Nav.Link href="/w/home">{this.props.t("home")}</Nav.Link>
+            <Nav.Link href='/w/sfx'>{this.props.t("sfx")}</Nav.Link>
+            <Nav.Link href='/w/sft'>{this.props.t("sft")}</Nav.Link>
+            <Nav.Link href='/w/contacts'>{this.props.t("contacts")}</Nav.Link>
+            <Nav.Link href='/w/settings'>{this.props.t("settings")}</Nav.Link>
+            {this.props.hasOwnProperty("active_account") ? (this.props.active_account.type ? <Nav.Link href='/w/migrations'>{this.props.t("migrations")}</Nav.Link> : '') : ''}
+            {this.props.hasOwnProperty("active_account") ? (this.props.active_account.type ? <Nav.Link href='/w/bitcoin'>{this.props.t("bitcoin")}</Nav.Link> : '') : ''}
+            <Nav.Link href='#'>{this.props.t("logout")}</Nav.Link>
+          </Nav>
+        </Navbar.Collapse>
+      </Navbar>
+    </>);
   }
 }
 export default withTranslation('top_menu')(connect(mapStateToProps)(TopMenu));

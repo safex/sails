@@ -66,6 +66,7 @@ let legacyAccountsReducer = function (state = {}, action) {
             return new_state;
         case RESET_LEGACY_BTC_BALANCE_PENDING:
             new_state[action.item] = { ...new_state[action.item], pending_btc_bal: 0 }
+            return new_state;
         case RESET_ALL_BALANCES:
             new_state[action.item] = { ...new_state[action.item], safex_bal: 0, btc_bal: 0, pending_safex_bal: 0, pending_btc_bal: 0 }
             return new_state;

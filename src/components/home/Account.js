@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
-let homeM = require('../../modules/home.module');
+import { Button } from 'react-bootstrap';
+
+import { setActiveAccount } from '../../modules/home.module';
 
 const mapStateToProps = (state) => {
   return {
@@ -13,7 +15,10 @@ class Account extends Component {
 
   render() {
 
-    return <div onClick={homeM.setActiveAccount(this.dispatch, { account: this.props.account, type: this.props.type })}> Account X </div>;
+    return (
+      <Button variant={this.props.type ? "default" : "info"} size="lg" onClick={() => { setActiveAccount(this.dispatch, { account: this.props.account, type: this.props.type }) }} block>
+        {this.props.account.label}
+      </Button>);
   }
 }
 export default withTranslation('home')(connect(mapStateToProps)(Account));
