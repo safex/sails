@@ -7,5 +7,22 @@
     "home": "Home",
     "history": "Transaction history",
     "export": "Export keys",
-    "accounts": "Accounts"
+    "accounts": "Accounts",
+    "add_new_seed": "Add new account from seed",
+    "add_new_keys": "Add new account from keys",
+    "add_new": "Create new account",
+    "add_new_file": "Create new account from file",
+    "filepath": "Filepath",
+    "password": "Password",
+    "file": "Import .keys file",
+    "25_word_mnemonic": "Type 25 words",
+    "keys": "Keys",
+    "required_25_words": "Separate 25 words by space.",
+    "address": "Public address",
+    "private_view": "Private View Key",
+    "private_spend": "Private Spend Key",
+    "label": "Label",
+    "button_add": "Add",
+    "button_close": "Close",
+    "button_browse": "Browse"
 }

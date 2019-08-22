@@ -14,9 +14,12 @@ const mapStateToProps = (state) => {
 class Account extends Component {
 
   render() {
-
+    let variant = this.props.type !== 1 ? "secondary" : "light";
+    if (this.props.active_account.hasOwnProperty("account") && this.props.hasOwnProperty("account")) {
+      if (this.props.active_account.account.address === this.props.account.address) { variant = "dark"; }
+    }
     return (
-      <Button variant={this.props.type ? "default" : "info"} size="lg" onClick={() => { setActiveAccount(this.dispatch, { account: this.props.account, type: this.props.type }) }} block>
+      <Button variant={variant} size="lg" onClick={() => { setActiveAccount(this.props.dispatch, { account: this.props.account, type: this.props.type }) }} block>
         {this.props.account.label}
       </Button>);
   }

@@ -11,9 +11,10 @@ let contactsReducer = function (state = { contacts: [], contact_counter: -1, new
     switch (action.type) {
         case ADD_CONTACT:
             new_state.contacts[action.item.id] = action.item.data;
-            return new_state;
+            return { ...new_state};
         case ADD_CONTACTS:
-            return { ...state, contacts: action.item };
+            
+            return { ...new_state, ...{contacts: action.item} };
         case REMOVE_CONTACT:
             delete new_state.contacts[action.item];
             return new_state;

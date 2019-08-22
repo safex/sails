@@ -21,7 +21,7 @@ class Contacts extends Component {
 
 
   render() {
-    let contacts = Object.values(this.props.contacts.contacts).map((x) => { return x ? <><Row><Col><Contact key={`contact-${x.id}`} contact={x} /></Col></Row><br/></> : ""; });
+    let cnts=Object.values(this.props.contacts.contacts);
     return (
       <Container>
         <Row>
@@ -29,10 +29,10 @@ class Contacts extends Component {
             <AddContact />
           </Col>
         </Row>
-        <br/>
+        <br />
         <Row>
           <Col>
-            {contacts}
+            {cnts.map((x, i) => { let add=(Math.random()*100)/100;return x ? <Row key={`row-${i}`}><Col key={`col-${i}`}><Contact key={`contact-${x.id}-${add}`} contact={cnts[i]} /></Col></Row> : ""; })}
           </Col>
         </Row>
       </Container>

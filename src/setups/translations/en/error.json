@@ -8,6 +8,22 @@
     "WALLET_EXISTS":"You override wallet",
     "ERR_READ_REQ":"Error in api request",
     "ERR_JSON_REQ_MAL":"JSON request malformed",
-    "ERR_JSON_RES_MAL":"JSON response malformed"
+    "ERR_JSON_RES_MAL":"JSON response malformed",
+    "FAILED_TO_OPEN_ACCOUNT":"Failed to open account",
+    "OK":"Ok!",
+    "FILE_DOESNT_EXISTS":"File doesn't exists",
+    "WALLET_IS_NOT_OPENED":"Wallet is not oppened",
+    "NO_OPEN_ACCOUNT":"No open account",
+    "FAILED_TO_RECOVER_ACCOUNT":"Failed to recover account",
+    "FILE_STORE_FAILED":"File store PUT failed ",
+    "FILE_LOAD_FAILED": "File store GET failed",
+    "GETTING_MNEMONIC_FAILED":"Getting mnemonic failed",
+    "FAILED_GETTING_TRANSACTION":"Failed getting transaction",
+    "FAILED_GETTING_OUTPUT" :"Failed getting output",
+    "FAILED_TO_CONNECT_TO_DAEMON":"Failed to connect to Daemon",
+    "EMPTY_PASSWORD": "EMPTY_PASSWORD",
+    "FILE_NOT_SELECTED": "FILE_NOT_SELECTED",
+    "FILE_NOT_VALID": "FILE_NOT_VALID",
+    "INAVLID_FILE_FORMAT": "INVALID_FILE_FORMAT"
 
 }

@@ -1,0 +1,11 @@
+{
+    "home": "Home",
+    "sfx":"SFX",
+    "sft":"SFT",
+    "contacts":"Contacts",
+    "migrations":"Migrations",
+    "bitcoin":"Bitcoin",
+    "settings":"Settings",
+    "active":"Active Account",
+    "logout": "Logout"
+}

@@ -6,37 +6,31 @@ import {
     resetNewContactData,
     addContactCounter
 } from '../actions/contacts.action';
-
-import { contactsApi } from '../api/go';
-import { processResponse, jsonResponse, errorResponse } from '../libs/response';
 import { addError } from '../actions/error.action';
 
-let addNewContact = function (dispatch,contacts_state) {
-    let data=contacts_state.new_contact;
-    let create=false;
+import { contactsApi } from '../api/go';
+import { lordOfTheFetch } from '../libs/one_fetch_to_rule_them_all';
+
+
+
+
+let addNewContact = function (dispatch, contacts_state) {
+    let data = contacts_state.new_contact;
+    let create = false;
     if (data.label === "") data.label = "Label";
-    if(!data.hasOwnProperty("id")){  create=true; data.id = contacts_state.contact_counter + 1; }
+    if (!data.hasOwnProperty("id")) { create = true; data.id = contacts_state.contact_counter + 1; }
     let contacts = contacts_state.contacts;
     contacts[data.id] = data;
-    contactsApi.setContactsApi(contacts)
-        .then(processResponse)
-        .then((res) => {
-            dispatch(addContact(data, data.id));
-            resetContactData(dispatch);
-        })
-        .then(() => {
-            if(create){ addContactsCounter(dispatch, data.id);}
-        })
-        .catch(error => dispatch(addError(error)));
+    lordOfTheFetch(contactsApi.setContactsApi, [contacts], callbackForAddNewContactUltimateFetch, [dispatch, data, create], { dispatch: dispatch });
+    //console.log("refresh");
 
 }
+
 
 let addContactsCounter = function (dispatch, counter) {
-    contactsApi.setContactsCounterApi(counter)
-        .then(processResponse)
-        .then((r) => { dispatch(addContactCounter(counter)) })
-        .catch(e => dispatch(addError(e)));
+    lordOfTheFetch(contactsApi.setContactsCounterApi, [counter], callbackForAddContactCounterUltimateFetch, [dispatch, counter], { dispatch: dispatch });
 }
+
 
 let removeFromContacts = function (dispatch, id) {
     dispatch(removeContact(id));
@@ -58,34 +52,45 @@ let addCounter = function (dispatch, counter) {
     dispatch(addContactCounter(counter));
 }
 let getContactsFromWallet = function (dispatch) {
-    contactsApi.getContactsApi()
-        .then(processResponse)
-        .then(jsonResponse)
-        .then((contacts) => {
-            if (contacts.status === 0) { dispatch(addContacts(JSON.parse(contacts.result.value))); }
-            else if (contacts.status !== 13) {
-                dispatch(addError(contacts.status));
-            }
-        })
-        .catch(errorResponse)
+    lordOfTheFetch(contactsApi.getContactsApi, [], callbackForGetContactsFromWalletUltimateFetch, [dispatch], { dispatch: dispatch });
 }
 
 let getContactsCounterFromWallet = function (dispatch) {
-    contactsApi.getContactsCounterApi()
-        .then(processResponse)
-        .then(jsonResponse)
-        .then((counter) => {
-            if (counter.status === 0) { dispatch(addContactCounter(JSON.parse(counter.result.value))); }
-            else if (counter.status !== 13) {
-                dispatch(addError(counter.status));
-            }
-        })
-        .catch(errorResponse)
+    lordOfTheFetch(contactsApi.getContactsCounterApi, [], callbackForGetContactCounterFromWallet, [dispatch], { dispatch: dispatch });
 }
 
 let copyContact = function (dispatch, data) {
     dispatch(addNewContactData(data))
 }
+
+
+//callback functions
+let callbackForAddNewContactUltimateFetch = function (res, dispatch, data, create) {
+    dispatch(addContact(data, data.id));
+    resetContactData(dispatch);
+    if (create) { addContactsCounter(dispatch, data.id); }
+}
+
+let callbackForAddContactCounterUltimateFetch = function (res, dispatch, counter) {
+    dispatch(addContactCounter(counter));
+}
+
+let callbackForGetContactsFromWalletUltimateFetch = function (res, dispatch) {
+    if (res.status === 0) {
+        dispatch(addContacts(JSON.parse(res.result.value)));
+    }
+    else if (res.status !== 13) {
+        dispatch(addError(res.status));
+    }
+}
+
+let callbackForGetContactCounterFromWallet = function (counter, dispatch) {
+    if (counter.status === 0) { dispatch(addContactCounter(JSON.parse(counter.result.value))); }
+    else if (counter.status !== 13) {
+        dispatch(addError(counter.status));
+    }
+}
+
 export {
     addNewContact,
     removeFromContacts,

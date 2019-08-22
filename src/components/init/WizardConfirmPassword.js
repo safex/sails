@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
-import { addWizardData, wizardNext, addWizardErrors, addWizardTouched, create, restore, createLegacy } from '../../modules/init.module';
+import { addWizardData, wizardNext, addWizardErrors, addWizardTouched, create, restore} from '../../modules/init.module';
 import { Row, Col, Form, Button } from 'react-bootstrap';
 
 
@@ -21,9 +21,9 @@ const handleSubmit = (event, dispatch, data, names, component = "create", wallet
     }
     else {
         addWizardData(dispatch, { validated: true });
-        if (component === "create") { wizardNext(dispatch,  create, [dispatch, data, names]); }
+        if (component === "create") { wizardNext(dispatch,  create, [dispatch, data, names, wallet]); }
         if (component === "restore") { wizardNext(dispatch, restore, [dispatch, data, names]); }
-        if (component === "legacy") { wizardNext(dispatch,  createLegacy, [dispatch, data, names, wallet]); }
+        if (component === "legacy") { wizardNext(dispatch,  create, [dispatch, data, names, wallet]); }
 
     }
 
@@ -79,7 +79,7 @@ class WizardConfirmPassword extends Component {
         //names[0] password field
         //names[1] confirm password field
         let names = Object.keys(this.props.prop_names);
-        let prevs = this.props.prev_data.map(x => { return <Row> <Col> {this.props.t(x)}</Col> <Col>{this.props.wizard.data[x]}</Col></Row> });
+        let prevs = this.props.prev_data.map((x,i) => { return <Row key={`prev-row-${i}`}> <Col key={`prev-col1-${i}`}> {this.props.t(x)}</Col> <Col key={`prev-col2-${i}`}>{this.props.wizard.data[x]}</Col></Row> });
         return (
             <>
 

@@ -10,7 +10,7 @@ class Wallet extends Component {
 
   render() {
     return <div>
-      <TopMenu />
+      <TopMenu history= {this.props.history}/>
       {routes_second}
       <Footer />
     </div>;

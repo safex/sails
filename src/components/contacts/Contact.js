@@ -6,9 +6,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCopy, faTrashAlt, faCoins, faMoneyBill, faPen } from '@fortawesome/free-solid-svg-icons';
 import { removeFromContacts, copyContact } from '../../modules/contacts.module';
 
+
 class Contact extends Component {
 
   render() {
+
     return (
       <Row>
         <Col>
@@ -33,7 +35,7 @@ class Contact extends Component {
                       placement="top"
                       overlay={<Tooltip id="tooltip-update"> {this.props.t("update")} </Tooltip>}
                     >
-                      <FontAwesomeIcon icon={faPen} style={{ cursor: "pointer" }} onClick={() => { copyContact(this.props.dispatch, this.props.contact) }} />
+                      <FontAwesomeIcon icon={faPen} style={{ cursor: "pointer" }} onClick={() => { copyContact(this.props.dispatch, {address:this.props.contact.address, label:this.props.contact.label, id:this.props.contact.id}) }} />
                     </OverlayTrigger>
                   </Col>
                   <Col>

@@ -26,11 +26,7 @@ let legacyAccountsReducer = function (state = {}, action) {
             delete new_state[action.item]
             return new_state;
         case ADD_LEGACY_ACCOUNTS:
-            let accounts = action.item.reduce((acc, cur, i) => {
-                acc[cur.public_key] = cur;
-                return acc;
-            }, {});
-            return { ...state, ...accounts };
+            return { ...action.item };
         case ADD_LEGACY_BALANCE:
             new_state[action.item.key] = { ...new_state[action.item.key], safex_bal: (action.item.amount + new_state[action.item.key].safex_bal) }
             return new_state;
