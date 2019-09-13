@@ -26,7 +26,7 @@ class AddressInfo extends Component {
         </Row>
         <Row>
           <Col>
-            <Alert variant="secondary"> {this.props.active_account.hasOwnProperty("account") ? this.props.active_account.account.address : "X"} </Alert>
+            <Alert variant="secondary"> {this.props.active_account.hasOwnProperty("account") ? this.props.active_account.account.address : ""} </Alert>
           </Col>
         </Row>
       </Col>

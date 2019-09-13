@@ -14,46 +14,45 @@ const mapStateToProps = (state) => {
 
 class LegacyBTCCard extends Component {
     render() {
+        console.log(this.props.account);
         return (
             <Card>
                 <Card.Body>
                     <Card.Title>{this.props.account.label}</Card.Title>
-                    <Card.Text>
-                        <Table>
-                            <thead>
-                                <tr>
-                                    <th colSpan="2"></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>{this.props.t("address")}</td>
-                                    <td>{this.props.account.public_key}</td>
-                                </tr>
-                                <tr>
-                                    <td>{this.props.t("private_key")}</td>
-                                    <td>{this.props.account.private_key}</td>
-                                </tr>
-                                <tr>
-                                    <td>{this.props.t("balance")}</td>
-                                    <td>{this.props.t("pending_balance")}</td>
-                                </tr>
-                                <tr>
-                                    <td>{this.props.account.safex_bal}</td>
-                                    <td>{this.props.account.pending_safex_bal}</td>
-                                </tr>
-                                <tr>
-                                    <td>{this.props.t("btc_balance")}</td>
-                                    <td>{this.props.t("pending_btc_balance")}</td>
-                                </tr>
-                                <tr>
-                                    <td>{this.props.account.btc_bal}</td>
-                                    <td>{this.props.account.pending_btc_bal}</td>
-                                </tr>
+                    <Table>
+                        <thead>
+                            <tr>
+                                <th colSpan="2"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>{this.props.t("address")}</td>
+                                <td>{this.props.account.public_key}</td>
+                            </tr>
+                            <tr>
+                                <td>{this.props.t("private_key")}</td>
+                                <td>{this.props.account.private_key}</td>
+                            </tr>
+                            <tr>
+                                <td>{this.props.t("balance")}</td>
+                                <td>{this.props.t("pending_balance")}</td>
+                            </tr>
+                            <tr>
+                                <td>{this.props.account.safex_bal}</td>
+                                <td>{this.props.account.pending_safex_bal}</td>
+                            </tr>
+                            <tr>
+                                <td>{this.props.t("btc_balance")}</td>
+                                <td>{this.props.t("pending_btc_balance")}</td>
+                            </tr>
+                            <tr>
+                                <td>{this.props.account.btc_bal}</td>
+                                <td>{this.props.account.pending_btc_bal}</td>
+                            </tr>
 
-                            </tbody>
-                        </Table>
-                    </Card.Text>
+                        </tbody>
+                    </Table>
                 </Card.Body>
 
             </Card>);
@@ -67,50 +66,49 @@ class LegacySAFEXCard extends Component {
             <Card>
                 <Card.Body>
                     <Card.Title>{this.props.account.public_addr}</Card.Title>
-                    <Card.Text>
-                        <Table>
-                            <thead>
-                                <tr>
-                                    <th colSpan="2"></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>{this.props.t("private_view")}</td>
-                                    <td>{this.props.account.view.sec}</td>
-                                </tr>
-                                <tr>
-                                    <td>{this.props.t("private_spend")}</td>
-                                    <td>{this.props.account.spend.sec}</td>
-                                </tr>
-                                <tr>
-                                    <td>{this.props.t("public_view")}</td>
-                                    <td>{this.props.account.view.pub}</td>
-                                </tr>
-                                <tr>
-                                    <td>{this.props.t("public_spend")}</td>
-                                    <td>{this.props.account.spend.pub}</td>
-                                </tr>
-                                <tr>
-                                    <td>{this.props.t("safex_tokens")}</td>
-                                    <td>{this.props.t("safex_tokens_pending")}</td>
-                                </tr>
-                                <tr>
-                                    <td>0</td>
-                                    <td>0</td>
-                                </tr>
-                                <tr>
-                                    <td>{this.props.t("safex_cash")}</td>
-                                    <td>{this.props.t("safex_cash_pending")}</td>
-                                </tr>
-                                <tr>
-                                    <td>0</td>
-                                    <td>0</td>
-                                </tr>
 
-                            </tbody>
-                        </Table>
-                    </Card.Text>
+                    <Table>
+                        <thead>
+                            <tr>
+                                <th colSpan="2"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>{this.props.t("private_view")}</td>
+                                <td>{this.props.account.view.sec}</td>
+                            </tr>
+                            <tr>
+                                <td>{this.props.t("private_spend")}</td>
+                                <td>{this.props.account.spend.sec}</td>
+                            </tr>
+                            <tr>
+                                <td>{this.props.t("public_view")}</td>
+                                <td>{this.props.account.view.pub}</td>
+                            </tr>
+                            <tr>
+                                <td>{this.props.t("public_spend")}</td>
+                                <td>{this.props.account.spend.pub}</td>
+                            </tr>
+                            <tr>
+                                <td>{this.props.t("safex_tokens")}</td>
+                                <td>{this.props.t("safex_tokens_pending")}</td>
+                            </tr>
+                            <tr>
+                                <td>0</td>
+                                <td>0</td>
+                            </tr>
+                            <tr>
+                                <td>{this.props.t("safex_cash")}</td>
+                                <td>{this.props.t("safex_cash_pending")}</td>
+                            </tr>
+                            <tr>
+                                <td>0</td>
+                                <td>0</td>
+                            </tr>
+
+                        </tbody>
+                    </Table>
                 </Card.Body>
 
             </Card>);
@@ -121,6 +119,7 @@ class LegacySAFEXCard extends Component {
 
 class WizardLegacy extends Component {
     render() {
+        console.log(this.props.legacy_accounts);
         let btc_card = this.props.legacy_accounts ? Object.values(this.props.legacy_accounts).map((x, i) => { return <LegacyBTCCard key={`legacy-btc-${i}`} account={x} t={this.props.t} /> }) : [];
         let safex_card = this.props.accounts ? Object.values(this.props.accounts).map((x, i) => { return <LegacySAFEXCard key={`legacy-safex-${i}`} account={x} t={this.props.t} /> }) : [];
         let btc_bal = Object.values(this.props.legacy_accounts) !== [] ? Object.values(this.props.legacy_accounts).reduce((s, x) => { return s + Number(x.btc_bal ? x.btc_bal : 0); }, 0) : 0;
@@ -149,7 +148,7 @@ class WizardLegacy extends Component {
                                 </tr>
                                 <tr>
                                     <td>{this.props.t("bitcoins_on_all_wallets")} </td>
-                                    <td>{btc_bal} BTC</td>
+                                    <td>{(parseFloat(btc_bal) / 100000000).toFixed(8)} BTC</td>
                                 </tr>
                                 <tr>
                                     <td>{this.props.t("safe_exchange_coins_total")}</td>
@@ -165,7 +164,7 @@ class WizardLegacy extends Component {
                                 </tr>
                                 <tr>
                                     <td>{this.props.t("safex_cash")}</td>
-                                    <td>{sfx} SFX</td>
+                                    <td>{(parseFloat(sfx) / 10000000000).toFixed(10)} SFX</td>
                                 </tr>
 
                             </tbody>

@@ -13,7 +13,7 @@ sails - main folder
     1. css - folder for css
     2. img - images
     3. js - simple js and json files
-3. setups - files thar are used for diferent kind of setups ( routers, env ...)
+3. setups - files thar are used for diferent kind of setups ( routers, env ...)git add .
 4. src
     1. actions - folder reserved for redux actions
     2. components - folder for react components

@@ -4,7 +4,9 @@ import {
     addContacts,
     addNewContactData,
     resetNewContactData,
-    addContactCounter
+    addContactCounter,
+    addContactError,
+    addContactTouched
 } from '../actions/contacts.action';
 import { addError } from '../actions/error.action';
 
@@ -22,8 +24,6 @@ let addNewContact = function (dispatch, contacts_state) {
     let contacts = contacts_state.contacts;
     contacts[data.id] = data;
     lordOfTheFetch(contactsApi.setContactsApi, [contacts], callbackForAddNewContactUltimateFetch, [dispatch, data, create], { dispatch: dispatch });
-    //console.log("refresh");
-
 }
 
 
@@ -32,9 +32,12 @@ let addContactsCounter = function (dispatch, counter) {
 }
 
 
-let removeFromContacts = function (dispatch, id) {
-    dispatch(removeContact(id));
+let removeFromContacts = function () {
+    let contacts = this.props.all;
+    delete contacts[this.props.contact.id]
+    lordOfTheFetch(contactsApi.setContactsApi, [contacts], callbackForRemoveFromContacts, [this.props.dispatch, this.props.contact.id], { dispatch: this.props.dispatch });
 }
+
 
 let addAllContacts = function (dispatch, contacts) {
     dispatch(addContacts(contacts));
@@ -46,6 +49,8 @@ let addContactData = function (dispatch, data) {
 
 let resetContactData = function (dispatch) {
     dispatch(resetNewContactData());
+    dispatch(addContactError({ address: false, label: false, double: false }));
+    dispatch(addContactTouched({ address: false, label: false, double: false }));
 }
 
 let addCounter = function (dispatch, counter) {
@@ -59,8 +64,60 @@ let getContactsCounterFromWallet = function (dispatch) {
     lordOfTheFetch(contactsApi.getContactsCounterApi, [], callbackForGetContactCounterFromWallet, [dispatch], { dispatch: dispatch });
 }
 
-let copyContact = function (dispatch, data) {
-    dispatch(addNewContactData(data))
+let copyContact = function (dispatch, data, touch, error) {
+    dispatch(addNewContactData(data));
+    addNewContactTouched(dispatch, touch);
+    addNewContactError(dispatch, error);
+}
+
+
+
+let contactSubmit = function (event) {
+    event.preventDefault();
+    event.stopPropagation();
+    const form = event.currentTarget;
+    if (form.checkValidity() !== false) {
+        addNewContact(this.props.dispatch, this.props.contacts);
+    }
+};
+let contactInputChange = function (event) {
+    let contacts = this.props.contacts.contacts;
+    let new_contact = this.props.contacts.new_contact;
+    new_contact[event.target.id.substring(8)] = event.target.value;
+    let doublesl = contacts.filter(x => {
+        if (x !== null) {
+            return ((x.label === new_contact.label) && ((new_contact.hasOwnProperty("id") && new_contact.id !== x.id) || (!new_contact.hasOwnProperty("id"))));
+
+        }
+        else { return false };
+
+    });
+    let doublesa = contacts.filter(x => {
+        if (x !== null) {
+            return ((x.address === new_contact.address) && ((new_contact.hasOwnProperty("id") && new_contact.id !== x.id) || (!new_contact.hasOwnProperty("id"))));
+        }
+        else {
+            return false;
+        };
+
+    });
+    let error = {};
+    if (event.target.value === "") error[event.target.id.substring(8)] = true; else error[event.target.id.substring(8)] = false;
+    if (doublesl.length !== 0 || doublesa.length !== 0) { error.double = true; } else { error.double = false; }
+    let touch = {}; touch[event.target.id.substring(8)] = true; touch.double = true;
+    addContactData(this.props.dispatch, new_contact);
+    addNewContactTouched(this.props.dispatch, touch);
+    addNewContactError(this.props.dispatch, error);
+
+
+}
+
+let addNewContactError = function (dispatch, error) {
+    dispatch(addContactError(error));
+}
+
+let addNewContactTouched = function (dispatch, touch) {
+    dispatch(addContactTouched(touch));
 }
 
 
@@ -91,6 +148,10 @@ let callbackForGetContactCounterFromWallet = function (counter, dispatch) {
     }
 }
 
+let callbackForRemoveFromContacts = function (res, dispatch, id) {
+    dispatch(removeContact(id));
+}
+
 export {
     addNewContact,
     removeFromContacts,
@@ -101,5 +162,9 @@ export {
     addContactsCounter,
     getContactsFromWallet,
     getContactsCounterFromWallet,
-    copyContact
+    copyContact,
+    addNewContactError,
+    addNewContactTouched,
+    contactSubmit,
+    contactInputChange
 }

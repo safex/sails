@@ -1,15 +1,16 @@
 import React, { Component } from 'react';
 import routes_main from '../../setups/routes_main';
 import LanguageMenu from '../shared/LanguageMenu';
-import ErrorResponse from '../shared/ErrorResponse';
+import DaemonSetting from '../shared/DaemonSetting';
+
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
-import { Container } from 'react-bootstrap'
+import { Container, Row, Col } from 'react-bootstrap'
 class App extends Component {
 
 
   render() {
-    return <div><Container><ErrorResponse> <LanguageMenu /> {routes_main} </ErrorResponse></Container></div>;
+    return <div><Container><Row><Col><LanguageMenu /></Col><Col><DaemonSetting /></Col></Row>  {routes_main}</Container></div>;
   }
 }
 export default withTranslation()(connect()(App));

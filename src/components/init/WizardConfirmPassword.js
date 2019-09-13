@@ -1,18 +1,19 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
-import { addWizardData, wizardNext, addWizardErrors, addWizardTouched, create, restore} from '../../modules/init.module';
+import { addWizardData, wizardNext, addWizardErrors, addWizardTouched, create, restore } from '../../modules/init.module';
 import { Row, Col, Form, Button } from 'react-bootstrap';
 
 
 const mapStateToProps = (state) => {
     return {
         wizard: state.wizard,
+        legacy_accounts: state.legacy_accounts,
         legacy_wallet: state.legacy_wallet
     };
 };
 
-const handleSubmit = (event, dispatch, data, names, component = "create", wallet = null) => {
+const handleSubmit = (event, dispatch, data, names, daemon, component = "create", wallet = null) => {
     const form = event.currentTarget;
     if (form.checkValidity() === false || (form[names[1]].value !== form[names[2]].value)) {
         event.preventDefault();
@@ -21,9 +22,9 @@ const handleSubmit = (event, dispatch, data, names, component = "create", wallet
     }
     else {
         addWizardData(dispatch, { validated: true });
-        if (component === "create") { wizardNext(dispatch,  create, [dispatch, data, names, wallet]); }
-        if (component === "restore") { wizardNext(dispatch, restore, [dispatch, data, names]); }
-        if (component === "legacy") { wizardNext(dispatch,  create, [dispatch, data, names, wallet]); }
+        if (component === "create") { wizardNext(dispatch, create, [dispatch, data, names, daemon, wallet]); }
+        if (component === "restore") { wizardNext(dispatch, restore, [dispatch, data, names, daemon]); }
+        if (component === "legacy") { wizardNext(dispatch, create, [dispatch, data, names, daemon, wallet]); }
 
     }
 
@@ -79,7 +80,7 @@ class WizardConfirmPassword extends Component {
         //names[0] password field
         //names[1] confirm password field
         let names = Object.keys(this.props.prop_names);
-        let prevs = this.props.prev_data.map((x,i) => { return <Row key={`prev-row-${i}`}> <Col key={`prev-col1-${i}`}> {this.props.t(x)}</Col> <Col key={`prev-col2-${i}`}>{this.props.wizard.data[x]}</Col></Row> });
+        let prevs = this.props.prev_data.map((x, i) => { return <Row key={`prev-row-${i}`}> <Col key={`prev-col1-${i}`}> {this.props.t(x)}</Col> <Col key={`prev-col2-${i}`}>{this.props.wizard.data[x]}</Col></Row> });
         return (
             <>
 
@@ -88,7 +89,7 @@ class WizardConfirmPassword extends Component {
                         {prevs}
                         <Row>
                             <Col>
-                                <Form noValidate validated={this.props.wizard.data.validated} onSubmit={(event) => { handleSubmit(event, this.props.dispatch, this.props.wizard.data, this.props.form_fields, this.props.component, this.props.legacy_wallet) }}>
+                                <Form noValidate validated={this.props.wizard.data.validated} onSubmit={(event) => { handleSubmit(event, this.props.dispatch, this.props.wizard.data, this.props.form_fields, this.props.daemon, this.props.component, this.props.legacy_wallet) }}>
                                     <Form.Row>
                                         <Form.Group as={Col} controlId={names[0]}>
                                             <Form.Label >{this.props.t(names[0])}</Form.Label>

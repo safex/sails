@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { withRouter } from "react-router";
 import { Row, Col, Tooltip, Card, ListGroup, OverlayTrigger } from 'react-bootstrap';
 import { withTranslation } from 'react-i18next';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -26,7 +27,10 @@ class Contact extends Component {
                       placement="top"
                       overlay={<Tooltip id="tooltip-copy"> {this.props.t("copy")} </Tooltip>}
                     >
-                      <FontAwesomeIcon icon={faCopy} style={{ cursor: "pointer" }} onClick={() => { copyContact(this.props.dispatch, { address: this.props.contact.address, label: this.props.contact.label }) }} />
+                      <FontAwesomeIcon icon={faCopy} style={{ cursor: "pointer" }} onClick={() => {
+                        copyContact(this.props.dispatch, { address: this.props.contact.address, label: this.props.contact.label },
+                          { address: true, label: true, double: true }, { double: true })
+                      }} />
                     </OverlayTrigger>
                   </Col>
                   <Col>
@@ -35,7 +39,13 @@ class Contact extends Component {
                       placement="top"
                       overlay={<Tooltip id="tooltip-update"> {this.props.t("update")} </Tooltip>}
                     >
-                      <FontAwesomeIcon icon={faPen} style={{ cursor: "pointer" }} onClick={() => { copyContact(this.props.dispatch, {address:this.props.contact.address, label:this.props.contact.label, id:this.props.contact.id}) }} />
+                      <FontAwesomeIcon
+                        icon={faPen}
+                        style={{ cursor: "pointer" }}
+                        onClick={() => {
+                          copyContact(this.props.dispatch, { address: this.props.contact.address, label: this.props.contact.label, id: this.props.contact.id },
+                            { address: true, label: true, double: true }, { double: true })
+                        }} />
                     </OverlayTrigger>
                   </Col>
                   <Col>
@@ -44,7 +54,11 @@ class Contact extends Component {
                       placement="top"
                       overlay={<Tooltip id="tooltip-send-sft"> {this.props.t("send_sft")} </Tooltip>}
                     >
-                      <FontAwesomeIcon icon={faCoins} style={{ cursor: "pointer" }} />
+                      <FontAwesomeIcon
+                        icon={faCoins}
+                        style={{ cursor: "pointer" }}
+                        onClick={() =>  {this.props.history.push('/w/sft/' + this.props.contact.address); }}
+                      />
                     </OverlayTrigger>
                   </Col>
                   <Col >
@@ -53,7 +67,11 @@ class Contact extends Component {
                       placement="top"
                       overlay={<Tooltip id="tooltip-send-sfx"> {this.props.t("send_sfx")} </Tooltip>}
                     >
-                      <FontAwesomeIcon icon={faMoneyBill} style={{ cursor: "pointer" }} />
+                      <FontAwesomeIcon
+                        icon={faMoneyBill}
+                        style={{ cursor: "pointer" }}
+                        onClick={() => { this.props.history.push('/w/sfx/' + this.props.contact.address); }}
+                      />
                     </OverlayTrigger>
                   </Col>
                   <Col   >
@@ -62,7 +80,7 @@ class Contact extends Component {
                       placement="top"
                       overlay={<Tooltip id="tooltip-delete"> {this.props.t("delete")} </Tooltip>}
                     >
-                      <FontAwesomeIcon icon={faTrashAlt} style={{ cursor: "pointer" }} onClick={() => { removeFromContacts(this.props.dispatch, this.props.contact.id) }} />
+                      <FontAwesomeIcon icon={faTrashAlt} style={{ cursor: "pointer" }} onClick={removeFromContacts.bind(this)} />
                     </OverlayTrigger>
                   </Col>
                 </Row>
@@ -75,4 +93,4 @@ class Contact extends Component {
     );
   }
 }
-export default withTranslation('contacts')(connect()(Contact));
+export default withTranslation('contacts')(withRouter(connect()(Contact)));

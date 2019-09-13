@@ -15,7 +15,7 @@ class LanguageMenu extends Component {
   render() {
     return (
       <Row>
-        <Col md={{ offset: 11 }} >
+        <Col>
           <select value={this.props.language} onChange={(event) => changeLanguageF(this, event.target.value)}>
             <option value="en">English</option>
             <option value="rs">Serbian</option>

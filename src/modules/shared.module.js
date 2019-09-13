@@ -4,6 +4,7 @@ import { addActiveAccount } from '../actions/active_account.action';
 import { addError } from '../actions/error.action';
 import { resetApp } from '../actions/root.action';
 import { addAccountHistory } from '../actions/history.action';
+import { addDaemonHost, addDaemonPort, addDaemonModal } from '../actions/daemon.action';
 
 
 //api
@@ -15,14 +16,15 @@ import { getTransactionHistory } from '../api/go/transaction.api'
 
 //libs
 import { lordOfTheFetch } from '../libs/one_fetch_to_rule_them_all';
+import { DAEMON_HOST, DAEMON_PORT } from '../setups/conf';
 
 let changeLanguageF = function (that, value) {
     that.props.dispatch(changeLanguage(value));
     that.props.i18n.changeLanguage(value);
 }
 
-let logout = function (dispatch, history) {
-    closeWallet(dispatch, history)
+let logout = function (event) {
+    closeWallet(this.props.dispatch, this.props.history);
 }
 
 
@@ -30,20 +32,21 @@ let closeWallet = function (dispatch, history) {
     lordOfTheFetch(closeApi, [], callbackForCloseWallet, [dispatch, history], { dispatch: dispatch });
 }
 
-let getActiveAccountFromWallet = function (dispatch, labels) {
-    lordOfTheFetch(getActiveAccountApi, [], callbackForGetActiveAccountFromWallet, [dispatch, labels], { dispatch: dispatch });
+let getActiveAccountFromWallet = function (dispatch) {
+    lordOfTheFetch(getActiveAccountApi, [], callbackForGetActiveAccountFromWallet, [dispatch], { dispatch: dispatch });
 }
 
-let openAccounts = function (dispatch, account, save, labels) {
+let openAccounts = function (dispatch, account, save) {
     if (account.type) {
         dispatch(addActiveAccount(account));
-        syncAccount(dispatch, account);
+        // syncAccount(dispatch, account);
         getHistory(dispatch, account);
         //fake open primary
-        lordOfTheFetch(openAccountsApi, ["primary"], callbackForOpenAccounts, [dispatch, save, false, {}], { dispatch: dispatch });
+
+        lordOfTheFetch(openAccountsApi, ["primary"], callbackForOpenAccounts, [dispatch, save, false], { dispatch: dispatch });
     }
     else {
-        lordOfTheFetch(openAccountsApi, [account.account.account_name], callbackForOpenAccounts, [dispatch, save, true, labels], { dispatch: dispatch });
+        lordOfTheFetch(openAccountsApi, [account.account.account_name], callbackForOpenAccounts, [dispatch, save, true], { dispatch: dispatch });
     }
 
 }
@@ -62,6 +65,7 @@ let getHistory = function (dispatch, account) {
 }
 
 let getHistoryOld = function (dispatch, account) {
+
 }
 let getHistoryNew = function (dispatch, account) {
     lordOfTheFetch(getTransactionHistory, [], callbackForGetHistoryNew, [dispatch], { dispatch: dispatch });
@@ -88,20 +92,16 @@ let callbackForGetActiveAccountFromWallet = function (res, dispatch, labels) {
     }
 }
 
-let callbackForOpenAccounts = function (res, dispatch, save, dispatchActiveAccount, labels) {
+let callbackForOpenAccounts = function (res, dispatch, save, dispatchActiveAccount) {
     if (res.status !== 0) {
         dispatch(addError(res.status));
     }
+    let tmp = res.result.info;
+    if (!tmp.hasOwnProperty("label")) { tmp.label = tmp.account_name };
     if (save) {
-        let tmp = res.result.info;
-        tmp.label = tmp.account_name; if (labels.hasOwnProperty(tmp.account_name)) tmp.label = labels[tmp.account_name];
         saveActiveToWallet(dispatch, tmp, dispatchActiveAccount);
     }
     else if (dispatchActiveAccount) {
-        console.log(res);
-        
-        let tmp = res.result.info;
-        tmp.label = tmp.account_name; if (labels.hasOwnProperty(tmp.account_name)) tmp.label = labels[tmp.account_name];
         dispatch(addActiveAccount({ account: tmp, type: 0 }));
         syncAccount(dispatch, { account: tmp, type: 0 });
         getHistory(dispatch, { account: tmp, type: 0 });
@@ -136,10 +136,28 @@ let callbackForSyncAccount = function (res, dispatch, account) {
     else { getHistory(dispatch, account); }
 }
 
+let toggleDaemonModal = function (show) {
+    this.props.dispatch(addDaemonModal(show));
+}
+
+let addDaemonData = function (event, type) {
+    if (type == "host") {
+        let val = event.target.value || DAEMON_HOST;
+        this.props.dispatch(addDaemonHost(val));
+    }
+    else {
+        let val = event.target.value || DAEMON_PORT;
+        this.props.dispatch(addDaemonPort(parseInt(val)));
+    }
+}
+
 
 
 export {
     changeLanguageF,
     logout,
-    getActiveAccountFromWallet
+    getActiveAccountFromWallet,
+    toggleDaemonModal,
+    addDaemonData
+
 }

@@ -79,10 +79,10 @@ class WizardFilepath extends Component {
                                 <Form.Control
                                     required
                                     type="text"
-                                    value={this.props.wizard.data[names[0]]}
+                                    value={this.props.wizard.data[names[0]] || ''}
                                     isValid={is_valid.bind(this, names[0])()}
                                     isInvalid={is_invalid.bind(this, names[0])()}
-                                    // disabled={this.props.type !== "open" && !(this.props.hasOwnProperty("legacy_type") && this.props.legacy_type == "default")}
+                                    readOnly={true}
                                 />
                                 <Form.Control.Feedback type="invalid">{this.props.t("required_field")}</Form.Control.Feedback>
                                 <Button variant="primary" 

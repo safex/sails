@@ -21,18 +21,18 @@ class Contacts extends Component {
 
 
   render() {
-    let cnts=Object.values(this.props.contacts.contacts);
+    let cnts = Object.values(this.props.contacts.contacts);
     return (
       <Container>
         <Row>
           <Col>
-            <AddContact />
+            <AddContact/>
           </Col>
         </Row>
         <br />
         <Row>
           <Col>
-            {cnts.map((x, i) => { let add=(Math.random()*100)/100;return x ? <Row key={`row-${i}`}><Col key={`col-${i}`}><Contact key={`contact-${x.id}-${add}`} contact={cnts[i]} /></Col></Row> : ""; })}
+            {cnts.map((x, i) => { let add = (Math.random() * 100) / 100; return x ? <Row key={`row-${i}`}><Col key={`col-${i}`}><Contact key={`contact-${x.id}-${add}`} contact={cnts[i]} all={cnts} /></Col></Row> : ""; })}
           </Col>
         </Row>
       </Container>

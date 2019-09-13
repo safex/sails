@@ -4,7 +4,9 @@ import {
     ADD_CONTACTS,
     ADD_NEW_CONTACT,
     RESET_NEW_CONTACT,
-    ADD_CONTACT_COUNTER
+    ADD_CONTACT_COUNTER,
+    ADD_CONTACT_ERROR,
+    ADD_CONTACT_TOUCHED
 } from './action.types';
 
 let addContacts = function (contacts) {
@@ -17,7 +19,7 @@ let addContacts = function (contacts) {
 let addContact = function (contact, id) {
     return {
         type: ADD_CONTACT,
-        item: {data:contact, id:id}
+        item: { data: contact, id: id }
     }
 }
 let removeContact = function (contact) {
@@ -44,6 +46,19 @@ let addContactCounter = function (num) {
         item: num
     }
 }
+let addContactTouched = function (touch) {
+    return {
+        type: ADD_CONTACT_TOUCHED,
+        item: touch
+    }
+}
+let addContactError = function (error) {
+    return {
+        type: ADD_CONTACT_ERROR,
+        item: error
+    }
+}
+
 
 export {
     addContacts,
@@ -51,6 +66,8 @@ export {
     removeContact,
     addNewContactData,
     resetNewContactData,
-    addContactCounter
+    addContactCounter,
+    addContactTouched,
+    addContactError
 
 }

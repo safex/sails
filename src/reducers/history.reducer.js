@@ -5,6 +5,7 @@ import {
 let historyReducer = function (state = {}, action) {
     switch (action.type) {
         case ADD_ACCOUNT_HISTORY:
+            console.log(action.item);
             return action.item;
         case RESET_ACCOUNT_HISTORY:
             return {};

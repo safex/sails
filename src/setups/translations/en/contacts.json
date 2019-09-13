@@ -7,5 +7,7 @@
     "send_sft": "Send SFT",
     "update": "Update",
     "delete": "Delete",
-    "reset": "Reset"
+    "reset": "Reset",
+    "double_values": "Address and label can't be repeated!",
+    "required_field": "This field is required"
 }

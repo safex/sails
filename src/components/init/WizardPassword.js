@@ -10,7 +10,7 @@ const mapStateToProps = (state) => {
     };
 };
 
-const handleSubmit = (event, dispatch, history, data, names, component = "open") => {
+const handleSubmit = (event, dispatch, history, data, names, daemon, component = "open") => {
     const form = event.currentTarget;
     if (form.checkValidity() === false) {
         event.preventDefault();
@@ -19,7 +19,7 @@ const handleSubmit = (event, dispatch, history, data, names, component = "open")
     }
     else {
         addWizardData(dispatch, { validated: true });
-        if (component === "open") { wizardNext(dispatch, open, [dispatch, history, data, names]); }
+        if (component === "open") { wizardNext(dispatch, open, [dispatch, history, data, names, daemon]); }
         if (component === "legacy") { wizardNext(dispatch, openLegacy, [dispatch, data, names]); }
 
     }
@@ -70,7 +70,7 @@ class WizardPassword extends Component {
                     {prevs}
                     <Row>
                         <Col>
-                            <Form noValidate validated={this.props.wizard.data.validated} onSubmit={(event) => { handleSubmit(event, this.props.dispatch, this.props.history, this.props.wizard.data, this.props.form_fields, this.props.component) }}>
+                            <Form noValidate validated={this.props.wizard.data.validated} onSubmit={(event) => { handleSubmit(event, this.props.dispatch, this.props.history, this.props.wizard.data, this.props.form_fields, this.props.daemon, this.props.component) }}>
                                 <Form.Row>
                                     <Form.Group as={Col} controlId={names[0]}>
                                         <Form.Label >{this.props.t(names[0])}</Form.Label>

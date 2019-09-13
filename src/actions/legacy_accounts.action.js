@@ -14,7 +14,9 @@ import {
     RESET_LEGACY_BALANCE_PENDING,
     RESET_LEGACY_BTC_BALANCE,
     RESET_LEGACY_BTC_BALANCE_PENDING,
-    RESET_ALL_BALANCES
+    RESET_ALL_BALANCES,
+    REPLACE_LEGACY_KEY,
+    REPLACE_LEGACY_ACCOUNTS
 } from './action.types';
 
 let addLegacyAccount = function (account) {
@@ -116,6 +118,20 @@ let resetAllBalances = function (key) {
     };
 }
 
+let replaceLegacyKey = function (new_key) {
+    return {
+        type: REPLACE_LEGACY_KEY,
+        item: new_key
+    };
+}
+
+let replaceLegacyAccounts = function (accounts) {
+    return {
+        type: REPLACE_LEGACY_ACCOUNTS,
+        item: accounts
+    }
+}
+
 export {
     addLegacyAccount,
     removeLegacyAccount,
@@ -132,5 +148,7 @@ export {
     resetLegacyBTCBalance,
     resetLegacyBalancePending,
     resetLegacyBTCBalancePending,
-    resetAllBalances
+    resetAllBalances,
+    replaceLegacyKey,
+    replaceLegacyAccounts
 }

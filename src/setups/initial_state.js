@@ -5,7 +5,13 @@ let initial_state = {
     active_account: {},
     accounts: {},
     history: [],
-    contacts: { contacts: [], contact_counter: -1, new_contact: { address: "", label: "" } },
+    contacts: {
+        contacts: [],
+        contact_counter: -1,
+        new_contact: { address: "", label: "" },
+        errors: { address: false, label: false, double: false },
+        touched: { address: false, label: false, double: false }
+    },
     legacy_wallet: {},
     wizard: {
         step: 1, data: {
@@ -21,7 +27,9 @@ let initial_state = {
     },
     legacy_accounts: {},
     home_modals: { modal_seeds: false, modal_keys: false, modal_edit: false, modal_file: false, modal_new: false },
-    account_labels: {}
+    account_labels: {},
+    daemon: { host: '127.0.0.1', port: 38001 },
+    active_tab: "home"
 };
 
 export { initial_state }

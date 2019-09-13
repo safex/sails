@@ -1,7 +1,7 @@
 //actions
 import { addWalletExistsStatus } from '../actions/wallet_exists.action.js';
 import { addLegacyWallet } from '../actions/legacy_wallet.action';
-import { resetAllBalances, addLegacyBalance, addLegacyBTCBalance, addLegacyBTCBalancePending } from '../actions/legacy_accounts.action';
+import { resetAllBalances, addLegacyBalance, addLegacyBTCBalance, addLegacyBTCBalancePending, addLegacyAccounts} from '../actions/legacy_accounts.action';
 import * as WizardActions from '../actions/wizard.action';
 import { addActiveAccount } from '../actions/active_account.action';
 import { addError } from '../actions/error.action';
@@ -38,9 +38,11 @@ let setWalletExistsStatus = function (dispatch, status) {
 }
 
 //create wallet actions
-let create = function (dispatch, form, names = ['filepath', 'password'], legacy = null) {
+let create = function (dispatch, form, names = ['filepath', 'password'], daemon, legacy = null) {
+    let daemon_host = daemon.daemon_host || DAEMON_HOST;
+    let daemon_port = daemon.daemon_port || DAEMON_PORT;
     lordOfTheFetch(initApi.createApi,
-        [{ path: form[names[0]], password: form[names[1]], nettype: NET_TYPE, daemon_host: DAEMON_HOST, daemon_port: DAEMON_PORT }],
+        [{ path: form[names[0]], password: form[names[1]], nettype: NET_TYPE, daemon_host: daemon_host, daemon_port: daemon_port }],
         callbackForCreate,
         [dispatch, legacy],
         { "dispatch": dispatch });
@@ -79,9 +81,11 @@ let addLegacyAccountsToWallet = function (dispatch, data) {
 
 
 //open wallet actions
-let open = function (dispatch, history, form, names = ["filepath", "password"]) {
+let open = function (dispatch, history, form, names = ["filepath", "password"], daemon) {
+    let daemon_host = daemon.daemon_host || DAEMON_HOST;
+    let daemon_port = daemon.daemon_port || DAEMON_PORT;
     lordOfTheFetch(initApi.openApi,
-        [{ path: form[names[0]].trim(), password: form[names[1]].trim(), nettype: NET_TYPE, daemon_host: DAEMON_HOST, daemon_port: DAEMON_PORT }],
+        [{ path: form[names[0]].trim(), password: form[names[1]].trim(), nettype: NET_TYPE, daemon_host: daemon_host, daemon_port: daemon_port }],
         callbackForOpen,
         [dispatch, history],
         { "dispatch": dispatch });
@@ -93,7 +97,9 @@ let openLegacy = function (dispatch, form, names = ["legacy_filepath", "legacy_p
         .then((data) => { return decryptContent(data, form[names[1]].trim()) })
         .then((content) => { //
             dispatch(addLegacyWallet(content));
+            dispatch(addLegacyAccounts(content.keys))
             content.keys.forEach(x => {
+
                 dispatch(resetAllBalances(x.public_key));
                 balancesApi.getBalanceApi(x.public_key)
                     .then(processResponse)
@@ -127,8 +133,10 @@ let openLegacy = function (dispatch, form, names = ["legacy_filepath", "legacy_p
 
 //restore
 
-let restore = function (dispatch, form, names) {
-    let args = { path: form[names[0]].trim(), password: form[names[1]].trim(), nettype: NET_TYPE, daemon_host: DAEMON_HOST, daemon_port: DAEMON_PORT };
+let restore = function (dispatch, form, names, daemon) {
+    let daemon_host = daemon.daemon_host || DAEMON_HOST;
+    let daemon_port = daemon.daemon_port || DAEMON_PORT;
+    let args = { path: form[names[0]].trim(), password: form[names[1]].trim(), nettype: NET_TYPE, daemon_host: daemon_host, daemon_port: daemon_port };
     let func = null;
     if (form[names[3]] === "mnemonic") {
         args = { ...args, seed: form[names[4]].trim(), password_mnemonic: "" }
@@ -359,6 +367,7 @@ let initWizardTouched = function (dispatch, data) {
 
 let initLegacyWallet = function (dispatch) {
     dispatch(addLegacyWallet({}));
+    dispatch(addLegacyAccounts([]));
 }
 
 
