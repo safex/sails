@@ -1,10 +1,10 @@
 //actions
-import { addWalletExistsStatus } from '../actions/wallet_exists.action.js';
-import { addLegacyWallet } from '../actions/legacy_wallet.action';
-import { resetAllBalances, addLegacyBalance, addLegacyBTCBalance, addLegacyBTCBalancePending, addLegacyAccounts} from '../actions/legacy_accounts.action';
-import * as WizardActions from '../actions/wizard.action';
-import { addActiveAccount } from '../actions/active_account.action';
-import { addError } from '../actions/error.action';
+import { addWalletExistsStatus } from '../redux/actions/wallet_exists.action.js';
+import { addLegacyWallet } from '../redux/actions/legacy_wallet.action';
+import { resetAllBalances, addLegacyBalance, addLegacyBTCBalance, addLegacyBTCBalancePending, addLegacyAccounts} from '../redux/actions/legacy_accounts.action';
+import * as WizardActions from '../redux/actions/wizard.action';
+import { addActiveAccount } from '../redux/actions/active_account.action';
+import { addError } from '../redux/actions/error.action';
 
 //libs
 import { checkFileForFlags, readFilePromise, decryptContent } from "../libs/legacy_wallet";

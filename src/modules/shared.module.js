@@ -1,10 +1,10 @@
 //actions
-import { changeLanguage } from '../actions/language.action';
-import { addActiveAccount } from '../actions/active_account.action';
-import { addError } from '../actions/error.action';
-import { resetApp } from '../actions/root.action';
-import { addAccountHistory } from '../actions/history.action';
-import { addDaemonHost, addDaemonPort, addDaemonModal } from '../actions/daemon.action';
+import { changeLanguage } from '../redux/actions/language.action';
+import { addActiveAccount } from '../redux/actions/active_account.action';
+import { addError } from '../redux/actions/error.action';
+import { resetApp } from '../redux/actions/root.action';
+import { addAccountHistory } from '../redux/actions/history.action';
+import { addDaemonHost, addDaemonPort, addDaemonModal } from '../redux/actions/daemon.action';
 
 
 //api

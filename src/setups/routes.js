@@ -1,0 +1,17 @@
+export const HOME = "/w/home";
+export const SFX = "/w/sfx/:address?";
+export const SFT = "/w/sft/:address?";
+export const SFX_ONLY = "/w/sfx";
+export const SFT_ONLY = "/w/sft";
+export const CONTACTS = "/w/contacts";
+export const SETTINGS = "/w/settings";
+export const MIGRATIONS = "/w/migrations";
+export const BITCOIN = "/w/bitcoin";
+export const INIT = "/";
+export const CREATE = "/create";
+export const OPEN = "/open";
+export const RESTORE = "/restore";
+export const LEGACY = "/legacy/:legacy_type";
+export const LEGACY_DEFAULT = "/legacy/default";
+export const LEGACY_INIT = "/legacy/init";
+export const WALLET = "/w/:page";

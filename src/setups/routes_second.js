@@ -1,5 +1,6 @@
 import { Route } from "react-router-dom"
 import React from 'react';
+import * as R from './routes';
 
 import Home from '../components/home/Home';
 import SFX from '../components/sfx/SFX';
@@ -11,13 +12,13 @@ import Bitcoin from '../components/bitcoin/Bitcoin';
 
 const routes_second = (
     <div>
-        <Route exact path="/w/home" component={Home} />
-        <Route exact path="/w/sfx/:address?" component={SFX} />
-        <Route exact path="/w/sft/:address?" component={SFT} />
-        <Route exact path="/w/contacts" component={Contacts} />
-        <Route exact path="/w/settings" component={Settings} />
-        <Route exact path="/w/migrations" component={Migration} />
-        <Route exact path="/w/bitcoin" component={Bitcoin} />
+        <Route exact path={R.HOME} component={Home} />
+        <Route exact path={R.SFX} component={SFX} />
+        <Route exact path={R.SFT} component={SFT} />
+        <Route exact path={R.CONTACTS} component={Contacts} />
+        <Route exact path={R.SETTINGS} component={Settings} />
+        <Route exact path={R.MIGRATIONS} component={Migration} />
+        <Route exact path={R.BITCOIN} component={Bitcoin} />
     </div>
 );
 

@@ -1,5 +1,5 @@
 import { processResponse, jsonResponse } from './response';
-import { addError } from '../actions/error.action';
+import { addError } from '../redux/actions/error.action';
 
 let lordOfTheFetch = function (func, func_data = [], callback = null, callback_data = null, additional = null) {
     func(...func_data)
