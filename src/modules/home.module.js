@@ -10,7 +10,8 @@ import { addAccountLabels } from '../redux/actions/account_labels.action';
 import { lordOfTheFetch } from '../libs/one_fetch_to_rule_them_all';
 
 let { dialog } = window.require("electron").remote;
-const bitcoin = window.require('bitcoinjs-lib');
+const bitcoin = null;
+// const bitcoin = window.require('bitcoinjs-lib');
 
 let getAccounts = function (dispatch) {
     lordOfTheFetch(accountsApi.getAccountsInfoApi, [], callbackForGetAccounts, [dispatch], { dispatch: dispatch });

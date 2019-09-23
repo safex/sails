@@ -4,7 +4,8 @@ import { withTranslation } from 'react-i18next';
 import { initWizardState, wizardBack, initLegacyWallet } from '../../modules/init.module';
 import { WizardData, WizardFilepath, WizardConfirmPassword, WizardReview, WizardPassword, WizardLegacy } from './index';
 import { Container, Alert, Form, Row, Col, ProgressBar } from 'react-bootstrap';
-import { tsImportEqualsDeclaration } from '@babel/types';
+import { setError, setTouched, setValidation, resetData, handleChange, handleSelectTab } from '../../libs/wizard';
+import { validateKeys, validateMnemonic } from '../../libs/validators';
 
 const mapStateToProps = (state) => {
     return {
@@ -24,7 +25,7 @@ class Wizard extends Component {
                 create_password: "",
                 create_confirm_password: "",
                 restore_type: "mnemonic",
-                restore_mnemonic: "",
+                restore_mnemonic: "test",
                 restore_address: "",
                 restore_view: "",
                 restore_spend: ""
@@ -86,33 +87,20 @@ class Wizard extends Component {
             legacy: {}
 
         }
-        this.setTouched = this.setTouched.bind(this);
-        this.setError = this.setError.bind(this);
-        this.setValidation = this.setValidation.bind(this);
-        this.resetData = this.resetData.bind(this);
+        this.setTouched = setTouched.bind(this);
+        this.setError = setError.bind(this);
+        this.setValidation = setValidation.bind(this);
+        this.resetData = resetData.bind(this);
+        this.handleChange = handleChange.bind(this);
+        this.handleSelectTab=handleSelectTab.bind(this);
 
     }
 
-    setError(prop, value) {
-        let state = { ...this.state.errors };
-        state[prop] = value;
-        this.setState({ errors: state });
 
-    }
-    setTouched(prop, value) {
-        let state = { ...this.state.touched };
-        state[prop] = value;
-        this.setState({ touched: state });
-    }
-    setValidation(value) {
-        this.setState({ validated: value });
-    }
 
-    resetData() {
-        this.setState(this.initialState);
-    }
     render() {
-
+        console.log(this.state);
+        const rand=(Math.random() * 100) / 100;
         return (
             <>
                 <Row>
@@ -122,7 +110,7 @@ class Wizard extends Component {
                 </Row>
                 <Form noValidate validated={this.state.validated} onSubmit={this.additional[this.props.component].handleSubmit}>
                     <WizardData
-                        key={`${this.props.component}-wizard-data`}
+                        key={`${this.props.component}-wizard-data-${rand}`}
                         daemon={this.props.daemon}
                         step={this.state.step}
                         component={this.props.component}
@@ -139,8 +127,10 @@ class Wizard extends Component {
                         }
                         values={
                             this.additional[this.props.component].hasOwnProperty("data") ?
-                            (this.additional[this.props.component].data.hasOwnProperty('values') ? this.additional[this.props.component].data.values: {}) : {}
+                                (this.additional[this.props.component].data.hasOwnProperty('values') ? this.additional[this.props.component].data.values : {}) : {}
                         }
+                        handleChange={this.handleChange}
+                        handleSelectTab={this.handleSelectTab}
                     />
 
                     <WizardFilepath
