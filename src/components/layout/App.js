@@ -10,7 +10,24 @@ class App extends Component {
 
 
   render() {
-    return <div><Container><Row><Col><LanguageMenu /></Col><Col><DaemonSetting /></Col></Row>  {routes_main}</Container></div>;
+    return (
+      <Container>
+        <Row>
+          <Col>
+            <LanguageMenu />
+          </Col>
+          <Col>
+            <DaemonSetting />
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            {routes_main}
+          </Col>
+        </Row>
+
+      </Container>
+    );
   }
 }
 export default withTranslation()(connect()(App));

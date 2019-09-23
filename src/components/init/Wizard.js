@@ -7,80 +7,99 @@ import { Container, Alert } from 'react-bootstrap';
 
 const mapStateToProps = (state) => {
     return {
-        wizard: state.wizard,
         daemon: state.daemon
     };
 };
 
 class Wizard extends Component {
-    componentWillMount() {
-        //component value create/legacy/open/restore
-        initWizardState(this.props.dispatch, this.props.component);
+    constructor(props) {
+        super(props);
+        this.state = {
+            step: 1,
+            data: {
+                restore_filepath: '',
+                restore_password: '',
+                create_filepath: '',
+                create_password: '',
+                create_confirm_password: ''
+            },
+            errors: {},
+            touched: {},
+            validated: false
+        }
+        this.initialState = this.state;
+        this.additional = {
+            restore: {
+                data: {
+                    prop_names: {
+                        "restore_type": "mnemonic",
+                        "restore_mnemonic": "",
+                        "restore_address": "",
+                        "restore_view": "",
+                        "restore_spend": ""
+                    },
+                    back: () => { wizardBack(this.props.dispatch, ["restore_type", "restore_mnemonic", "restore_address", "restore_view", "restore_spend"], (history) => { history.push('/'); }, [this.props.history]) }
+                },
+                filepath:{}
+
+            },
+            open: [],
+            create: [],
+            legacy: []
+        }
 
     }
     render() {
+        <WizardData
+            daemon={this.props.daemon}
+            step={this.props.step}
+            key={`${this.props.component}-wizard-data`}
+            component={this.props.component}
+            history={this.props.history}
+            prop_names={
+                this.props.additional[this.props.component].hasOwnProperty('prop_names')?this.props.additional[this.props.component].prop_names:{}
+            }
+            back={
+                this.props.additional[this.props.component].hasOwnProperty('back')?this.props.additional[this.props.component].back:()=>{}
+            } />
+
+            <WizardFilepath
+                daemon={this.props.daemon}
+                key={`${this.props.component}-wizard-filepath-create`}
+                component={this.props.component}
+                history={this.props.history}
+                prop_names={{ "create_filepath": "" }}
+                type="create"
+                options={{
+                    title: this.props.t("choose_filepath"),
+                    filters: [{
+                        name: 'Sails Wallet',
+                        extensions: ['sails']
+                    }]
+                }}
+                back={() => { wizardBack(this.props.dispatch, ["create_filepath"]) }} />
+
+            <WizardConfirmPassword
+                daemon={this.props.daemon}
+                key={`${this.props.component}-wizard-confirm-password`}
+                component={this.props.component}
+                history={this.props.history}
+                prop_names={{ "create_password": "", "create_confirm_password": "" }}
+                prev_data={["create_filepath"]}
+                form_fields={["create_filepath", "create_password", "create_confirm_password", "restore_type", "restore_mnemonic", "restore_address", "restore_view", "restore_spend"]}
+                back={() => { wizardBack(this.props.dispatch, ["create_password", "create_confirm_password"]) }} />
+
+            <WizardReview
+                daemon={this.props.daemon}
+                key={`${this.props.component}-wizard-review`}
+                component={this.props.component}
+                history={this.props.history}
+                form_fields={["create_filepath", "create_password"]}
+                prop_names={["create_password", "create_confirm_password"]} />
+
         var component;
         switch (this.props.component) {
-            case 'restore':
-                switch (this.props.wizard.step) {
-                    case 1:
-                        component = <WizardData
-                            daemon={this.props.daemon}
-                            key="restore-wizard-data"
-                            component="restore"
-                            history={this.props.history}
-                            prop_names={{ "restore_type": "mnemonic", "restore_mnemonic": "", "restore_address": "", "restore_view": "", "restore_spend": "" }}
-                            back={() => { wizardBack(this.props.dispatch, ["restore_type", "restore_mnemonic", "restore_address", "restore_view", "restore_spend"], (history) => { history.push('/'); }, [this.props.history]) }} />;
-                        break;
-                    case 2:
-                        component = <WizardFilepath
-                            daemon={this.props.daemon}
-                            key="restore-wizard-filepath"
-                            component="restore"
-                            history={this.props.history}
-                            prop_names={{ "create_filepath": "" }}
-                            type="create"
-                            options={{
-                                title: this.props.t("choose_filepath"),
-                                filters: [{
-                                    name: 'Sails Wallet',
-                                    extensions: ['sails']
-                                }]
-                            }}
-                            back={() => { wizardBack(this.props.dispatch, ["create_filepath"]) }} />;
-                        break;
-                    case 3:
-                        component = <WizardConfirmPassword
-                            daemon={this.props.daemon}
-                            key="restore-wizard-confirm-password"
-                            component="restore"
-                            history={this.props.history}
-                            prop_names={{ "create_password": "", "create_confirm_password": "" }}
-                            prev_data={["create_filepath"]}
-                            form_fields={["create_filepath", "create_password", "create_confirm_password", "restore_type", "restore_mnemonic", "restore_address", "restore_view", "restore_spend"]}
-                            back={() => { wizardBack(this.props.dispatch, ["create_password", "create_confirm_password"]) }} />;
-                        break;
-                    case 4:
-                        component = <WizardReview
-                            daemon={this.props.daemon}
-                            key="restore-wizard-review"
-                            component="restore"
-                            history={this.props.history}
-                            form_fields={["create_filepath", "create_password"]}
-                            prop_names={["create_password", "create_confirm_password"]} />;
-                        break;
-                    default:
-                        component = <Alert
-                            key="restore-wizard-alert"
-                            variant="danger"
-                            history={this.props.history}
-                            dismissible >
-                            <Alert.Heading>Oh snap! You got an error!</Alert.Heading>
-                            <p> Report it to the Safex wallet team :D</p>
-                        </Alert>;
-                        break;
-                }
-                break;
+
             case 'create':
                 switch (this.props.wizard.step) {
                     case 1:

@@ -10,13 +10,14 @@ class Wallet extends Component {
 
 
   render() {
-    return <div>
-      <TopMenu />
-      <ErrorResponse/>
-      {routes_second}
-      
-      <Footer />
-    </div>;
+    return (
+      <>
+        <TopMenu />
+        <ErrorResponse />
+        {routes_second}
+        <Footer />
+      </>
+    );
   }
 }
 export default withTranslation()(connect()(Wallet));
