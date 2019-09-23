@@ -97,6 +97,9 @@ let callbackForOpenAccounts = function (res, dispatch, save, dispatchActiveAccou
         dispatch(addError(res.status));
     }
     let tmp = res.result.info;
+
+    //ovde je greska
+    //ovde mora da se izvuce labela
     if (!tmp.hasOwnProperty("label")) { tmp.label = tmp.account_name };
     if (save) {
         saveActiveToWallet(dispatch, tmp, dispatchActiveAccount);
@@ -141,7 +144,7 @@ let toggleDaemonModal = function (show) {
 }
 
 let addDaemonData = function (event, type) {
-    if (type == "host") {
+    if (type === "host") {
         let val = event.target.value || DAEMON_HOST;
         this.props.dispatch(addDaemonHost(val));
     }

@@ -32,7 +32,7 @@ class SFX extends Component {
   }
   render() {
     console.log(this.props.contacts);
-    if (this.props.active_account.type == 1) {
+    if (this.props.active_account.type === 1) {
       return (
         <Row>
           <Col>

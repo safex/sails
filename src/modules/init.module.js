@@ -1,7 +1,7 @@
 //actions
 import { addWalletExistsStatus } from '../actions/wallet_exists.action.js';
 import { addLegacyWallet } from '../actions/legacy_wallet.action';
-import { resetAllBalances, addLegacyBalance, addLegacyBTCBalance, addLegacyBTCBalancePending, addLegacyAccounts} from '../actions/legacy_accounts.action';
+import { resetAllBalances, addLegacyBalance, addLegacyBTCBalance, addLegacyBTCBalancePending, addLegacyAccounts } from '../actions/legacy_accounts.action';
 import * as WizardActions from '../actions/wizard.action';
 import { addActiveAccount } from '../actions/active_account.action';
 import { addError } from '../actions/error.action';
@@ -202,9 +202,9 @@ let callbackForSetActiveAccount = function (res, dispatch, data, legacy) {
         if (legacy && legacy.hasOwnProperty("keys") && legacy.keys.length > 0) {
             let legacies = {};
             legacy.keys.forEach((e, i) => {
-                legacies["wallet_legacy" + i] = { account: legacy.keys[i], type: 1 };
-                legacies["wallet_legacy" + i].account["address"] = e.public_key;
-                legacies["wallet_legacy" + i].account["account_name"] = "wallet_legacy" + i;
+                legacies["wallet_legacy_" + i] = { account: legacy.keys[i], type: 1 };
+                legacies["wallet_legacy_" + i].account["address"] = e.public_key;
+                legacies["wallet_legacy_" + i].account["account_name"] = "wallet_legacy_" + i;
 
 
             });

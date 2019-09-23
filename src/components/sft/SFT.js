@@ -31,7 +31,7 @@ class SFT extends Component {
 
   }
   render() {
-    if (this.props.active_account.type == 1) {
+    if (this.props.active_account.type === 1) {
       return (
         <Row>
           <Col>

@@ -80,7 +80,7 @@ let win;
 
 function initAll() {
   createWindow();
-  createChild(2905);
+ // createChild(2905);
 }
 
 

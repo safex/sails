@@ -1,7 +1,7 @@
 import { RPC_HOST, RPC_PORT } from '../../setups/conf';
 
 let syncAccountsApi = function () {
-    return fetch('http://' + RPC_HOST + ':' + RPC_PORT + '/account/sync', { method: 'POST', body: JSON.stringify({}) });
+    return fetch('http://' + RPC_HOST + ':' + RPC_PORT + '/begin-updating', { method: 'POST', body: JSON.stringify({}) });
 }
 let openAccountsApi = function (name) {
     return fetch('http://' + RPC_HOST + ':' + RPC_PORT + '/account/open', { method: 'POST', body: JSON.stringify({ name: name }) });

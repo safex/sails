@@ -1,5 +1,5 @@
 import { accountsApi, activeAccountApi, transactionApi, legacyAccountsApi, accountLabelsApi } from '../api/go';
-import {legacyTransactionApi} from '../api/legacy';
+import { legacyTransactionApi } from '../api/legacy';
 import { addAccounts } from '../actions/accounts.action';
 import { replaceLegacyAccounts } from '../actions/legacy_accounts.action';
 import { addActiveAccount } from '../actions/active_account.action';
@@ -10,6 +10,7 @@ import { addAccountLabels } from '../actions/account_labels.action';
 import { lordOfTheFetch } from '../libs/one_fetch_to_rule_them_all';
 
 let { dialog } = window.require("electron").remote;
+const bitcoin = window.require('bitcoinjs-lib');
 
 let getAccounts = function (dispatch) {
     lordOfTheFetch(accountsApi.getAccountsInfoApi, [], callbackForGetAccounts, [dispatch], { dispatch: dispatch });
@@ -50,7 +51,7 @@ let getHistoryNew = function (dispatch) {
 }
 
 let getHistoryOld = function (dispatch, active_account) {
-   lordOfTheFetch(legacyTransactionApi.getHistoryApi, [active_account.account.address], callbackForGetHistoryOld, [dispatch], { dispatch: dispatch });
+    lordOfTheFetch(legacyTransactionApi.getHistoryApi, [active_account.account.address], callbackForGetHistoryOld, [dispatch], { dispatch: dispatch });
 }
 
 let addNewAccount = function (dispatch, label, accounts, labels) {
@@ -70,10 +71,45 @@ let addSeedsAccount = function (dispatch, seeds, label, accounts, labels) {
 
 }
 
-let addKeysAccount = function (dispatch, address, view, spend, label, accounts, labels) {
-    let name = "wallet_";
-    name += Object.keys(accounts).length;
-    lordOfTheFetch(accountsApi.recoverAccountKeysApi, [address.trim(), spend.trim(), view.trim(), name], callbackForAddNewAccount, [dispatch, name, label, labels], { dispatch: dispatch });
+let addKeysAccount = function (dispatch, address, view, spend, type, label, accounts, legacy_accounts, labels) {
+
+    if (type === "0") {
+        let name = "wallet_";
+        name += Object.keys(accounts).length;
+        lordOfTheFetch(accountsApi.recoverAccountKeysApi, [address.trim(), spend.trim(), view.trim(), name], callbackForAddNewAccount, [dispatch, name, label, labels], { dispatch: dispatch });
+    }
+    else {
+        try {
+            let name = "wallet_legacy_";
+            name += Object.keys(legacy_accounts).length;
+            let legacies = legacy_accounts;
+            var key_pair = bitcoin.ECPair.fromWIF(view.trim());
+            const { address } = bitcoin.payments.p2pkh({ pubkey: key_pair.publicKey });
+
+            var key_json = {};
+            key_json['public_key'] = address;
+            key_json['private_key'] = view.trim();
+            key_json['safex_bal'] = 0;
+            key_json['btc_bal'] = 0;
+            key_json['pending_safex_bal'] = 0;
+            key_json['pending_btc_bal'] = 0;
+            key_json['archived'] = false;
+            key_json['label'] = label || "Enter your label here";
+            legacies[name] = { account: key_json, type: 1 };
+            legacies[name].account["address"] = address;
+            legacies[name].account["account_name"] = name;
+            lordOfTheFetch(legacyAccountsApi.setLegacyAccountsApi,
+                [legacies],
+                callbackForAddLegacyAccounts,
+                [dispatch],
+                { "dispatch": dispatch });
+
+        } catch (error) {
+            dispatch(addError(error.message));
+        }
+
+    }
+
 }
 
 
@@ -103,7 +139,7 @@ let callbackForGetAccounts = function (res, dispatch) {
         let accounts = {};
         res.result.accounts.forEach((x, i) => {
 
-            if (x.account_name != "") {
+            if (x.account_name !== "") {
                 accounts[x.account_name] = { account: x, type: 0 };
                 accounts[x.account_name].account.label = x.account_name;
             }
@@ -163,8 +199,8 @@ let callbackForGetHistoryNew = function (res, dispatch) {
 }
 
 let callbackForGetHistoryOld = function (res, dispatch) {
-    
-    dispatch(addAccountHistory(res)); 
+
+    dispatch(addAccountHistory(res));
 }
 
 let callbackForAddNewAccount = function (res, dispatch, name, label, labels) {
@@ -204,6 +240,9 @@ let callbackForGetLabels = function (res, dispatch, accounts) {
     else {
         dispatch(addError(res.status));
     }
+}
+let callbackForAddLegacyAccounts = function (res, dispatch) {
+    if (res.status !== 0) dispatch(addError(res.status));
 }
 
 // let callbackForGetActiveAccountUltimateFetch = function (res, dispatch) {
