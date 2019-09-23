@@ -3,7 +3,8 @@ import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import { initWizardState, wizardBack, initLegacyWallet } from '../../modules/init.module';
 import { WizardData, WizardFilepath, WizardConfirmPassword, WizardReview, WizardPassword, WizardLegacy } from './index';
-import { Container, Alert } from 'react-bootstrap';
+import { Container, Alert, Form, Row, Col, ProgressBar } from 'react-bootstrap';
+import { tsImportEqualsDeclaration } from '@babel/types';
 
 const mapStateToProps = (state) => {
     return {
@@ -17,279 +18,170 @@ class Wizard extends Component {
         this.state = {
             step: 1,
             data: {
-                restore_filepath: '',
-                restore_password: '',
-                create_filepath: '',
-                create_password: '',
-                create_confirm_password: ''
+                restore_filepath: "",
+                restore_password: "",
+                create_filepath: "",
+                create_password: "",
+                create_confirm_password: "",
+                restore_type: "mnemonic",
+                restore_mnemonic: "",
+                restore_address: "",
+                restore_view: "",
+                restore_spend: ""
             },
-            errors: {},
-            touched: {},
+            errors: {
+                restore_filepath: false,
+                restore_password: false,
+                create_filepath: false,
+                create_password: false,
+                create_confirm_password: false,
+                restore_mnemonic: false,
+                restore_address: false,
+                restore_view: false,
+                restore_spend: false
+            },
+            touched: {
+                restore_filepath: false,
+                restore_password: false,
+                create_filepath: false,
+                create_password: false,
+                create_confirm_password: false,
+                restore_mnemonic: false,
+                restore_address: false,
+                restore_view: false,
+                restore_spend: false
+            },
             validated: false
         }
         this.initialState = this.state;
         this.additional = {
             restore: {
+                steps: 4,
                 data: {
-                    prop_names: {
-                        "restore_type": "mnemonic",
-                        "restore_mnemonic": "",
-                        "restore_address": "",
-                        "restore_view": "",
-                        "restore_spend": ""
+                    values: {
+                        "restore_type": this.state.data.restore_type,
+                        "restore_mnemonic": this.state.data.restore_mnemonic,
+                        "restore_address": this.state.data.restore_address,
+                        "restore_view": this.state.data.restore_view,
+                        "restore_spend": this.state.data.restore_spend
                     },
+                    prop_names: ["restore_type", "restore_mnemonic", "restore_address", "restore_view", "restore_spend"],
                     back: () => { wizardBack(this.props.dispatch, ["restore_type", "restore_mnemonic", "restore_address", "restore_view", "restore_spend"], (history) => { history.push('/'); }, [this.props.history]) }
                 },
-                filepath:{}
+                filepath_create: {
+                    prop_names: [],
+                    options: {
+                        title: this.props.t("choose_filepath"),
+                        filters: [{
+                            name: 'Sails Wallet',
+                            extensions: ['sails']
+                        }]
+                    },
+                    back: () => { wizardBack(this.props.dispatch, ["create_filepath"]) }
+                }
 
             },
-            open: [],
-            create: [],
-            legacy: []
+            open: {},
+            create: {},
+            legacy: {}
+
         }
+        this.setTouched = this.setTouched.bind(this);
+        this.setError = this.setError.bind(this);
+        this.setValidation = this.setValidation.bind(this);
+        this.resetData = this.resetData.bind(this);
 
     }
+
+    setError(prop, value) {
+        let state = { ...this.state.errors };
+        state[prop] = value;
+        this.setState({ errors: state });
+
+    }
+    setTouched(prop, value) {
+        let state = { ...this.state.touched };
+        state[prop] = value;
+        this.setState({ touched: state });
+    }
+    setValidation(value) {
+        this.setState({ validated: value });
+    }
+
+    resetData() {
+        this.setState(this.initialState);
+    }
     render() {
-        <WizardData
-            daemon={this.props.daemon}
-            step={this.props.step}
-            key={`${this.props.component}-wizard-data`}
-            component={this.props.component}
-            history={this.props.history}
-            prop_names={
-                this.props.additional[this.props.component].hasOwnProperty('prop_names')?this.props.additional[this.props.component].prop_names:{}
-            }
-            back={
-                this.props.additional[this.props.component].hasOwnProperty('back')?this.props.additional[this.props.component].back:()=>{}
-            } />
-
-            <WizardFilepath
-                daemon={this.props.daemon}
-                key={`${this.props.component}-wizard-filepath-create`}
-                component={this.props.component}
-                history={this.props.history}
-                prop_names={{ "create_filepath": "" }}
-                type="create"
-                options={{
-                    title: this.props.t("choose_filepath"),
-                    filters: [{
-                        name: 'Sails Wallet',
-                        extensions: ['sails']
-                    }]
-                }}
-                back={() => { wizardBack(this.props.dispatch, ["create_filepath"]) }} />
-
-            <WizardConfirmPassword
-                daemon={this.props.daemon}
-                key={`${this.props.component}-wizard-confirm-password`}
-                component={this.props.component}
-                history={this.props.history}
-                prop_names={{ "create_password": "", "create_confirm_password": "" }}
-                prev_data={["create_filepath"]}
-                form_fields={["create_filepath", "create_password", "create_confirm_password", "restore_type", "restore_mnemonic", "restore_address", "restore_view", "restore_spend"]}
-                back={() => { wizardBack(this.props.dispatch, ["create_password", "create_confirm_password"]) }} />
-
-            <WizardReview
-                daemon={this.props.daemon}
-                key={`${this.props.component}-wizard-review`}
-                component={this.props.component}
-                history={this.props.history}
-                form_fields={["create_filepath", "create_password"]}
-                prop_names={["create_password", "create_confirm_password"]} />
-
-        var component;
-        switch (this.props.component) {
-
-            case 'create':
-                switch (this.props.wizard.step) {
-                    case 1:
-                        component = <WizardFilepath
-                            daemon={this.props.daemon}
-                            key="create-wizard-filepath"
-                            component="create"
-                            history={this.props.history}
-                            prop_names={{ "create_filepath": "" }}
-                            type="create"
-                            options={{
-                                title: this.props.t("choose_filepath"),
-                                filters: [{
-                                    name: 'Sails Wallet',
-                                    extensions: ['sails']
-                                }]
-                            }}
-                            back={() => { wizardBack(this.props.dispatch, ["create_filepath"], (history) => { history.push('/'); }, [this.props.history]) }} />;
-                        break;
-                    case 2:
-                        component = <WizardConfirmPassword
-                            daemon={this.props.daemon}
-                            key="create-wizard-confirm-password"
-                            component="create"
-                            history={this.props.history}
-                            prop_names={{ "create_password": "", "create_confirm_password": "" }}
-                            prev_data={["create_filepath"]}
-                            form_fields={["create_filepath", "create_password", "create_confirm_password"]}
-                            back={() => { wizardBack(this.props.dispatch, ["create_password", "create_confirm_password"]) }} />;
-                        break;
-                    case 3:
-                        component = <WizardReview
-                            daemon={this.props.daemon}
-                            key="create-wizard-review"
-                            component="create"
-                            history={this.props.history}
-                            form_fields={["create_filepath", "create_password"]}
-                            prop_names={["create_password", "create_confirm_password"]} />;
-                        break;
-                    default:
-                        component = <Alert
-                            key="create-wizard-alert"
-                            variant="danger"
-                            history={this.props.history}
-                            dismissible>
-                            <Alert.Heading>Oh snap! You got an error!</Alert.Heading>
-                            <p> Report it to the Safex wallet team :D</p>
-                        </Alert>;
-                        break;
-                }
-                break;
-            case 'open':
-                switch (this.props.wizard.step) {
-                    case 1:
-                        component = <WizardFilepath
-                            daemon={this.props.daemon}
-                            key="open-wizard-filepath"
-                            component="open"
-                            history={this.props.history}
-                            prop_names={{ "open_filepath": "" }}
-                            type="open"
-                            options={{
-                                title: this.props.t("choose_filepath"),
-                                filters: [{
-                                    name: 'Sails Wallet',
-                                    extensions: ['sails']
-                                }]
-                            }}
-                            back={() => { wizardBack(this.props.dispatch, ["open_filepath"], (history) => { history.push('/'); }, [this.props.history]) }} />;
-                        break;
-                    case 2:
-                        component = <WizardPassword
-                            daemon={this.props.daemon}
-                            key="open-wizard-password"
-                            component="open"
-                            history={this.props.history}
-                            prop_names={{ "open_password": "" }}
-                            prev_data={["open_filepath"]}
-                            form_fields={["open_filepath", "open_password"]}
-                            back={() => { wizardBack(this.props.dispatch, ["open_password"]) }} />;
-                        break;
-                    default:
-                        component = <Alert
-                            key="open-wizard-alert"
-                            variant="danger"
-                            history={this.props.history}
-                            dismissible>
-                            <Alert.Heading>Oh snap! You got an error!</Alert.Heading>
-                            <p> Report it to the Safex wallet team :D</p>
-                        </Alert>;
-                        break;
-                }
-                break;
-            case 'legacy':
-                switch (this.props.wizard.step) {
-                    case 1:
-                        component = <WizardFilepath
-                            daemon={this.props.daemon}
-                            key="legacy-wizard-filepath-open"
-                            legacy_type={this.props.legacy_type}
-                            component="legacy"
-                            history={this.props.history}
-                            prop_names={{ "open_filepath": "" }}
-                            type="open"
-                            options={{
-                                title: this.props.t("choose_filepath"),
-                                filters: [{
-                                    name: 'V7 Wallet',
-                                    extensions: ['dat']
-                                }]
-                            }}
-                            back={() => { wizardBack(this.props.dispatch, ["open_filepath"], (history) => { history.push('/'); }, [this.props.history]) }} />;
-                        break;
-                    case 2:
-                        component = <WizardPassword
-                            daemon={this.props.daemon}
-                            key="legacy-wizard-password"
-                            component="legacy"
-                            history={this.props.history}
-                            prop_names={{ "open_password": "" }}
-                            prev_data={["open_filepath"]}
-                            form_fields={["open_filepath", "open_password"]}
-                            back={() => { wizardBack(this.props.dispatch, ["open_password"]) }} />;
-                        break;
-                    case 3:
-                        component = <WizardLegacy
-                            daemon={this.props.daemon}
-                            key="legacy-wizard-legacy"
-                            component="legacy"
-                            history={this.props.history}
-                            back={() => { wizardBack(this.props.dispatch, [], (dispatch) => { initLegacyWallet(dispatch); }, [this.props.dispatch]) }} />;
-                        break;
-                    case 4:
-                        component = <WizardFilepath
-                            daemon={this.props.daemon}
-                            key="legacy-wizard-filepath-create"
-                            legacy_type={this.props.legacy_type}
-                            component="legacy"
-                            history={this.props.history}
-                            prop_names={{ "create_filepath": "" }}
-                            type="create"
-                            options={{
-                                title: this.props.t("choose_filepath"),
-                                filters: [{
-                                    name: 'Sails Wallet',
-                                    extensions: ['sails']
-                                }]
-                            }}
-                            back={() => { wizardBack(this.props.dispatch, ["create_filepath"]) }} />;
-                        break;
-                    case 5:
-                        component = <WizardConfirmPassword
-                            daemon={this.props.daemon}
-                            key="legacy-wizard-confirm-password"
-                            component="legacy"
-                            history={this.props.history}
-                            prop_names={{ "create_password": "", "create_confirm_password": "" }}
-                            prev_data={["create_filepath"]}
-                            form_fields={["create_filepath", "create_password", "create_confirm_password"]}
-                            back={() => { wizardBack(this.props.dispatch, ["create_password", "create_confirm_password"]) }} />;
-                        break;
-                    case 6:
-                        component = <WizardReview
-                            daemon={this.props.daemon}
-                            key="legacy-wizard-review"
-                            component="legacy"
-                            history={this.props.history}
-                            form_fields={["create_filepath", "create_password"]}
-                            prop_names={["create_password", "create_confirm_password"]} />;
-                        break;
-                    default:
-                        component = <Alert
-                            key="legacy-wizard-aler"
-                            variant="danger"
-                            history={this.props.history}
-                            dismissible>
-                            <Alert.Heading>Oh snap! You got an error!</Alert.Heading>
-                            <p> Report it to the Safex wallet team :D</p>
-                        </Alert>;
-                        break;
-                }
-                break;
-            default:
-                break;
-        }
 
         return (
-            <Container>
-                {component}
-            </Container>
+            <>
+                <Row>
+                    <Col>
+                        <ProgressBar variant="info" now={this.state.step * (100.00 / this.additional[this.props.component].steps)} />
+                    </Col>
+                </Row>
+                <Form noValidate validated={this.state.validated} onSubmit={this.additional[this.props.component].handleSubmit}>
+                    <WizardData
+                        key={`${this.props.component}-wizard-data`}
+                        daemon={this.props.daemon}
+                        step={this.state.step}
+                        component={this.props.component}
+                        history={this.props.history}
+                        setError={this.setError}
+                        setTouched={this.setTouched}
+                        prop_names={
+                            this.additional[this.props.component].hasOwnProperty("data") ?
+                                (this.additional[this.props.component].data.hasOwnProperty('prop_names') ? this.additional[this.props.component].data.prop_names : []) : []
+                        }
+                        back={
+                            this.additional[this.props.component].hasOwnProperty("data") ?
+                                (this.additional[this.props.component].data.hasOwnProperty('back') ? this.additional[this.props.component].data.back : "") : ""
+                        }
+                        values={
+                            this.additional[this.props.component].hasOwnProperty("data") ?
+                            (this.additional[this.props.component].data.hasOwnProperty('values') ? this.additional[this.props.component].data.values: {}) : {}
+                        }
+                    />
+
+                    <WizardFilepath
+                        daemon={this.props.daemon}
+                        step={this.state.step}
+                        key={`${this.props.component}-wizard-filepath-create`}
+                        component={this.props.component}
+                        history={this.props.history}
+                        prop_names={
+                            this.additional[this.props.component].hasOwnProperty("filepath_create") ?
+                                (this.additional[this.props.component].filepath_create.hasOwnProperty('prop_names') ? this.additional[this.props.component].filepath_create.prop_names : []) : []
+                        }
+                        type="create"
+                        options={
+                            this.additional[this.props.component].hasOwnProperty("filepath_create") ?
+                                (this.additional[this.props.component].filepath_create.hasOwnProperty('options') ? this.additional[this.props.component].filepath_create.options : {}) : {}
+                        }
+                        back={
+                            this.additional[this.props.component].hasOwnProperty("filepath_create") ?
+                                (this.additional[this.props.component].filepath_create.hasOwnProperty('back') ? this.additional[this.props.component].filepath_create.options : () => { }) : () => { }
+                        } />
+
+                    <WizardConfirmPassword
+                        daemon={this.props.daemon}
+                        key={`${this.props.component}-wizard-confirm-password`}
+                        component={this.props.component}
+                        history={this.props.history}
+                        prop_names={{ "create_password": "", "create_confirm_password": "" }}
+                        prev_data={["create_filepath"]}
+                        form_fields={["create_filepath", "create_password", "create_confirm_password", "restore_type", "restore_mnemonic", "restore_address", "restore_view", "restore_spend"]}
+                        back={() => { wizardBack(this.props.dispatch, ["create_password", "create_confirm_password"]) }} />
+
+                    <WizardReview
+                        daemon={this.props.daemon}
+                        key={`${this.props.component}-wizard-review`}
+                        component={this.props.component}
+                        history={this.props.history}
+                        form_fields={["create_filepath", "create_password"]}
+                        prop_names={["create_password", "create_confirm_password"]} />
+                </Form>
+            </>
         );
 
     }

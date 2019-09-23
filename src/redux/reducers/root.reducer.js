@@ -18,6 +18,7 @@ import { homeModalsReducer } from './home_modals.reducer';
 import { accountLabelsReducer } from './account_labels.reducer';
 import { daemonReducer } from './daemon.reducer';
 import { activeTabReducer } from './active_tab.reducer';
+import { spinnerReducer } from './spinner.reducer';
 
 let appReducer = combineReducers({
     wallet_exists: walletExistsReducer,
@@ -34,7 +35,8 @@ let appReducer = combineReducers({
     home_modals: homeModalsReducer,
     account_labels: accountLabelsReducer,
     daemon: daemonReducer,
-    active_tab: activeTabReducer
+    active_tab: activeTabReducer,
+    spinner: spinnerReducer
 });
 
 const rootReducer = (state, action) => {

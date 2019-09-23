@@ -86,3 +86,6 @@ export const ADD_DAEMON_MODAL = "ADD_DAEMON_MODAL";
 
 export const ADD_ACTIVE_TAB = "ADD_ACTIVE_TAB";
 
+export const SPINNER_START = "SPINNER_START";
+export const SPINNER_END = "SPINNER_END";
+

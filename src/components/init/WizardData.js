@@ -6,12 +6,6 @@ import { Row, Col, Form, Button, Tabs, Tab } from 'react-bootstrap';
 
 
 
-const mapStateToProps = (state) => {
-    return {
-        wizard: state.wizard
-    };
-};
-
 const handleSubmit = (event, dispatch, type, names) => {
     const form = event.currentTarget;
     let validation = false;
@@ -83,32 +77,20 @@ class WizardData extends Component {
     */
 
 
-    componentDidMount() {
-
-        let data = this.props.prop_names; data.validated = false;
-        let falses = {};
-        for (var x in this.props.prop_names) {
-            if (this.props.prop_names.hasOwnProperty(x)) {
-                falses[x] = false;
-            }
-        }
-
-        addWizardData(this.props.dispatch, data);
-        addWizardErrors(this.props.dispatch, falses);
-        addWizardTouched(this.props.dispatch, falses);
-    }
-
 
 
 
     render() {
 
-        let names = Object.keys(this.props.prop_names);
+        let names = this.props.prop_names;
+        if (this.props.step !== 1 && this.props.component==="restore") { 
+            return null;
+        }
         return (
             <Row>
                 <Col>
-                    <Form noValidate validated={this.props.wizard.data.validated} onSubmit={(event) => { handleSubmit(event, this.props.dispatch, this.props.wizard.data[names[0]], names) }}>
-                        <Tabs id="controlled-tab-example" activeKey={this.props.wizard.data[names[0]]} onSelect={(val) => { let t = {}; t[names[0]] = val; addWizardData(this.props.dispatch, t) }}>
+               
+                        <Tabs id="controlled-tab-example" activeKey={this.props.values[names[0]]} onSelect={(val) => { let t = {}; t[names[0]] = val; addWizardData(this.props.dispatch, t) }}>
                             <Tab eventKey="mnemonic" title={this.props.t("mnemonic")}>
                                 <Form.Row>
                                     <Form.Group as={Col} controlId={names[1]}>
@@ -190,7 +172,7 @@ class WizardData extends Component {
                                 <Button variant="success" type="submit" >{this.props.t('next_button')}</Button>
                             </Form.Group>
                         </Form.Row>
-                    </Form>
+                  
                 </Col>
 
             </Row>
@@ -200,4 +182,4 @@ class WizardData extends Component {
         );
     }
 }
-export default withTranslation('init')(connect(mapStateToProps)(WizardData));
+export default withTranslation('init')(connect()(WizardData));
