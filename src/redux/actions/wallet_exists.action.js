@@ -14,10 +14,10 @@ export const addWalletExistsStatus = (status) => {
     }
 }
 export const checkIfFileExists = () => {
-    return (dispatch, getState) => {
+    return (dispatch) => {
         readFilePromise(LEGACY_DEFAULT_WALLET_PATH)
             .then(checkFileForFlags)
-            .then((status) => { dispatch(setWalletExistsStatus(status)) })
+            .then((status) => { dispatch(addWalletExistsStatus(status)) })
             .catch((error) => { dispatch({ type: ADD_ERROR, item: error.message }) });
     }
 }

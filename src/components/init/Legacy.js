@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
-import { setWalletExistsStatus } from '../../modules/init.module';
+import { addWalletExistsStatus } from '../../redux/actions/wallet_exists.action';
 import { Row, Col, Card, Button } from 'react-bootstrap';
 import * as R from '../../setups/routes';
 
@@ -18,7 +18,7 @@ class Legacy extends Component {
                 {this.props.t("legacy_detected_description")}
               </Card.Text>
               <Row>
-                <Col><Button variant="primary" onClick={() => { setWalletExistsStatus(this.props.dispatch, false) }}>{this.props.t("escape_button")}</Button></Col>
+                <Col><Button variant="primary" onClick={(event) => { this.props.addWalletExistsStatus(false) }}>{this.props.t("escape_button")}</Button></Col>
                 <Col><Link to={R.LEGACY_DEFAULT} ><Button variant="primary">{this.props.t("proceed_button")}</Button></Link></Col>
               </Row>
             </Card.Body>
@@ -28,4 +28,11 @@ class Legacy extends Component {
     );
   }
 }
-export default withTranslation('init')(connect()(Legacy));
+const mapDispatchToProps = (dispatch) => {
+  return {
+    addWalletExistsStatus: (status) => {
+      dispatch(addWalletExistsStatus(status));
+    }
+  }
+}
+export default withTranslation('init')(connect(null, mapDispatchToProps)(Legacy));

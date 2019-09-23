@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import error_types from '../../setups/error_types.json';
 import { Row, Col, Toast } from 'react-bootstrap';
-import { removeError } from '../../actions/error.action';
+import { removeError } from '../../redux/actions/error.action';
 
 const mapStateToProps = (state) => {
     return {

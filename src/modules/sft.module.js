@@ -2,8 +2,8 @@ import { getBalanceApi } from '../api/go/transaction.api';
 import { getContactsApi } from '../api/go/contacts.api';
 import { lordOfTheFetch } from "../libs/one_fetch_to_rule_them_all";
 
-import { addError } from '../actions/error.action';
-import { addContacts } from '../actions/contacts.action';
+import { addError } from '../redux/actions/error.action';
+import { addContacts } from '../redux/actions/contacts.action';
 
 let getBalance = function () {
     lordOfTheFetch(

@@ -7,8 +7,8 @@ import {
     addContactCounter,
     addContactError,
     addContactTouched
-} from '../actions/contacts.action';
-import { addError } from '../actions/error.action';
+} from '../redux/actions/contacts.action';
+import { addError } from '../redux/actions/error.action';
 
 import { contactsApi } from '../api/go';
 import { lordOfTheFetch } from '../libs/one_fetch_to_rule_them_all';

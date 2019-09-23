@@ -1,12 +1,12 @@
 import { accountsApi, activeAccountApi, transactionApi, legacyAccountsApi, accountLabelsApi } from '../api/go';
 import {legacyTransactionApi} from '../api/legacy';
-import { addAccounts } from '../actions/accounts.action';
-import { replaceLegacyAccounts } from '../actions/legacy_accounts.action';
-import { addActiveAccount } from '../actions/active_account.action';
-import { addAccountHistory, resetAccountHistory } from '../actions/history.action';
-import { addError } from '../actions/error.action';
-import { addHomeModal } from '../actions/home_modals.action';
-import { addAccountLabels } from '../actions/account_labels.action';
+import { addAccounts } from '../redux/actions/accounts.action';
+import { replaceLegacyAccounts } from '../redux/actions/legacy_accounts.action';
+import { addActiveAccount } from '../redux/actions/active_account.action';
+import { addAccountHistory, resetAccountHistory } from '../redux/actions/history.action';
+import { addError } from '../redux/actions/error.action';
+import { addHomeModal } from '../redux/actions/home_modals.action';
+import { addAccountLabels } from '../redux/actions/account_labels.action';
 import { lordOfTheFetch } from '../libs/one_fetch_to_rule_them_all';
 
 let { dialog } = window.require("electron").remote;
