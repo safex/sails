@@ -1,0 +1,86 @@
+export class Http {
+  request(method, path, body, query, token) {
+    const requestId = ++this.requestId;
+    if (body) {
+      console.log(`${requestId} >>> ${method} ${path}`, body);
+    } else {
+      console.log(`${requestId} >>> ${method} ${path}`);
+    }
+
+    if (query) {
+      const params = [];
+      for (const key in query) {
+        if (query.hasOwnProperty(key)) {
+          params.push(
+            encodeURIComponent(key) +
+              "=" +
+              encodeURIComponent(String(query[key]))
+          );
+        }
+      }
+      path += "?" + params.join("&");
+    }
+
+    const headers = {};
+
+    // token = token || (this.sessionProvider.session && this.sessionProvider.session.access_token);
+    if (token !== null) {
+      headers.Authorization = "Bearer " + token;
+    }
+
+    const fetchOptions = { method: method.toUpperCase(), headers };
+
+    if (body) {
+      fetchOptions.body = JSON.stringify(body);
+      headers["content-type"] = "application/json";
+    }
+
+    return fetch(path, fetchOptions)
+      .then(res => {
+        return res.json().then(data => {
+          if (res.status >= 400) {
+            const err = new Error(data.message || res.statusText);
+            Object.keys(data).forEach(key => {
+              err[key] = data[key];
+            });
+            err.status = res.status;
+            throw err;
+          }
+
+          console.log(
+            `${requestId} <<< ${method} ${path}: ${res.status}`,
+            data
+          );
+
+          return data;
+        });
+      })
+      .catch(err => {
+        if (err.message === "Failed to fetch") {
+          // Presume this is a CORS error
+          err = new HttpError("Server cannot be reached", 503);
+        }
+        console.error(
+          `${requestId} <<< ${method} ${path}: ${err.status}  ${err.message}`,
+          err
+        );
+        throw err;
+      });
+  }
+
+  get(path, query, token) {
+    return this.request("GET", path, null, query, token);
+  }
+
+  post(path, body, query, token) {
+    return this.request("POST", path, body, query, token);
+  }
+
+  put(path, body, query, token) {
+    return this.request("PUT", path, body, query, token);
+  }
+
+  delete(path, body, query, token) {
+    return this.request("DELETE", path, body, query, token);
+  }
+}
