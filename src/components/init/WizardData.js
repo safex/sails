@@ -5,12 +5,10 @@ import { addWizardData, addWizardErrors, addWizardTouched, wizardNext } from '..
 import { Row, Col, Form, Button, Tabs, Tab } from 'react-bootstrap';
 
 let is_valid = function (field, type, data) {
-    return true;
-    //return (this.props.wizard.data[field] === type) && ((this.props.wizard.touched.hasOwnProperty(data) && this.props.wizard.touched[data]) && (this.props.wizard.errors.hasOwnProperty(data) && !this.props.wizard.errors[data]));
+    return (this.props.values[field] === type) && ((this.props.touched.hasOwnProperty(data) && this.props.touched[data]) && (this.props.errors.hasOwnProperty(data) && !this.props.errors[data]));
 }
 let is_invalid = function (field, type, data) {
-    return false;
-    //return (this.props.wizard.data[field] === type) && ((this.props.wizard.touched.hasOwnProperty(data) && this.props.wizard.touched[data]) && (this.props.wizard.errors.hasOwnProperty(data) && this.props.wizard.errors[data]));
+    return (this.props.values[field] === type) && ((this.props.touched.hasOwnProperty(data) && this.props.touched[data]) && (this.props.errors.hasOwnProperty(data) && this.props.errors[data]));
 }
 
 
@@ -24,23 +22,8 @@ class WizardData extends Component {
     4 - private spend key
     */
 
-
-
-    static getDerivedStateFromProps(props,state){
-        console.log("derived");
-        console.log(props);
-        console.log(state);
-    }
-
-    shouldComponentUpdate(props,state){
-        console.log("should");
-        console.log(props);
-        console.log(state);
-        return true;
-    }
-
     render() {
-        
+
         let names = this.props.prop_names;
         console.log(this.props.values[names[1]]);
         if (this.props.step !== 1 && this.props.component === "restore") {
@@ -49,8 +32,7 @@ class WizardData extends Component {
         return (
             <Row>
                 <Col>
-
-                    <Tabs id="controlled-tab-example" activeKey={this.props.values[names[0]]} name={names[0]} onSelect={this.props.handleTabSelect}>
+                    <Tabs id="controlled-tab-example" activeKey={this.props.values[names[0]]} onSelect={this.props.handleSelectTab}>
                         <Tab eventKey="mnemonic" title={this.props.t("mnemonic")}>
                             <Form.Row>
                                 <Form.Group as={Col} controlId={names[1]}>
@@ -63,6 +45,7 @@ class WizardData extends Component {
                                         isValid={is_valid.bind(this, names[0], "mnemonic", names[1])()}
                                         isInvalid={is_invalid.bind(this, names[0], "mnemonic", names[1])()}
                                         onChange={this.props.handleChange}
+                                        data-rules="required, 25_words"
 
                                     />
                                     <Form.Control.Feedback type="invalid">{this.props.t("required_field")} {this.props.t("required_25_words")}</Form.Control.Feedback>
@@ -81,6 +64,7 @@ class WizardData extends Component {
                                         isValid={is_valid.bind(this, names[0], "keys", names[2])()}
                                         isInvalid={is_invalid.bind(this, names[0], "keys", names[2])()}
                                         onChange={this.props.handleChange}
+                                        data-rules="required"
                                     />
                                     <Form.Control.Feedback type="invalid">{this.props.t("required_field")}</Form.Control.Feedback>
 
@@ -96,6 +80,7 @@ class WizardData extends Component {
                                         isValid={is_valid.bind(this, names[0], "keys", names[3])()}
                                         isInvalid={is_invalid.bind(this, names[0], "keys", names[3])()}
                                         onChange={this.props.handleChange}
+                                        data-rules="required"
                                     />
                                     <Form.Control.Feedback type="invalid">{this.props.t("required_field")}</Form.Control.Feedback>
 
@@ -112,6 +97,7 @@ class WizardData extends Component {
                                         isValid={is_valid.bind(this, names[0], "keys", names[4])()}
                                         isInvalid={is_invalid.bind(this, names[0], "keys", names[4])()}
                                         onChange={this.props.handleChange}
+                                        data-rules="required"
                                     />
                                     <Form.Control.Feedback type="invalid">{this.props.t("required_field")}</Form.Control.Feedback>
 
@@ -123,10 +109,10 @@ class WizardData extends Component {
                     </Tabs>
                     <Form.Row>
                         <Form.Group as={Col}>
-                            <Button variant="danger" type="button" onClick={this.props.back}>{this.props.t('back_button')}</Button>
+                            <Button variant="danger" type="button" onClick={this.props.back}> {this.props.t('back_button')}</Button>
                         </Form.Group>
                         <Form.Group as={Col}>
-                            <Button variant="success" type="button" >{this.props.t('next_button')}</Button>
+                            <Button variant="success" type="button" onClick={this.props.next}> {this.props.t('next_button')}</Button>
                         </Form.Group>
                     </Form.Row>
 

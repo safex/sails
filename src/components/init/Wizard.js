@@ -25,7 +25,7 @@ class Wizard extends Component {
                 create_password: "",
                 create_confirm_password: "",
                 restore_type: "mnemonic",
-                restore_mnemonic: "test",
+                restore_mnemonic: "",
                 restore_address: "",
                 restore_view: "",
                 restore_spend: ""
@@ -59,13 +59,6 @@ class Wizard extends Component {
             restore: {
                 steps: 4,
                 data: {
-                    values: {
-                        "restore_type": this.state.data.restore_type,
-                        "restore_mnemonic": this.state.data.restore_mnemonic,
-                        "restore_address": this.state.data.restore_address,
-                        "restore_view": this.state.data.restore_view,
-                        "restore_spend": this.state.data.restore_spend
-                    },
                     prop_names: ["restore_type", "restore_mnemonic", "restore_address", "restore_view", "restore_spend"],
                     back: () => { wizardBack(this.props.dispatch, ["restore_type", "restore_mnemonic", "restore_address", "restore_view", "restore_spend"], (history) => { history.push('/'); }, [this.props.history]) }
                 },
@@ -87,20 +80,12 @@ class Wizard extends Component {
             legacy: {}
 
         }
-        this.setTouched = setTouched.bind(this);
-        this.setError = setError.bind(this);
-        this.setValidation = setValidation.bind(this);
-        this.resetData = resetData.bind(this);
-        this.handleChange = handleChange.bind(this);
-        this.handleSelectTab=handleSelectTab.bind(this);
-
     }
 
 
 
+
     render() {
-        console.log(this.state);
-        const rand=(Math.random() * 100) / 100;
         return (
             <>
                 <Row>
@@ -110,7 +95,7 @@ class Wizard extends Component {
                 </Row>
                 <Form noValidate validated={this.state.validated} onSubmit={this.additional[this.props.component].handleSubmit}>
                     <WizardData
-                        key={`${this.props.component}-wizard-data-${rand}`}
+                        key={`${this.props.component}-wizard-data`}
                         daemon={this.props.daemon}
                         step={this.state.step}
                         component={this.props.component}
@@ -126,11 +111,19 @@ class Wizard extends Component {
                                 (this.additional[this.props.component].data.hasOwnProperty('back') ? this.additional[this.props.component].data.back : "") : ""
                         }
                         values={
-                            this.additional[this.props.component].hasOwnProperty("data") ?
-                                (this.additional[this.props.component].data.hasOwnProperty('values') ? this.additional[this.props.component].data.values : {}) : {}
+                            {
+                                "restore_type": this.state.data.restore_type,
+                                "restore_mnemonic": this.state.data.restore_mnemonic,
+                                "restore_address": this.state.data.restore_address,
+                                "restore_view": this.state.data.restore_view,
+                                "restore_spend": this.state.data.restore_spend
+
+                            }
                         }
-                        handleChange={this.handleChange}
-                        handleSelectTab={this.handleSelectTab}
+                        touched={this.state.touched}
+                        errors={this.state.errors}
+                        handleChange={handleChange.bind(this)}
+                        handleSelectTab={handleSelectTab.bind(this)}
                     />
 
                     <WizardFilepath
