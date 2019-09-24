@@ -19,9 +19,12 @@
     "keys": "Keys",
     "required_25_words": "Separate 25 words by space.",
     "address": "Public address",
-    "private_view": "Private View Key",
+    "private_view": "Private View Key / Private Key (SAFEX)",
     "private_spend": "Private Spend Key",
     "label": "Label",
+    "type": "Account type",
+    "note": "Note",
+    "note_text": "For SAFEX account fill out just private view key (private key)",
     "button_add": "Add",
     "button_close": "Close",
     "button_browse": "Browse"

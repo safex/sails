@@ -9,6 +9,7 @@ import { addNewAccount, changeModalState, addSeedsAccount, addKeysAccount, addFi
 const mapStateToProps = (state) => {
     return {
         accounts: state.accounts,
+        legacy_accounts: state.legacy_accounts,
         home_modals: state.home_modals,
         account_labels: state.account_labels
     }
@@ -97,7 +98,38 @@ function ModalKeys(props) {
                         </Form.Group>
                     </Form.Row>
 
+                    <Form.Row>
+                        <Form.Group as={Col} controlId="add_keys_type">
+                            <Form.Label as="legend" > {props.type} </Form.Label>
+                            <Col>
+                                <Form.Check
+                                    defaultChecked="true"
+                                    type="radio"
+                                    label="SFX/SFT"
+                                    name="add_keys_type"
+                                    inline="true"
+                                    id="type_sfx_sft"
+                                    value="0"
+                                />
+                                <Form.Check
+                                    type="radio"
+                                    label="SAFEX"
+                                    name="add_keys_type"
+                                    inline="true"
+                                    id="type_safex"
+                                    value="1"
+                                />
+                            </Col>
+                        </Form.Group>
+                    </Form.Row>
+                    <Form.Row>
+                        <Col>
+                            <h5>{props.note} : <small>{props.note_text}</small></h5>
+                        </Col>
+                    </Form.Row>
+
                 </Form>
+
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="success" type="submit" onClick={(event) => {
@@ -106,12 +138,15 @@ function ModalKeys(props) {
                         document.getElementById("add_keys_view").value,
                         document.getElementById("add_keys_spend").value,
                         document.getElementById("add_keys_label").value,
+                        document.querySelector('input[name=add_keys_type]:checked').value,
                         props.accounts,
+                        props.legacy_accounts,
                         props.labels);
                     document.getElementById("add_keys_address").value = "";
                     document.getElementById("add_keys_view").value = "";
                     document.getElementById("add_keys_spend").value = "";
                     document.getElementById("add_keys_label").value = "";
+                    document.querySelector('input[name=add_keys_type]:checked').value = "0";
                     changeModalState(props.dispatch, { modal_keys: false });
                 }}>{props.submit}</Button>
                 <Button variant="danger" onClick={() => { changeModalState(props.dispatch, { modal_keys: false }) }}>{props.close}</Button>
@@ -257,6 +292,7 @@ class Home extends Component {
                 <ModalKeys
                     show={this.props.home_modals.modal_keys}
                     accounts={this.props.accounts}
+                    legacy_accounts={this.props.legacy_accounts}
                     dispatch={this.props.dispatch}
                     title={this.props.t("add_new_keys")}
                     body_title={this.props.t("keys")}
@@ -267,6 +303,9 @@ class Home extends Component {
                     view={this.props.t("private_spend")}
                     label={this.props.t("label")}
                     labels={this.props.account_labels}
+                    type={this.props.t("type")}
+                    note={this.props.t("note")}
+                    note_text={this.props.t("note_text")}
                 />
                 <ModalNew
                     show={this.props.home_modals.modal_new}

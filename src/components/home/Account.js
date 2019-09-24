@@ -24,6 +24,8 @@ class Account extends Component {
       <Button variant={variant} size="lg" onClick={setActiveAccount.bind(this)} block>
         {this.props.account.label}
       </Button>);
+
+      //
   }
 }
 export default withTranslation('home')(connect(mapStateToProps)(Account));
