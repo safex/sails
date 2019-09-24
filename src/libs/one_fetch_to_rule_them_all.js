@@ -17,7 +17,7 @@ let lordOfTheFetch = function (func, func_data = [], callback = null, callback_d
                 console.log(additional.msg);
             if (additional && additional.hasOwnProperty("dispatch")) {
                 console.log(error);
-                additional.dispatch(addError(error.message));
+                additional.dispatch(addError(error.statusText));
             }
             else {
                 throw new Error(error)
@@ -38,7 +38,7 @@ let secondTry = function(func, func_data, callback, callback_data, additional){
             console.log(additional.msg);
         if (additional && additional.hasOwnProperty("dispatch")) {
             console.log(error);
-            additional.dispatch(addError(error.message));
+            additional.dispatch(addError(error.statusText));
         }
         else {
             throw new Error(error)
