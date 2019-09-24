@@ -5,21 +5,13 @@ import { wizardNext, addWizardData } from '../../modules/init.module';
 
 import { Row, Col, Card, Button } from 'react-bootstrap';
 
-
-const mapStateToProps = (state) => {
-    return {
-        wizard: state.wizard,
-        active_account: state.active_account,
-        error: state.error
-    };
-};
-
-
-
 class WizardReview extends Component {
 
 
     render() {
+        if ((this.props.step !== 4) && (this.props.component === "restore")) {
+            return null;
+        }
         return (
             <>
                 <Row>
@@ -29,7 +21,7 @@ class WizardReview extends Component {
                                 {this.props.t(this.props.form_fields[0])}
                             </Col>
                             <Col>
-                                {this.props.wizard.data[this.props.form_fields[0]]}
+                                {this.props.data[this.props.form_fields[0]]}
                             </Col>
                         </Row>
                         <br />
@@ -38,7 +30,7 @@ class WizardReview extends Component {
                                 {this.props.t(this.props.form_fields[1])}
                             </Col>
                             <Col>
-                                {(this.props.wizard.data.hasOwnProperty('password_visible') && this.props.wizard.data.password_visible) ? this.props.wizard.data[this.props.form_fields[1]] : "*".repeat(this.props.wizard.data[this.props.form_fields[1]].length)}
+                                {(this.props.data.hasOwnProperty('password_visible') && this.props.data.password_visible) ? this.props.data[this.props.form_fields[1]] : "*".repeat(this.props.data[this.props.form_fields[1]].length)}
                             </Col>
                             <Col>
                                 <Button variant="primary" onClick={() => {
@@ -82,7 +74,7 @@ class WizardReview extends Component {
                         <br />
                         <Row>
                             <Col>
-                                <Button variant="primary" onClick={() => { wizardNext(this.props.dispatch, (history) => { history.push('/w/home'); }, [this.props.history]) }} >{this.props.t('next_button')}</Button>
+                                <Button variant="info" onClick={() => { wizardNext(this.props.dispatch, (history) => { history.push('/w/home'); }, [this.props.history]) }} >{this.props.t('next_button')}</Button>
                             </Col>
                         </Row>
                     </Col>
@@ -91,4 +83,9 @@ class WizardReview extends Component {
         );
     }
 }
+const mapStateToProps = (state) => {
+    return {
+        active_account: state.active_account
+    };
+};
 export default withTranslation('init')(connect(mapStateToProps)(WizardReview));

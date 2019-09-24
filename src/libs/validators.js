@@ -1,5 +1,5 @@
-export let confirmPassword = function(pwd1, pwd2, dispatch=null) {
-    return pwd1==pwd2;
+export let validateConfirmPassword = function (pwd1, pwd2) {
+    return pwd1 == pwd2;
 }
 
 export let validateKeys = function (address, view, spend) {
