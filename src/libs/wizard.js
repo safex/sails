@@ -39,6 +39,19 @@ export const handleChange = function (event) {
 export const handleSelectTab = function (val) {
     this.setState({
         data: { ...this.state.data, restore_type: val }
-    })
+    });
+}
+
+export const previousStep = function () {
+    if (this.state.step == 1) { resetData.bind(this)(); this.props.history.push('/'); }
+    else {
+        this.setState({
+            step: (this.state.step - 1)
+        });
+    }
+}
+
+export const nextStep = function (){
+    if(this.state.step+1<=this.additional[this.props.component].steps) this.setState({step:(this.state.step+1)});
 }
 

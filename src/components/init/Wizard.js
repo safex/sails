@@ -4,7 +4,7 @@ import { withTranslation } from 'react-i18next';
 import { initWizardState, wizardBack, initLegacyWallet } from '../../modules/init.module';
 import { WizardData, WizardFilepath, WizardConfirmPassword, WizardReview, WizardPassword, WizardLegacy } from './index';
 import { Container, Alert, Form, Row, Col, ProgressBar } from 'react-bootstrap';
-import { setError, setTouched, setValidation, resetData, handleChange, handleSelectTab } from '../../libs/wizard';
+import { setError, setTouched, setValidation, resetData, handleChange, handleSelectTab, previousStep, nextStep } from '../../libs/wizard';
 import { validateKeys, validateMnemonic } from '../../libs/validators';
 
 const mapStateToProps = (state) => {
@@ -60,7 +60,21 @@ class Wizard extends Component {
                 steps: 4,
                 data: {
                     prop_names: ["restore_type", "restore_mnemonic", "restore_address", "restore_view", "restore_spend"],
-                    back: () => { wizardBack(this.props.dispatch, ["restore_type", "restore_mnemonic", "restore_address", "restore_view", "restore_spend"], (history) => { history.push('/'); }, [this.props.history]) }
+                    back: previousStep.bind(this),
+                    next: () => {
+                        let validation = false;
+                        if (this.state.data.restore_type === "mnemonic") {
+                            validation = validateMnemonic(this.state.data.restore_mnemonic.trim());
+                        }
+                        else {
+                            validation = validateKeys(this.state.data.restore_address.trim(), this.state.data.restore_view.trim(), this.state.data.restore_spend.trim());
+                        }
+                        this.setState({ validated: validation })
+
+                        if (validation !== false) {
+                            nextStep.bind(this)();
+                        }
+                    }
                 },
                 filepath_create: {
                     prop_names: [],
@@ -110,6 +124,10 @@ class Wizard extends Component {
                             this.additional[this.props.component].hasOwnProperty("data") ?
                                 (this.additional[this.props.component].data.hasOwnProperty('back') ? this.additional[this.props.component].data.back : "") : ""
                         }
+                        next={
+                            this.additional[this.props.component].hasOwnProperty("data") ?
+                                (this.additional[this.props.component].data.hasOwnProperty('next') ? this.additional[this.props.component].data.next : "") : ""
+                        }
                         values={
                             {
                                 "restore_type": this.state.data.restore_type,
@@ -144,7 +162,14 @@ class Wizard extends Component {
                         back={
                             this.additional[this.props.component].hasOwnProperty("filepath_create") ?
                                 (this.additional[this.props.component].filepath_create.hasOwnProperty('back') ? this.additional[this.props.component].filepath_create.options : () => { }) : () => { }
-                        } />
+                        }
+                        next={
+                            this.additional[this.props.component].hasOwnProperty("filepath_create") ?
+                                (this.additional[this.props.component].filepath_create.hasOwnProperty('next') ? this.additional[this.props.component].filepath_create.next : "") : ""
+                        }
+                        touched={this.state.touched}
+                        errors={this.state.errors}
+                         />
 
                     <WizardConfirmPassword
                         daemon={this.props.daemon}
