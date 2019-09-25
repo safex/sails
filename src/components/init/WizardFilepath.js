@@ -37,7 +37,7 @@ class WizardFilepath extends Component {
 
 
     render() {
-        let names = Object.keys(this.props.prop_names);
+        let names = this.props.prop_names;
         let options = null;
         if (this.props.hasOwnProperty("options") && this.props.options) options = this.props.options;
         if (this.props.type === "open" && this.props.hasOwnProperty("legacy_type") && this.props.legacy_type === "default") {
@@ -49,9 +49,9 @@ class WizardFilepath extends Component {
                 this.props.handleChange({ target: { name: names[0], value: LEGACY_DEFAULT_WALLET_PATH } });
             }
         }
-        if ((this.props.step !== 2) && (this.props.component === "restore")) {
-            return null;
-        }
+        
+        if (this.props.show_on_step === false) return null;
+        if (this.props.step !== this.props.show_on_step) return null;
         return (
             <Row>
                 <Col>
@@ -88,4 +88,4 @@ class WizardFilepath extends Component {
         );
     }
 }
-export default withTranslation('init')(connect(mapStateToProps)(WizardFilepath));
+export default withTranslation('init')(connect()(WizardFilepath));

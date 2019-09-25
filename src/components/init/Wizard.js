@@ -3,7 +3,8 @@ import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import { WizardData, WizardFilepath, WizardConfirmPassword, WizardReview, WizardPassword, WizardLegacy } from './index';
 import { Form, Row, Col, ProgressBar } from 'react-bootstrap';
-import { handleChange, handleSelectTab, previousStep, nextStep, walletFile, restore } from '../../libs/wizard';
+import { startRestoringWallet } from '../../redux/actions/init.action';
+import { handleChange, handleSelectTab, previousStep, nextStep, walletFile, restore, create } from '../../libs/wizard';
 import { validateKeys, validateMnemonic, validateConfirmPassword } from '../../libs/validators';
 
 const mapStateToProps = (state) => {
@@ -126,6 +127,62 @@ class Wizard extends Component {
                             restore.bind(this)();
                         }
 
+                    }
+
+
+
+                },
+                review: {
+                    show_on_step: 4,
+                    form_fields: ["create_filepath", "create_password"],
+                    prop_names: ["create_password", "create_confirm_password"]
+
+                }
+            },
+            open: {},
+            create: {
+                steps: 3,
+                filepath_create: {
+                    show_on_step: 1,
+                    prop_names: ["create_filepath"],
+                    options: {
+                        title: this.props.t("choose_filepath"),
+                        filters: [{
+                            name: 'Sails Wallet',
+                            extensions: ['sails']
+                        }]
+                    },
+                    back: previousStep.bind(this),
+                    next: () => {
+                        let validation = false;
+                        if (this.state.data.create_filepath !== "") validation = true;
+                        if (validation) {
+                            nextStep.bind(this)();
+                        }
+                    }
+
+                },
+                confirm_password: {
+                    show_on_step: 2,
+                    prop_names: ["create_password", "create_confirm_password"],
+                    form_fields: ["create_filepath", "create_password", "create_confirm_password"],
+                    prev_data: ["create_filepath"],
+                    back: () => {
+                        this.setState({ data: { ...this.state.data, create_password: '', create_confirm_password: '' } });
+                        this.setState({ touched: { ...this.state.touched, create_password: false, create_confirm_password: false } });
+                        this.setState({ errors: { ...this.state.errors, create_password: false, create_confirm_password: false } });
+                        previousStep.bind(this)();
+                    },
+                    next: () => {
+                        let validation = true;
+                        if ((this.state.data.create_password.trim() === "")
+                            || (this.state.data.create_confirm_password.trim() === "")
+                            || (!validateConfirmPassword(this.state.data.create_password.trim(), this.state.data.create_confirm_password.trim()))) validation = false;
+
+                        if (validation) {
+                            nextStep.bind(this)();
+                            create.bind(this)();
+                        }
 
                     }
 
@@ -133,12 +190,13 @@ class Wizard extends Component {
 
                 },
                 review: {
-                    show_on_step: 4
+                    show_on_step: 3,
+                    form_fields: ["create_filepath", "create_password"],
+                    prop_names: ["create_password", "create_confirm_password"]
 
                 }
+
             },
-            open: {},
-            create: {},
             legacy: {}
 
         }
@@ -155,11 +213,15 @@ class Wizard extends Component {
                         <ProgressBar variant="info" now={this.state.step * (100.00 / this.additional[this.props.component].steps)} />
                     </Col>
                 </Row>
-                <Form noValidate >
+                <Form>
                     <WizardData
                         key={`${this.props.component}-wizard-data`}
                         daemon={this.props.daemon}
                         step={this.state.step}
+                        show_on_step={
+                            this.additional[this.props.component].hasOwnProperty("data") ?
+                                (this.additional[this.props.component].data.hasOwnProperty('show_on_step') ? this.additional[this.props.component].data.show_on_step : false) : false
+                        }
                         component={this.props.component}
                         history={this.props.history}
                         setError={this.setError}
@@ -195,6 +257,10 @@ class Wizard extends Component {
                     <WizardFilepath
                         daemon={this.props.daemon}
                         step={this.state.step}
+                        show_on_step={
+                            this.additional[this.props.component].hasOwnProperty("filepath_create") ?
+                                (this.additional[this.props.component].filepath_create.hasOwnProperty('show_on_step') ? this.additional[this.props.component].filepath_create.show_on_step : false) : false
+                        }
                         key={`${this.props.component}-wizard-filepath-create`}
                         component={this.props.component}
                         history={this.props.history}
@@ -225,13 +291,17 @@ class Wizard extends Component {
                     <WizardConfirmPassword
                         daemon={this.props.daemon}
                         step={this.state.step}
+                        show_on_step={
+                            this.additional[this.props.component].hasOwnProperty("confirm_password") ?
+                                (this.additional[this.props.component].confirm_password.hasOwnProperty('show_on_step') ? this.additional[this.props.component].confirm_password.show_on_step : false) : false
+                        }
                         key={`${this.props.component}-wizard-confirm-password`}
                         component={this.props.component}
                         history={this.props.history}
                         values={
                             {
                                 "create_password": this.state.data.create_password,
-                                "create_confirm_password": this.state.sata.create_confirm_password
+                                "create_confirm_password": this.state.data.create_confirm_password
                             }
                         }
                         prop_names={
@@ -262,11 +332,24 @@ class Wizard extends Component {
 
                     <WizardReview
                         daemon={this.props.daemon}
+                        step={this.state.step}
+                        show_on_step={
+                            this.additional[this.props.component].hasOwnProperty("review") ?
+                                (this.additional[this.props.component].review.hasOwnProperty('show_on_step') ? this.additional[this.props.component].review.show_on_step : false) : false
+                        }
                         key={`${this.props.component}-wizard-review`}
                         component={this.props.component}
                         history={this.props.history}
-                        form_fields={["create_filepath", "create_password"]}
-                        prop_names={["create_password", "create_confirm_password"]}
+                        data={this.state.data}
+                        form_fields={
+                            this.additional[this.props.component].hasOwnProperty("review") ?
+                                (this.additional[this.props.component].review.hasOwnProperty('form_fields') ? this.additional[this.props.component].review.form_fields : []) : []
+                        }
+                        prop_names={
+                            this.additional[this.props.component].hasOwnProperty("review") ?
+                                (this.additional[this.props.component].review.hasOwnProperty('prop_names') ? this.additional[this.props.component].review.prop_names : []) : []
+                        }
+                        handleChange={handleChange.bind(this)}
                         next={nextStep.bind(this)}
                     />
                 </Form>

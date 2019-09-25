@@ -2,18 +2,13 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from "react-router";
 import { withTranslation } from 'react-i18next';
-import { getActiveAccountFromWallet, logout } from '../../modules/shared.module';
+import { getActiveAccountFromWallet } from '../../modules/shared.module';
 import { Navbar, Nav } from 'react-bootstrap';
+import { closeWallet } from '../../redux/actions/init.action';
+
 
 import * as R from '../../setups/routes';
 
-const mapStateToProps = (state) => {
-  return {
-    active_account: state.active_account,
-    active_tab: state.active_tab,
-    account_labels: state.account_labels
-  };
-};
 
 
 class TopMenu extends Component {
@@ -38,11 +33,23 @@ class TopMenu extends Component {
             <Nav.Link href={R.SETTINGS} active={this.props.active_tab === "setting" ? true : false}>{this.props.t("settings")}</Nav.Link>
             {this.props.hasOwnProperty("active_account") ? (this.props.active_account.type ? <Nav.Link href={R.MIGRATIONS} active={this.props.active_tab === "migrations" ? true : false}>{this.props.t("migrations")}</Nav.Link> : '') : ''}
             {this.props.hasOwnProperty("active_account") ? (this.props.active_account.type ? <Nav.Link href={R.BITCOIN} active={this.props.active_tab === "bitcoin" ? true : false}>{this.props.t("bitcoin")}</Nav.Link> : '') : ''}
-            <Nav.Link onClick={logout.bind(this)}>{this.props.t("logout")}</Nav.Link>
+            <Nav.Link onClick={this.props.logout(this.props.history)}>{this.props.t("logout")}</Nav.Link>
           </Nav>
         </Navbar.Collapse>
       </Navbar>
     </>);
   }
 }
-export default withTranslation('top_menu')(withRouter(connect(mapStateToProps)(TopMenu)));
+const mapStateToProps = (state) => {
+  return {
+    active_account: state.active_account,
+    active_tab: state.active_tab,
+    account_labels: state.account_labels
+  };
+};
+const mapDispatchToProps = (dispatch) => {
+  return {
+    logout: (history) => { dispatch(closeWallet(history)) }
+  }
+}
+export default withTranslation('top_menu')(withRouter(connect(mapStateToProps, mapDispatchToProps)(TopMenu)));

@@ -1,5 +1,7 @@
 import { validateMnemonic, validateConfirmPassword } from './validators';
-import {INIT_RESTORE_SEEDS, INIT_RESTORE_KEYS} from './api_endpoints';
+import { INIT_RESTORE_SEEDS, INIT_RESTORE_KEYS } from './api_endpoints';
+import { DAEMON_HOST, DAEMON_PORT, NET_TYPE } from '../setups/conf';
+import { EventEmitter } from 'events';
 let { dialog } = window.require("electron").remote;
 export const setError = function (prop, value) {
     this.setState({ errors: { ...this.state.errors, [prop]: value } });
@@ -17,10 +19,12 @@ export const resetData = function () {
 export const handleChange = function (event) {
 
     const { name, value } = event.target;
-    let rules = [];
-    if ((event.target.dataset.rules) !== undefined && (event.target.dataset.rules != "")) rules = event.target.dataset.rules.split(",");
     this.setState({ data: { ...this.state.data, [name]: value } });
     this.setState({ touched: { ...this.state.touched, [name]: true } });
+    let rules = [];
+    if (event.target.hasOwnProperty("dataset")) {
+        if ((event.target.dataset.rules) !== undefined && (event.target.dataset.rules != "")) rules = event.target.dataset.rules.split(",");
+    }
     rules.forEach(rule => {
         switch (rule.trim()) {
             case "required":
@@ -32,7 +36,7 @@ export const handleChange = function (event) {
             case "confirm_password":
                 let linked = event.target.dataset.linked;
                 let field = event.target.dataset.field;
-                validateConfirmPassword(value.trim(), this.state[linked].trim()) ? this.setState({ errors: { ...this.state.errors, [field]: false } }) : this.setState({ errors: { ...this.state.errors, [field]: true } });
+                validateConfirmPassword(value.trim(), this.state.data[linked].trim()) ? this.setState({ errors: { ...this.state.errors, [field]: false } }) : this.setState({ errors: { ...this.state.errors, [field]: true } });
                 break;
             default:
                 break;
@@ -59,8 +63,8 @@ export const previousStep = function () {
 }
 
 export const nextStep = function () {
-    if (this.state.step + 1 < this.additional[this.props.component].steps) this.setState({ step: (this.state.step + 1) });
-    else if (this.state.step + 1 < this.additional[this.props.component].steps) this.props.history.push("/w/home");
+    if (this.state.step + 1 <= this.additional[this.props.component].steps) this.setState({ step: (this.state.step + 1) });
+    else if (this.state.step + 1 > this.additional[this.props.component].steps) this.props.history.push("/w/home");
 }
 
 export const walletFile = function (options = null, type = "create", name = "create_filepath") {
@@ -106,15 +110,22 @@ export const restore = function () {
         daemon_host: daemon_host,
         daemon_port: daemon_port
     };
-    let fendpoint = null;
+    let endpoint = null;
     if (this.state.data.restore_type === "mnemonic") {
         body = { ...body, seed: this.state.data.restore_mnemonic.trim(), password_mnemonic: "" }
         endpoint = INIT_RESTORE_SEEDS;
     }
     else {
         body = { ...body, address: this.state.data.restore_address.trim(), spendkey: this.state.data.restore_spend.trim(), viewkey: this.state.data.restore_view.trim() };
-        endpoint= INIT_RESTORE_KEYS;
+        endpoint = INIT_RESTORE_KEYS;
     }
-    this.props.restore
+    this.props.startRestoringWallet(endpoint, body);
+}
+
+export const create = function () {
+    let daemon_host = this.props.daemon.daemon_host || DAEMON_HOST;
+    let daemon_port = this.props.daemon.daemon_port || DAEMON_PORT;
+    this.props.startCreatingWallet({});
+
 }
 

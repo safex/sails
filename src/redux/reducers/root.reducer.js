@@ -13,7 +13,6 @@ import { historyReducer } from './history.reducer';
 import { contactsReducer } from './contacts.reducer';
 import { legacyWalletReducer } from './legacy_wallet.reducer';
 import { legacyAccountsReducer } from './legacy_accounts.reducer';
-import { wizardReducer } from './wizard.reducer';
 import { homeModalsReducer } from './home_modals.reducer';
 import { accountLabelsReducer } from './account_labels.reducer';
 import { daemonReducer } from './daemon.reducer';
@@ -30,7 +29,6 @@ let appReducer = combineReducers({
     history: historyReducer,
     contacts: contactsReducer,
     legacy_wallet: legacyWalletReducer,
-    wizard: wizardReducer,
     legacy_accounts: legacyAccountsReducer,
     home_modals: homeModalsReducer,
     account_labels: accountLabelsReducer,

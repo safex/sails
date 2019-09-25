@@ -3,7 +3,7 @@
 import { addWalletExistsStatus } from '../redux/actions/wallet_exists.action.js';
 import { addLegacyWallet } from '../redux/actions/legacy_wallet.action';
 import { resetAllBalances, addLegacyBalance, addLegacyBTCBalance, addLegacyBTCBalancePending, addLegacyAccounts } from '../redux/actions/legacy_accounts.action';
-import * as WizardActions from '../redux/actions/wizard.action';
+import * as WizardActions from '../redux/actions/legacy_accounts.action';
 import { addActiveAccount } from '../redux/actions/active_account.action';
 import { addError } from '../redux/actions/error.action';
 
@@ -294,81 +294,81 @@ let walletFile = function (dispatch, options = null, type = "create", name = "cr
 
 let initWizardState = function (dispatch) {
 
-    dispatch(WizardActions.resetWizardStep());
-    dispatch(WizardActions.resetWizardData());
-    dispatch(WizardActions.resetWizardErrors());
-    dispatch(WizardActions.resetWizardTouched());
+    // dispatch(WizardActions.resetWizardStep());
+    // dispatch(WizardActions.resetWizardData());
+    // dispatch(WizardActions.resetWizardErrors());
+    // dispatch(WizardActions.resetWizardTouched());
 
 }
 
 let addWizardData = function (dispatch, data) {
-    dispatch(WizardActions.addWizardData(data));
+    // dispatch(WizardActions.addWizardData(data));
 }
 
 let addWizardErrors = function (dispatch, data) {
-    dispatch(WizardActions.addWizardErrors(data));
+    // dispatch(WizardActions.addWizardErrors(data));
 }
 
 let addWizardTouched = function (dispatch, data) {
-    dispatch(WizardActions.addWizardTouched(data));
+    // dispatch(WizardActions.addWizardTouched(data));
 }
 
 let removeWizardData = function (dispatch, data = [], type = "data") {
-    data.forEach((x) => {
-        switch (type) {
-            case "data":
-                dispatch(WizardActions.removeWizardData(x));
-                break;
-            case "errors":
-                dispatch(WizardActions.removeWizardErrors(x));
-                break;
-            case "touched":
-                dispatch(WizardActions.removeWizardTouched(x));
-                break;
-            default:
-                dispatch(WizardActions.removeWizardData(x));
+    // data.forEach((x) => {
+    //     switch (type) {
+    //         case "data":
+    //             dispatch(WizardActions.removeWizardData(x));
+    //             break;
+    //         case "errors":
+    //             dispatch(WizardActions.removeWizardErrors(x));
+    //             break;
+    //         case "touched":
+    //             dispatch(WizardActions.removeWizardTouched(x));
+    //             break;
+    //         default:
+    //             dispatch(WizardActions.removeWizardData(x));
 
-                break;
-        }
+    //             break;
+    //     }
 
-    });
+    // });
 }
 
 let wizardBack = function (dispatch, props, callback = null, args = []) {
-    removeWizardData(dispatch, props, 'data');
-    removeWizardData(dispatch, props, 'errors');
-    removeWizardData(dispatch, props, 'touched');
+    // removeWizardData(dispatch, props, 'data');
+    // removeWizardData(dispatch, props, 'errors');
+    // removeWizardData(dispatch, props, 'touched');
 
-    dispatch(WizardActions.removeWizardStep());
+    // dispatch(WizardActions.removeWizardStep());
 
-    if (callback) {
-        callback(...args);
-    }
+    // if (callback) {
+    //     callback(...args);
+    // }
 }
 
 let wizardNext = function (dispatch, callback = null, args = []) {
 
-    dispatch(WizardActions.addWizardStep());
+    // dispatch(WizardActions.addWizardStep());
 
-    if (callback) {
-        callback(...args);
-    }
+    // if (callback) {
+    //     callback(...args);
+    // }
 
 }
 
 let initWizardData = function (dispatch, data) {
-    dispatch(WizardActions.initWizardData(data));
+    // dispatch(WizardActions.initWizardData(data));
 }
 let initWizardErrors = function (dispatch, data) {
-    dispatch(WizardActions.initWizardErrors(data));
+    // dispatch(WizardActions.initWizardErrors(data));
 }
 let initWizardTouched = function (dispatch, data) {
-    dispatch(WizardActions.initWizardTouched(data));
+    // dispatch(WizardActions.initWizardTouched(data));
 }
 
 let initLegacyWallet = function (dispatch) {
-    dispatch(addLegacyWallet({}));
-    dispatch(addLegacyAccounts([]));
+    // dispatch(addLegacyWallet({}));
+    // dispatch(addLegacyAccounts([]));
 }
 
 

@@ -1,25 +1,57 @@
-import {ADD_ACCOUNT, REMOVE_ACCOUNT, ADD_ACCOUNTS} from './action.types';
+import { ADD_ACCOUNT, REMOVE_ACCOUNT, ADD_ACCOUNTS } from './action.types';
+import { ACCOUNT_OPEN } from '../../libs/api_endpoints';
+import { spinnerStart, spinnerEnd } from './spinner.action';
+import { addError } from './error.action';
+import { setActiveAccount } from './active_account.action'
+import { Http } from '../../libs/http';
 
-let addAccount = function(account){
+const http = new Http();
+
+export const addAccount = function (account) {
     return {
-        type:ADD_ACCOUNT,
+        type: ADD_ACCOUNT,
         item: account
     }
 }
-let removeAccount = function(account){
+export const removeAccount = function (account) {
     return {
-        type:REMOVE_ACCOUNT,
+        type: REMOVE_ACCOUNT,
         item: account
     }
 }
-let addAccounts = function(accounts) {
+export const addAccounts = function (accounts) {
     return {
-        type:ADD_ACCOUNTS,
-        item:accounts
+        type: ADD_ACCOUNTS,
+        item: accounts
     }
 }
-export {
-    addAccount,
-    removeAccount,
-    addAccounts
+
+
+export const openAccount = (account, set_active = false) => {
+    return (dispatch, getState) => {
+        dispatch(spinnerStart());
+        console.log("OPEN ACCOUNT");
+        console.log(getState);
+        return http
+            .post(ACCOUNT_OPEN, { name: account }, null, null)
+            .then(data => {
+                dispatch(spinnerEnd());
+                if (data.status !== 0) {
+                    dispatch(addError(data.status));
+                }
+                else {
+                    if (set_active) {
+                        dispatch(setActiveAccount({ account: data.result.info, type: 0 }))
+                    }
+
+                }
+            })
+            .catch(error => {
+                dispatch(spinnerEnd());
+                dispatch(addError(error.message || error.statusText || error || "UNKNOWN"));
+            });
+
+
+    }
 }
+

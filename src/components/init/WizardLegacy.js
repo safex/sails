@@ -126,6 +126,8 @@ class WizardLegacy extends Component {
         let safex_bal = Object.values(this.props.legacy_accounts) !== [] ? Object.values(this.props.legacy_accounts).reduce((s, x) => { return s + Number(x.safex_bal ? x.safex_bal : 0); }, 0) : 0;
         let sft = 0;
         let sfx = 0;
+        if (this.props.show_on_step === false) return null;
+        if (this.props.step !== this.props.show_on_step) return null;
         return (
             <>
                 <Row>

@@ -25,10 +25,8 @@ class WizardData extends Component {
     render() {
 
         let names = this.props.prop_names;
-        console.log(this.props.values[names[1]]);
-        if (this.props.step !== 1 && this.props.component === "restore") {
-            return null;
-        }
+        if (this.props.show_on_step === false) return null;
+        if (this.props.step !== this.props.show_on_step) return null;
         return (
             <Row>
                 <Col>

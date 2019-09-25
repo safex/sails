@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import { wizardNext, addWizardData } from '../../modules/init.module';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
 import { Row, Col, Card, Button } from 'react-bootstrap';
 
@@ -9,9 +11,8 @@ class WizardReview extends Component {
 
 
     render() {
-        if ((this.props.step !== 4) && (this.props.component === "restore")) {
-            return null;
-        }
+        if (this.props.show_on_step === false) return null;
+        if (this.props.step !== this.props.show_on_step) return null;
         return (
             <>
                 <Row>
@@ -33,10 +34,14 @@ class WizardReview extends Component {
                                 {(this.props.data.hasOwnProperty('password_visible') && this.props.data.password_visible) ? this.props.data[this.props.form_fields[1]] : "*".repeat(this.props.data[this.props.form_fields[1]].length)}
                             </Col>
                             <Col>
-                                <Button variant="primary" onClick={() => {
-                                    let val = (this.props.wizard.data.hasOwnProperty('password_visible') ? !this.props.wizard.data.password_visible : true);
-                                    addWizardData(this.props.dispatch, { password_visible: val });
-                                }}>{(this.props.wizard.data.hasOwnProperty('password_visible') && this.props.wizard.data.password_visible) ? this.props.t('hide_pwd_button') : this.props.t('view_pwd_button')}</Button>
+                                <FontAwesomeIcon
+                                    icon={(this.props.data.hasOwnProperty('password_visible') && this.props.data.password_visible) ? faEyeSlash : faEye}
+                                    style={{ cursor: "pointer" }}
+                                    onClick={() => {
+                                        let val = (this.props.data.hasOwnProperty('password_visible') ? !this.props.data.password_visible : true);
+                                        this.props.handleChange({ target: { name: "password_visible", value: val } });
+                                    }}
+                                />
                             </Col>
                         </Row>
                         <br />
@@ -74,7 +79,7 @@ class WizardReview extends Component {
                         <br />
                         <Row>
                             <Col>
-                                <Button variant="info" onClick={() => { wizardNext(this.props.dispatch, (history) => { history.push('/w/home'); }, [this.props.history]) }} >{this.props.t('next_button')}</Button>
+                                <Button variant="info" onClick={this.props.next} >{this.props.t('next_button')}</Button>
                             </Col>
                         </Row>
                     </Col>

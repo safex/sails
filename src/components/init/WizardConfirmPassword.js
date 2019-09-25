@@ -7,22 +7,22 @@ import { Row, Col, Form, Button } from 'react-bootstrap';
 
 
 
-const handleSubmit = (event, dispatch, data, names, daemon, component = "create", wallet = null) => {
-    const form = event.currentTarget;
-    if (form.checkValidity() === false || (form[names[1]].value !== form[names[2]].value)) {
-        event.preventDefault();
-        event.stopPropagation();
-        addWizardData(dispatch, { validated: false });
-    }
-    else {
-        addWizardData(dispatch, { validated: true });
-        if (component === "create") { wizardNext(dispatch, create, [dispatch, data, names, daemon, wallet]); }
-        if (component === "restore") { wizardNext(dispatch, restore, [dispatch, data, names, daemon]); }
-        if (component === "legacy") { wizardNext(dispatch, create, [dispatch, data, names, daemon, wallet]); }
+// const handleSubmit = (event, dispatch, data, names, daemon, component = "create", wallet = null) => {
+//     const form = event.currentTarget;
+//     if (form.checkValidity() === false || (form[names[1]].value !== form[names[2]].value)) {
+//         event.preventDefault();
+//         event.stopPropagation();
+//         addWizardData(dispatch, { validated: false });
+//     }
+//     else {
+//         addWizardData(dispatch, { validated: true });
+//         if (component === "create") { wizardNext(dispatch, create, [dispatch, data, names, daemon, wallet]); }
+//         if (component === "restore") { wizardNext(dispatch, restore, [dispatch, data, names, daemon]); }
+//         if (component === "legacy") { wizardNext(dispatch, create, [dispatch, data, names, daemon, wallet]); }
 
-    }
+//     }
 
-};
+// };
 
 
 
@@ -43,11 +43,10 @@ class WizardConfirmPassword extends Component {
         //names[0] password field
         //names[1] confirm password field
 
-        let names = Object.keys(this.props.prop_names);
+        let names = this.props.prop_names;
         let prevs = this.props.prev_data.map((x, i) => { return <Row key={`prev-row-${i}`}> <Col key={`prev-col1-${i}`}> {this.props.t(x)}</Col> <Col key={`prev-col2-${i}`}>{this.props.data[x]}</Col></Row> });
-        if ((this.props.step !== 3) && (this.props.component === "restore")) {
-            return null;
-        }
+        if (this.props.show_on_step === false) return null;
+        if (this.props.step !== this.props.show_on_step) return null;
         return (
             <>
                 <Row>
@@ -59,8 +58,8 @@ class WizardConfirmPassword extends Component {
                                     <Form.Group as={Col} controlId={names[0]}>
                                         <Form.Label >{this.props.t(names[0])}</Form.Label>
                                         <Form.Control
-                                            required
                                             type="password"
+                                            name={names[0]}
                                             data-linked="create_confirm_password"
                                             data-rules="required, confirm_password"
                                             data-field="equal"
@@ -76,8 +75,8 @@ class WizardConfirmPassword extends Component {
                                     <Form.Group as={Col} controlId={names[1]}>
                                         <Form.Label >{this.props.t(names[1])}</Form.Label>
                                         <Form.Control
-                                            required
                                             type="password"
+                                            name={names[1]}
                                             data-linked="create_password"
                                             data-rules="required, confirm_password"
                                             data-field="equal"

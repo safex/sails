@@ -62,8 +62,10 @@ class WizardPassword extends Component {
     }
 
     render() {
-        let names = Object.keys(this.props.prop_names);
+        let names = this.props.prop_names;
         let prevs = this.props.prev_data.map((x, i) => { return <Row key={`prevs-row-${i}`}> <Col key={`prevs-col1-${i}`}> {this.props.t(x)}</Col> <Col key={`prevs-col2-${i}`}>{this.props.wizard.data[x]}</Col></Row> });
+        if (this.props.show_on_step === false) return null;
+        if (this.props.step !== this.props.show_on_step) return null;
         return (
             <Row>
                 <Col>

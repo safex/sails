@@ -1,3 +1,34 @@
+export const handleResponse = response => {
+  if (response.status === 403) {
+    return response.json();
+  } else if (response.status >= 400 && response.status < 500) {
+    console.error("400+ err");
+    throw new Error(response.statusText);
+  } else if (response.status >= 500) {
+    console.error("500+ err");
+    throw new Error(response.statusText);
+  } else {
+    return response.json();
+  }
+};
+
+export class HttpError extends Error {
+  code;
+  name;
+  status;
+
+  constructor(source, code) {
+    super(source.message || source);
+    this.code = code || source.code || 500;
+
+    for (const key in source) {
+      if (source.hasOwnProperty(key) && key !== "message" && key !== "code") {
+        this[key] = source[key];
+      }
+    }
+  }
+}
+
 export class Http {
   request(method, path, body, query, token) {
     const requestId = ++this.requestId;
@@ -13,8 +44,8 @@ export class Http {
         if (query.hasOwnProperty(key)) {
           params.push(
             encodeURIComponent(key) +
-              "=" +
-              encodeURIComponent(String(query[key]))
+            "=" +
+            encodeURIComponent(String(query[key]))
           );
         }
       }
@@ -68,8 +99,8 @@ export class Http {
       });
   }
 
-  get(path, query, token) {
-    return this.request("GET", path, null, query, token);
+  get(path, token) {
+    return this.request("GET", path, null, null, token);
   }
 
   post(path, body, query, token) {
