@@ -1,4 +1,5 @@
 import { validateMnemonic, validateConfirmPassword } from './validators';
+import {INIT_RESTORE_SEEDS, INIT_RESTORE_KEYS} from './api_endpoints';
 let { dialog } = window.require("electron").remote;
 export const setError = function (prop, value) {
     this.setState({ errors: { ...this.state.errors, [prop]: value } });
@@ -98,31 +99,22 @@ export const walletFile = function (options = null, type = "create", name = "cre
 export const restore = function () {
     let daemon_host = this.props.daemon.daemon_host || DAEMON_HOST;
     let daemon_port = this.props.daemon.daemon_port || DAEMON_PORT;
-    let args = {
-        path: this.state.data[names[0]].trim(),
-        password: this.state.data[names[1]].trim(),
+    let body = {
+        path: this.state.data.create_filepath.trim(),
+        password: this.state.data.create_password.trim(),
         nettype: NET_TYPE,
         daemon_host: daemon_host,
         daemon_port: daemon_port
     };
-    let func = null;
-    if (this.state.data[names[3]] === "mnemonic") {
-        args = { ...args, seed: this.state.data[names[4]].trim(), password_mnemonic: "" }
-        func = initApi.restoreSeedsApi;
+    let fendpoint = null;
+    if (this.state.data.restore_type === "mnemonic") {
+        body = { ...body, seed: this.state.data.restore_mnemonic.trim(), password_mnemonic: "" }
+        endpoint = INIT_RESTORE_SEEDS;
     }
     else {
-        args = { ...args, address: this.state.data[names[5]].trim(), spendkey: this.state.data[names[7]].trim(), viewkey: this.state.data[names[6]].trim() };
-        func = initApi.restoreKeysApi;
+        body = { ...body, address: this.state.data.restore_address.trim(), spendkey: this.state.data.restore_spend.trim(), viewkey: this.state.data.restore_view.trim() };
+        endpoint= INIT_RESTORE_KEYS;
     }
-
-    lordOfTheFetch(func,
-        [args],
-        callbackForCreate,
-        [dispatch, null],
-        { "dispatch": dispatch });
-
-
-
-
+    this.props.restore
 }
 

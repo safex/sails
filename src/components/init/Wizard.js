@@ -59,6 +59,7 @@ class Wizard extends Component {
             restore: {
                 steps: 4,
                 data: {
+                    show_on_step: 1,
                     prop_names: ["restore_type", "restore_mnemonic", "restore_address", "restore_view", "restore_spend"],
                     back: previousStep.bind(this),
                     next: () => {
@@ -77,6 +78,7 @@ class Wizard extends Component {
                     }
                 },
                 filepath_create: {
+                    show_on_step: 2,
                     prop_names: ["create_filepath"],
                     options: {
                         title: this.props.t("choose_filepath"),
@@ -85,7 +87,12 @@ class Wizard extends Component {
                             extensions: ['sails']
                         }]
                     },
-                    back: () => { this.setState(data: { ...this.state.data, create_filepath: '' }); previousStep.bind(this)(); },
+                    back: () => {
+                        this.setState({ data: { ...this.state.data, create_filepath: '' } });
+                        this.setState({ touched: { ...this.state.touched, create_filepath: false } });
+                        this.setState({ errors: { ...this.state.errors, create_filepath: false } });
+                        previousStep.bind(this)();
+                    },
                     next: () => {
                         let validation = false;
                         if (this.state.data.create_filepath !== "") validation = true;
@@ -98,8 +105,16 @@ class Wizard extends Component {
 
                 },
                 confirm_password: {
+                    show_on_step: 3,
                     prop_names: ["create_password", "create_confirm_password"],
-                    back: () => { this.setState(data: { ...this.state.data, create_password: '', create_confirm_password: '' }); previousStep.bind(this)(); },
+                    form_fields: ["create_filepath", "create_password", "create_confirm_password", "restore_type", "restore_mnemonic", "restore_address", "restore_view", "restore_spend"],
+                    prev_data: ["create_filepath"],
+                    back: () => {
+                        this.setState({ data: { ...this.state.data, create_password: '', create_confirm_password: '' } });
+                        this.setState({ touched: { ...this.state.touched, create_password: false, create_confirm_password: false } });
+                        this.setState({ errors: { ...this.state.errors, create_password: false, create_confirm_password: false } });
+                        previousStep.bind(this)();
+                    },
                     next: () => {
                         let validation = true;
                         if ((this.state.data.create_password.trim() === "")
@@ -118,7 +133,8 @@ class Wizard extends Component {
 
                 },
                 review: {
-                  
+                    show_on_step: 4
+
                 }
             },
             open: {},
@@ -222,8 +238,14 @@ class Wizard extends Component {
                             this.additional[this.props.component].hasOwnProperty("confirm_password") ?
                                 (this.additional[this.props.component].confirm_password.hasOwnProperty('prop_names') ? this.additional[this.props.component].confirm_password.prop_names : []) : []
                         }
-                        prev_data={["create_filepath"]}
-                        form_fields={["create_filepath", "create_password", "create_confirm_password", "restore_type", "restore_mnemonic", "restore_address", "restore_view", "restore_spend"]}
+                        prev_data={
+                            this.additional[this.props.component].hasOwnProperty("confirm_password") ?
+                                (this.additional[this.props.component].confirm_password.hasOwnProperty('prev_data') ? this.additional[this.props.component].confirm_password.prev_data : []) : []
+                        }
+                        form_fields={
+                            this.additional[this.props.component].hasOwnProperty("confirm_password") ?
+                                (this.additional[this.props.component].confirm_password.hasOwnProperty('form_fields') ? this.additional[this.props.component].confirm_password.form_fields : []) : []
+                        }
                         back={
                             this.additional[this.props.component].hasOwnProperty("confirm_password") ?
                                 (this.additional[this.props.component].confirm_password.hasOwnProperty('back') ? this.additional[this.props.component].confirm_password.back : () => { }) : () => { }
@@ -246,7 +268,7 @@ class Wizard extends Component {
                         form_fields={["create_filepath", "create_password"]}
                         prop_names={["create_password", "create_confirm_password"]}
                         next={nextStep.bind(this)}
-                         />
+                    />
                 </Form>
             </>
         );
@@ -255,7 +277,7 @@ class Wizard extends Component {
 }
 const mapDispatchToProps = (dispatch) => {
     return {
-        startRestoringWallet: () => { dispatch() },
+        startRestoringWallet: (api, body) => { dispatch(startRestoringWallet(api, body)) },
         startCreatingWallet: () => { dispatch() }
     }
 
