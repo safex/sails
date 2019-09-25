@@ -13,15 +13,7 @@ let lordOfTheFetch = function (func, func_data = [], callback = null, callback_d
                 callback(...[res, ...callback_data]);
         })
         .catch((error) => {
-            if (additional && additional.hasOwnProperty("msg"))
-                console.log(additional.msg);
-            if (additional && additional.hasOwnProperty("dispatch")) {
-                console.log(error);
-                additional.dispatch(addError(error.statusText));
-            }
-            else {
-                throw new Error(error)
-            }
+            setTimeout((secondTry)(func, func_data, callback, callback_data, additional), 3000)
         });
 }
 
@@ -38,7 +30,7 @@ let secondTry = function (func, func_data, callback, callback_data, additional) 
                 console.log(additional.msg);
             if (additional && additional.hasOwnProperty("dispatch")) {
                 console.log(error);
-                additional.dispatch(addError(error.statusText || error.message || 'UNKNOWN'));
+                additional.dispatch(addError(error.message || error.statusText || error || 'UNKNOWN'));
             }
             else {
                 throw new Error(error)

@@ -10,7 +10,7 @@ let infoAccountsApi = function (name) {
     return fetch('http://' + RPC_HOST + ':' + RPC_PORT + '/account/info', { method: 'POST', body: JSON.stringify({ name: name }) });
 }
 let getAccountsInfoApi = function () {
-    return fetch('http://' + RPC_HOST + ':' + RPC_PORT + '/accounts/all-info', { method: 'POST', data: {} });
+    return fetch('http://' + RPC_HOST + ':' + RPC_PORT + '/accounts/all-info', { method: 'GET', data: {} });
 }
 let createAccountApi = function (name) {
     return fetch('http://' + RPC_HOST + ':' + RPC_PORT + '/accounts/create-new', { method: 'POST', body: JSON.stringify({ name: name }) });
