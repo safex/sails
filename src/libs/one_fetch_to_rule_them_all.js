@@ -6,8 +6,8 @@ let lordOfTheFetch = function (func, func_data = [], callback = null, callback_d
         .then(processResponse)
         .then(jsonResponse)
         .then((res) => {
-            if(res.status!==0){
-               setTimeout((secondTry)(func,func_data, callback, callback_data, additional),2000)
+            if (res.status !== 0) {
+                setTimeout((secondTry)(func, func_data, callback, callback_data, additional), 2000)
             }
             else if (callback)
                 callback(...[res, ...callback_data]);
@@ -25,25 +25,25 @@ let lordOfTheFetch = function (func, func_data = [], callback = null, callback_d
         });
 }
 
-let secondTry = function(func, func_data, callback, callback_data, additional){
+let secondTry = function (func, func_data, callback, callback_data, additional) {
     func(...func_data)
-    .then(processResponse)
-    .then(jsonResponse)
-    .then((res) => {
-        if (callback)
-            callback(...[res, ...callback_data]);
-    })
-    .catch((error) => {
-        if (additional && additional.hasOwnProperty("msg"))
-            console.log(additional.msg);
-        if (additional && additional.hasOwnProperty("dispatch")) {
-            console.log(error);
-            additional.dispatch(addError(error.statusText));
-        }
-        else {
-            throw new Error(error)
-        }
-    });
+        .then(processResponse)
+        .then(jsonResponse)
+        .then((res) => {
+            if (callback)
+                callback(...[res, ...callback_data]);
+        })
+        .catch((error) => {
+            if (additional && additional.hasOwnProperty("msg"))
+                console.log(additional.msg);
+            if (additional && additional.hasOwnProperty("dispatch")) {
+                console.log(error);
+                additional.dispatch(addError(error.statusText || error.message || 'UNKNOWN'));
+            }
+            else {
+                throw new Error(error)
+            }
+        });
 
 }
 
