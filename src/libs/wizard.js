@@ -125,7 +125,13 @@ export const restore = function () {
 export const create = function () {
     let daemon_host = this.props.daemon.daemon_host || DAEMON_HOST;
     let daemon_port = this.props.daemon.daemon_port || DAEMON_PORT;
-    this.props.startCreatingWallet({});
+    this.props.startCreatingWallet({
+        path: this.state.data.create_filepath.trim(),
+        password: this.state.data.create_password.trim(),
+        nettype: NET_TYPE,
+        daemon_host: daemon_host,
+        daemon_port: daemon_port
+    });
 
 }
 

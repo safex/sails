@@ -361,7 +361,7 @@ class Wizard extends Component {
 const mapDispatchToProps = (dispatch) => {
     return {
         startRestoringWallet: (api, body) => { dispatch(startRestoringWallet(api, body)) },
-        startCreatingWallet: () => { dispatch() }
+        startCreatingWallet: (body) => { dispatch(startCreatingWallet(body)) }
     }
 
 }
