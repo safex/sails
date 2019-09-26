@@ -14,14 +14,12 @@ class LanguageMenu extends Component {
 
   render() {
     return (
-      <Row>
-        <Col>
-          <select value={this.props.language} onChange={(event) => changeLanguageF(this, event.target.value)}>
-            <option value="en">English</option>
-            <option value="rs">Serbian</option>
-          </select>
-        </Col>
-      </Row>
+      <div style={{ "margin-left": "15px" }}>
+        <select value={this.props.language} onChange={(event) => changeLanguageF(this, event.target.value)}>
+          <option value="en">English</option>
+          <option value="rs">Serbian</option>
+        </select>
+      </div>
     );
   }
 }

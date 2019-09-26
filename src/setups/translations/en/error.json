@@ -1,4 +1,5 @@
 {
+    "try_again": "Try again later!",
     "ERR_404": "Page Not Found",
     "NO_PWD": "Password field can't be empty",
     "INVALID_FILE_FORMAT": "Invalid wallet format (expected v1)",

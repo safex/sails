@@ -32,10 +32,10 @@ class History extends Component {
       <>
         <Row>
           <Col>
-            <h2>{this.props.t("history")}</h2>
+            <h3>{this.props.t("history")}</h3>
           </Col>
         </Row>
-        <Row>
+        <Row style={{"max-height":"290px", "height":"290px","overflow-y":"auto"}}>
           <Col>
             Number of transactions: {this.props.historyT.hasOwnProperty("ntx") ? this.props.historyT.ntx : this.props.historyT.length}
             {transactions}

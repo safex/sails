@@ -23,18 +23,17 @@ let mainWindow;
 function createWindow() {
   // Create the browser window.
   mainWindow = new BrowserWindow({
-    backgroundColor: "#243782",
-    maximizable: true,
-    // width: 1024,
-    // height: 650,
-    // minWidth: 1024,
-    // minHeight: 650,
+    maximizable: false,
+    width: 1024,
+    height: 650,
+    maxWidth: 1024,
+    maxHeight: 650,
     webPreferences: {
       webSecurity: false,
       nodeIntegration: true
     },
     useContentSize: true,
-    frame: false
+    frame: true
   });
 
   // and load the index.html of the app.

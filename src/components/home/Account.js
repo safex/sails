@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
-import { Button } from 'react-bootstrap';
+import { Button, Row, Col } from 'react-bootstrap';
 
 import { setActiveAccount } from '../../modules/home.module';
 
@@ -21,9 +21,15 @@ class Account extends Component {
     }
 
     return (
-      <Button variant={variant} size="lg" onClick={setActiveAccount.bind(this)} block>
+      <Row>
+        <Col>
+        <Button variant={variant} size="lg" onClick={setActiveAccount.bind(this)} block>
         {this.props.account.label}
-      </Button>);
+      </Button>
+        </Col>
+      </Row>
+     
+      );
 
       //
   }

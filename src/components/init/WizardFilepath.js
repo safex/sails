@@ -52,7 +52,7 @@ class WizardFilepath extends Component {
         addWizardErrors(this.props.dispatch, falses);
         addWizardTouched(this.props.dispatch, falses);
 
-        
+
     }
 
 
@@ -60,12 +60,12 @@ class WizardFilepath extends Component {
         let names = Object.keys(this.props.prop_names);
         let options = null;
         if (this.props.hasOwnProperty("options") && this.props.options) options = this.props.options;
-        if (this.props.type==="open" && this.props.hasOwnProperty("legacy_type") && this.props.legacy_type === "default") {
-            let leg={}; leg[names[0]]=LEGACY_DEFAULT_WALLET_PATH
+        if (this.props.type === "open" && this.props.hasOwnProperty("legacy_type") && this.props.legacy_type === "default") {
+            let leg = {}; leg[names[0]] = LEGACY_DEFAULT_WALLET_PATH
             if ((!this.props.wizard.data.hasOwnProperty(names[0]))) {
                 addWizardData(this.props.dispatch, leg);
             }
-            else if (this.props.wizard.data[names[0]]  !== LEGACY_DEFAULT_WALLET_PATH) {
+            else if (this.props.wizard.data[names[0]] !== LEGACY_DEFAULT_WALLET_PATH) {
                 addWizardData(this.props.dispatch, leg);
             }
         }
@@ -86,8 +86,8 @@ class WizardFilepath extends Component {
                                 />
                                 <Form.Control.Feedback type="invalid">{this.props.t("required_field")}</Form.Control.Feedback>
                                 <Button variant="primary" 
-                                        // disabled={this.props.hasOwnProperty("legacy_type") && this.props.legacy_type == "default"}
-                                        onClick={() => { walletFile(this.props.dispatch, options, this.props.type, names[0], this.props.wizard.touched, this.props.wizard.errors) }} >{this.props.t("browse_button")}</Button>
+                                    // disabled={this.props.hasOwnProperty("legacy_type") && this.props.legacy_type == "default"}
+                                    onClick={() => { walletFile(this.props.dispatch, options, this.props.type, names[0], this.props.wizard.touched, this.props.wizard.errors) }} >{this.props.t("browse_button")}</Button>
                             </Form.Group>
                         </Form.Row>
                         <Form.Row>

@@ -21,10 +21,9 @@ class InitWallet extends Component {
 
 
   render() {
-    return <div>
-      {this.props.wallet_exists ? <Legacy key="legacy" /> : <Main key="main" />}
-      <Link to='/w/home'><button>Wallet</button></Link>
-    </div>
+    return (<div>{this.props.wallet_exists ? <Legacy key="legacy" /> : <Main key="main" />}</div>)
+
+
   }
 }
 export default withTranslation('init')(connect(mapStateToProps)(InitWallet));
