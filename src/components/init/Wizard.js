@@ -2,16 +2,11 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import { WizardData, WizardFilepath, WizardConfirmPassword, WizardReview, WizardPassword, WizardLegacy } from './index';
-import { Form, Row, Col, ProgressBar } from 'react-bootstrap';
-import { startRestoringWallet } from '../../redux/actions/init.action';
+import {Form, Row, Col, ProgressBar } from 'react-bootstrap';
+import {startRestoringWallet, startCreatingWallet } from '../../redux/actions/init.action';
 import { handleChange, handleSelectTab, previousStep, nextStep, walletFile, restore, create } from '../../libs/wizard';
 import { validateKeys, validateMnemonic, validateConfirmPassword } from '../../libs/validators';
-
-const mapStateToProps = (state) => {
-    return {
-        daemon: state.daemon
-    };
-};
+            
 
 class Wizard extends Component {
     constructor(props) {
@@ -365,4 +360,10 @@ const mapDispatchToProps = (dispatch) => {
     }
 
 }
+const mapStateToProps = (state) => {
+    return {
+    daemon: state.daemon
+};
+};
+
 export default withTranslation('init')(connect(mapStateToProps, mapDispatchToProps)(Wizard));

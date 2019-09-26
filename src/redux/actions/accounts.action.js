@@ -8,30 +8,38 @@ import { Http } from '../../libs/http';
 const http = new Http();
 
 export const addAccount = function (account) {
-    return {
-        type: ADD_ACCOUNT,
-        item: account
+    return (dispatch) => {
+        dispatch(
+            {
+                type: ADD_ACCOUNT,
+                item: account
+            }
+        );
     }
 }
 export const removeAccount = function (account) {
-    return {
-        type: REMOVE_ACCOUNT,
-        item: account
+    return (dispatch) => {
+        dispatch({
+            type: REMOVE_ACCOUNT,
+            item: account
+        });
+
     }
 }
 export const addAccounts = function (accounts) {
-    return {
-        type: ADD_ACCOUNTS,
-        item: accounts
+    return (dispatch) => {
+        dispatch({
+            type: ADD_ACCOUNTS,
+            item: accounts
+        })
+
     }
 }
 
 
 export const openAccount = (account, set_active = false) => {
-    return (dispatch, getState) => {
+    return (dispatch) => {
         dispatch(spinnerStart());
-        console.log("OPEN ACCOUNT");
-        console.log(getState);
         return http
             .post(ACCOUNT_OPEN, { name: account }, null, null)
             .then(data => {
@@ -41,7 +49,7 @@ export const openAccount = (account, set_active = false) => {
                 }
                 else {
                     if (set_active) {
-                        dispatch(setActiveAccount({ account: data.result.info, type: 0 }))
+                        dispatch(setActiveAccount({ account: data.result.info, type: 0 }));
                     }
 
                 }
