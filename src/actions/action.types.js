@@ -85,6 +85,7 @@ const ADD_DAEMON_PORT = "ADD_DAEMON_PORT";
 const ADD_DAEMON_MODAL = "ADD_DAEMON_MODAL";
 
 const ADD_ACTIVE_TAB = "ADD_ACTIVE_TAB";
+const RPC_PORT = "RPC_PORT";
 
 
 export {
@@ -161,5 +162,6 @@ export {
     //daemon
     ADD_DAEMON_HOST,
     ADD_DAEMON_PORT,
-    ADD_DAEMON_MODAL
+    ADD_DAEMON_MODAL,
+    RPC_PORT
 }

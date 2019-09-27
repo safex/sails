@@ -13,7 +13,7 @@ class NetworkStatus extends Component {
 
   render() {
     return (
-      <div style={{"margin-left":"10px"}}>
+      <div style={{marginLeft:"10px"}}>
         <Row>
           <Col>{this.props.t("network_status")} </Col>
           <Col> {this.props.t("connected")}</Col>

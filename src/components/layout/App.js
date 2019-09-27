@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import routes_main from '../../setups/routes_main';
-import LanguageMenu from '../shared/LanguageMenu';
-import DaemonSetting from '../shared/DaemonSetting';
+import { LanguageMenu, DaemonSetting, AppBar } from '../shared/';
 import { Navbar } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
@@ -9,6 +8,7 @@ class App extends Component {
 
 
   render() {
+    console.log(this.props.port);
     return (
       <div>
         <Navbar bg="dark" expand="lg">
@@ -19,6 +19,9 @@ class App extends Component {
             </Navbar.Text>
             <Navbar.Text>
               <DaemonSetting />
+            </Navbar.Text>
+            <Navbar.Text>
+              <AppBar />
             </Navbar.Text>
           </Navbar.Collapse>
         </Navbar>

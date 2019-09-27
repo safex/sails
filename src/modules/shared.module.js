@@ -18,6 +18,11 @@ import { getTransactionHistory } from '../api/go/transaction.api'
 import { lordOfTheFetch } from '../libs/one_fetch_to_rule_them_all';
 import { DAEMON_HOST, DAEMON_PORT } from '../setups/conf';
 
+//electron
+
+let { ipcRenderer } = window.require("electron");
+
+
 let changeLanguageF = function (that, value) {
     that.props.dispatch(changeLanguage(value));
     that.props.i18n.changeLanguage(value);
@@ -151,6 +156,17 @@ let addDaemonData = function (event, type) {
     }
 }
 
+let minimize = function () {
+    ipcRenderer.send('app-minimize');
+}
+let maximize = function () {
+    ipcRenderer.send('app-maximize');
+}
+let quit = function () {
+    console.log("quit");
+    ipcRenderer.send('app-close');
+}
+
 
 
 export {
@@ -158,6 +174,9 @@ export {
     logout,
     getActiveAccountFromWallet,
     toggleDaemonModal,
-    addDaemonData
+    addDaemonData,
+    minimize,
+    maximize,
+    quit
 
 }

@@ -14,7 +14,7 @@ class LanguageMenu extends Component {
 
   render() {
     return (
-      <div style={{ "margin-left": "15px" }}>
+      <div style={{ marginLeft: "15px" }}>
         <select value={this.props.language} onChange={(event) => changeLanguageF(this, event.target.value)}>
           <option value="en">English</option>
           <option value="rs">Serbian</option>

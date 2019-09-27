@@ -30,7 +30,7 @@ class Contacts extends Component {
           </Col>
         </Row>
         <br />
-        <Row style={{"max-height":"250px", "height":"250px", "overflow-y":"auto"}}>
+        <Row style={{maxHeight:"250px", "height":"250px", overflowY:"auto"}}>
           <Col>
             {cnts.map((x, i) => { let add = (Math.random() * 100) / 100; return x ? <Row key={`row-${i}`}><Col key={`col-${i}`}><Contact key={`contact-${x.id}-${add}`} contact={cnts[i]} all={cnts} /></Col></Row> : ""; })}
           </Col>

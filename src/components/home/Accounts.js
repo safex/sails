@@ -31,7 +31,7 @@ class Accounts extends Component {
             <h3>{this.props.t("accounts")}</h3>
           </Col>
         </Row>
-        <Row style={{"max-height":"290px", "height":"290px","overflow-y":"auto"}}>
+        <Row style={{maxHeight:"290px", "height":"290px",oferflowY:"auto"}}>
           <Col>
             {accounts}
             {legacy_accounts}

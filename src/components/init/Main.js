@@ -8,7 +8,7 @@ class CardMain extends Component {
   render() {
     return (
       <Link to={this.props.to}>
-        <Card bg="light" text="dark" style={{"min-height":"170px"}}>
+        <Card bg="light" text="dark" style={{minHeight:"170px"}}>
           <Card.Header as="h5">{this.props.header}</Card.Header>
           <Card.Body>
             <Card.Title>{this.props.title}</Card.Title>
@@ -24,7 +24,7 @@ class Main extends Component {
 
   render() {
     return (
-      <div style={{ "height": "560px", "overflow-y": "auto", "margin-top": "20px" }}>
+      <div style={{ "height": "560px", overflowY: "auto", marginTop: "20px" }}>
         <Container>
           <Row>
             <Col>

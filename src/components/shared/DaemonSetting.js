@@ -24,7 +24,7 @@ class DaemonSetting extends Component {
                     placement="left"
                     overlay={<Tooltip id="tooltip-setting"> {this.props.t("setting")} </Tooltip>}
                 >
-                    <FontAwesomeIcon style={{ "margin-left":"15px", color: "white", cursor: "pointer" }} icon={faSlidersH} onClick={toggleDaemonModal.bind(this, !this.props.daemon.daemon_modal)} />
+                    <FontAwesomeIcon style={{ marginLeft:"15px", color: "white", cursor: "pointer" }} icon={faSlidersH} onClick={toggleDaemonModal.bind(this, !this.props.daemon.daemon_modal)} />
                 </OverlayTrigger>
 
 
