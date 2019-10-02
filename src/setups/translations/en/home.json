@@ -19,7 +19,7 @@
     "keys": "Keys",
     "required_25_words": "Separate 25 words by space.",
     "address": "Public address",
-    "private_view": "Private View Key / Private Key (SAFEX)",
+    "private_view": "Private View Key",
     "private_spend": "Private Spend Key",
     "label": "Label",
     "type": "Account type",

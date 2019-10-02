@@ -26,7 +26,8 @@ const password = crypto.randomBytes(20).toString('hex');
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
 let childWindow;
-let childProcess;
+let json_prc_process;
+let react_process;
 
 const startUrl = (process.env.NODE_ENV != "development" ? url.format({
   pathname: path.join(__dirname, "/build/index.html"),
@@ -38,7 +39,10 @@ const errorUrl = null;
 
 
 const conf = {
-  maximizable: false,
+  maximizable: true,
+  minimizable: true,
+  movable: true,
+  fullScreenable: true,
   width: 1024,
   height: 650,
   maxWidth: 1024,
@@ -66,18 +70,28 @@ function createWindow() {
       const parameters = ["-port=" + port, '-password=' + password];
 
       try {
-        let childProcess = child.execFile(executablePath, parameters);
-        if (childProcess) {
-          mainWindow.loadURL(startUrl);
+        let json_prc_process = child.execFile(executablePath, parameters);
+        if (json_prc_process) {
+          if (process.env.NODE_ENV != "development") {
+            mainWindow.loadURL(startUrl);
+          }
+          else {
+            react_process = child.exec("BROWSER=none npm start");
+            (function (mainWindow, startUrl) {
+              setTimeout(() => { mainWindow.loadURL(startUrl); }, 5000);
+            })(mainWindow, startUrl);
+          }
+
           electron.ipcMain.once('react-is-ready-to-receive-port', (event, arg) => {
             event.reply('receive-port', port);
           });
+
         }
       } catch (error) {
         childWindow = new BrowserWindow({ parent: mainWindow, modal: true, show: false })
         childWindow.loadURL(errorUrl);
         childWindow.once('ready-to-show', () => {
-          childWindow.show()
+          childWindow.show();
         });
       }
 
@@ -97,17 +111,19 @@ function createWindow() {
 
   // Emitted when the window is closed.
   mainWindow.on("closed", function () {
-    if (childProcess) childProcess.kill();
+    if (json_prc_process) json_prc_process.kill();
+    if (react_process) react_process.kill();
     mainWindow = null;
     childWindow - null;
 
   });
+
   //show when loaded
   mainWindow.once('ready-to-show', () => {
-    mainWindow.show()
+    mainWindow.show();
   })
 
- 
+
 
 
 }
@@ -117,8 +133,20 @@ function initAll() {
 }
 
 electron.ipcMain.on('app-close', () => {
-  console.log("close received");
-  app.exit();
+  app.quit();
+});
+electron.ipcMain.on('app-minimize', () => {
+  if (mainWindow) {
+    if (mainWindow.isMinimized()) { mainWindow.restore(); }
+    else { mainWindow.minimize(); }
+  }
+
+});
+electron.ipcMain.on('app-maximize', () => {
+  if (mainWindow) {
+    if (mainWindow.isMaximized()) { mainWindow.unmaximize(); }
+    else { mainWindow.maximize(); }
+  }
 });
 
 app.on("ready", initAll, () => {

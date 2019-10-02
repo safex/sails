@@ -73,6 +73,7 @@ let copyContact = function (dispatch, data, touch, error) {
 
 
 let contactSubmit = function (event) {
+    console.log("submited contact");
     event.preventDefault();
     event.stopPropagation();
     const form = event.currentTarget;

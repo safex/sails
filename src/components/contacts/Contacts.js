@@ -23,16 +23,16 @@ class Contacts extends Component {
   render() {
     let cnts = Object.values(this.props.contacts.contacts);
     return (
-     <>
-        <Row>
+      <>
+        <Row style={{ position: "relative", top: "5px", width: "100%", marginBottom: "10px" }}>
           <Col>
-            <AddContact/>
+            <AddContact />
           </Col>
         </Row>
         <br />
-        <Row style={{maxHeight:"250px", "height":"250px", overflowY:"auto"}}>
+        <Row style={{ maxHeight: "250px", "height": "250px", overflowY: "auto" }}>
           <Col>
-            {cnts.map((x, i) => { let add = (Math.random() * 100) / 100; return x ? <Row key={`row-${i}`}><Col key={`col-${i}`}><Contact key={`contact-${x.id}-${add}`} contact={cnts[i]} all={cnts} /></Col></Row> : ""; })}
+            {cnts.map((x, i) => { let add = (Math.random() * 100) / 100; return x ? <><Row key={`row-${i}`}><Col key={`col-${i}`}><Contact key={`contact-${x.id}-${add}`} contact={cnts[i]} all={cnts} /></Col></Row><br /></> : ""; })}
           </Col>
         </Row>
       </>

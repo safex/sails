@@ -1,7 +1,7 @@
 import { RPC_HOST, RPC_PORT } from '../../setups/conf';
 
 let syncAccountsApi = function () {
-    return fetch('http://' + RPC_HOST + ':' + RPC_PORT + '/account/sync', { method: 'POST', body: JSON.stringify({}) });
+    return fetch('http://' + RPC_HOST + ':' + RPC_PORT + '/begin-updating', { method: 'POST', body: JSON.stringify({}) });
 }
 let openAccountsApi = function (name) {
     return fetch('http://' + RPC_HOST + ':' + RPC_PORT + '/account/open', { method: 'POST', body: JSON.stringify({ name: name }) });
@@ -10,7 +10,7 @@ let infoAccountsApi = function (name) {
     return fetch('http://' + RPC_HOST + ':' + RPC_PORT + '/account/info', { method: 'POST', body: JSON.stringify({ name: name }) });
 }
 let getAccountsInfoApi = function () {
-    return fetch('http://' + RPC_HOST + ':' + RPC_PORT + '/accounts/all-info', { method: 'POST', data: {} });
+    return fetch('http://' + RPC_HOST + ':' + RPC_PORT + '/accounts/all-info', { method: 'GET', data: {} });
 }
 let createAccountApi = function (name) {
     return fetch('http://' + RPC_HOST + ':' + RPC_PORT + '/accounts/create-new', { method: 'POST', body: JSON.stringify({ name: name }) });

@@ -42,42 +42,25 @@ let getActiveAccountFromWallet = function (dispatch) {
 }
 
 let openAccounts = function (dispatch, account, save) {
-    if (account.type) {
-        dispatch(addActiveAccount(account));
-        // syncAccount(dispatch, account);
-        getHistory(dispatch, account);
-        //fake open primary
-
-        lordOfTheFetch(openAccountsApi, ["primary"], callbackForOpenAccounts, [dispatch, save, false], { dispatch: dispatch });
-    }
-    else {
-        lordOfTheFetch(openAccountsApi, [account.account.account_name], callbackForOpenAccounts, [dispatch, save, true], { dispatch: dispatch });
-    }
-
+        lordOfTheFetch(openAccountsApi, [account.account_name], callbackForOpenAccounts, [dispatch, save, true], { dispatch: dispatch });
 }
 
 let saveActiveToWallet = function (dispatch, account, dispatchActiveAccount) {
-    lordOfTheFetch(setActiveAccountApi, [{ account: account, type: 0 }], callbackForSetActiveAccountInWallet, [dispatch, account, dispatchActiveAccount], { dispatch: dispatch });
+    lordOfTheFetch(setActiveAccountApi, [account], callbackForSetActiveAccountInWallet, [dispatch, account, dispatchActiveAccount], { dispatch: dispatch });
 }
 
 let syncAccount = function (dispatch, account) {
-    if (account.type === 1) syncAccountOld(dispatch, account);
-    else syncAccountNew(dispatch, account);
+   syncAccountNew(dispatch, account);
 }
 let getHistory = function (dispatch, account) {
-    if (account.type === 1) getHistoryOld(dispatch, account);
-    else getHistoryNew(dispatch, account);
+  getHistoryNew(dispatch, account);
 }
 
-let getHistoryOld = function (dispatch, account) {
 
-}
 let getHistoryNew = function (dispatch, account) {
     lordOfTheFetch(getTransactionHistory, [], callbackForGetHistoryNew, [dispatch], { dispatch: dispatch });
 }
 
-let syncAccountOld = function (dispatch, account) {
-}
 let syncAccountNew = function (dispatch, account) {
     lordOfTheFetch(syncAccountsApi, [], callbackForSyncAccount, [dispatch, account], { dispatch: dispatch });
 }
@@ -87,10 +70,11 @@ let syncAccountNew = function (dispatch, account) {
 //callbacks
 let callbackForGetActiveAccountFromWallet = function (res, dispatch, labels) {
     if (res.status === 0) {
+        console.log(JSON.parse(res.result.value));
         openAccounts(dispatch, JSON.parse(res.result.value), false, labels);
     }
     else if (res.status === 13) {
-        openAccounts(dispatch, { account: { account_name: "primary" }, type: 0 }, true, labels);
+        openAccounts(dispatch, { account_name: "primary" }, true, labels);
     }
     else {
         dispatch(addError(res.status));
@@ -107,9 +91,9 @@ let callbackForOpenAccounts = function (res, dispatch, save, dispatchActiveAccou
         saveActiveToWallet(dispatch, tmp, dispatchActiveAccount);
     }
     else if (dispatchActiveAccount) {
-        dispatch(addActiveAccount({ account: tmp, type: 0 }));
-        syncAccount(dispatch, { account: tmp, type: 0 });
-        getHistory(dispatch, { account: tmp, type: 0 });
+        dispatch(addActiveAccount(tmp));
+        syncAccount(dispatch, tmp);
+        getHistory(dispatch, tmp);
     }
 
 
@@ -119,7 +103,7 @@ let callbackForSetActiveAccountInWallet = function (res, dispatch, data, dispatc
     if (res.status !== 0) dispatch(addError(res.status));
     else {
         if (dispatchToAccount) {
-            dispatch(addActiveAccount({ account: data, type: 0 }));
+            dispatch(addActiveAccount(data));
         }
 
     }
@@ -163,7 +147,6 @@ let maximize = function () {
     ipcRenderer.send('app-maximize');
 }
 let quit = function () {
-    console.log("quit");
     ipcRenderer.send('app-close');
 }
 

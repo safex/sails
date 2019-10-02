@@ -8,13 +8,15 @@ import i18n from './setups/i18n';
 import App from './components/layout/App';
 import { setPort } from './actions/rpc_config.action';
 let { ipcRenderer } = window.require("electron");
-
+let port =2905;
 ipcRenderer.once('receive-port', ((event, arg) => {
     store.dispatch(setPort(arg));
-    ReactDOM.render(<I18nextProvider i18n={i18n}><Provider store={store}><div><App port={arg} /></div></Provider></I18nextProvider>, document.getElementById('root'));
+    port=arg;
+    
 })
 )
 ipcRenderer.send('react-is-ready-to-receive-port');
+ReactDOM.render(<I18nextProvider i18n={i18n}><Provider store={store}><div><App port={port} /></div></Provider></I18nextProvider>, document.getElementById('root'));
 
 
 

@@ -5,7 +5,7 @@ const LEGACY_WALLET_FILENAME = 'safexwallet.dat';
 const LEGACY_DEFAULT_WALLET_PATH = path.resolve(os.homedir(), LEGACY_WALLET_FILENAME);
 const DEFAULT_LANGUAGE = 'en';
 const LEGACY_DECRYPT_ALGORITHM = 'aes-256-ctr';
-const NET_TYPE = 'testnet';
+const NET_TYPE = 'mainnet';
 
 const DAEMON_PORT = 17402;
 const DAEMON_HOST = 'rpc.safex.io';

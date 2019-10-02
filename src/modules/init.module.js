@@ -1,7 +1,8 @@
 //actions
 import { addWalletExistsStatus } from '../actions/wallet_exists.action.js';
 import { addLegacyWallet } from '../actions/legacy_wallet.action';
-import { resetAllBalances, addLegacyBalance, addLegacyBTCBalance, addLegacyBTCBalancePending, addLegacyAccounts} from '../actions/legacy_accounts.action';
+import { resetAllBalances, addLegacyBalance, addLegacyBTCBalance, addLegacyBTCBalancePending, addLegacyAccounts } from '../actions/legacy_accounts.action';
+import { addAccounts } from '../actions/accounts.action';
 import * as WizardActions from '../actions/wizard.action';
 import { addActiveAccount } from '../actions/active_account.action';
 import { addError } from '../actions/error.action';
@@ -58,12 +59,12 @@ let openAccount = function (dispatch, legacy) {
 
 
 
-let setActiveAccount = function (dispatch, data, type, legacy) {
+let setActiveAccount = function (dispatch, data, legacy) {
 
     lordOfTheFetch(activeAccountApi.setActiveAccountApi,
-        [{ account: data, type: type }],
+        [data],
         callbackForSetActiveAccount,
-        [dispatch, { account: data, type: type }, legacy],
+        [dispatch, data, legacy],
         { "dispatch": dispatch });
 }
 
@@ -96,6 +97,7 @@ let openLegacy = function (dispatch, form, names = ["legacy_filepath", "legacy_p
     readFilePromise(form[names[0]].trim())
         .then((data) => { return decryptContent(data, form[names[1]].trim()) })
         .then((content) => { //
+            dispatch(addAccounts(Object.assign({}, content.safex_keys)));
             dispatch(addLegacyWallet(content));
             dispatch(addLegacyAccounts(content.keys))
             content.keys.forEach(x => {
@@ -124,6 +126,8 @@ let openLegacy = function (dispatch, form, names = ["legacy_filepath", "legacy_p
                     .catch((error) => { dispatch(addError(error.message)); });
 
             });
+
+
         })
         .catch((error) => { dispatch(addError(error)); });
 }
@@ -184,7 +188,7 @@ let callbackForCreate = function (res, dispatch, legacy) {
 let callbackForOpenAccount = function (res, dispatch, legacy) {
     if (res.status !== 0) dispatch(addError(res.status));
     else {
-        setActiveAccount(dispatch, res.result.info, 0, legacy);
+        setActiveAccount(dispatch, res.result.info, legacy);
     }
 }
 
@@ -202,11 +206,9 @@ let callbackForSetActiveAccount = function (res, dispatch, data, legacy) {
         if (legacy && legacy.hasOwnProperty("keys") && legacy.keys.length > 0) {
             let legacies = {};
             legacy.keys.forEach((e, i) => {
-                legacies["wallet_legacy" + i] = { account: legacy.keys[i], type: 1 };
-                legacies["wallet_legacy" + i].account["address"] = e.public_key;
-                legacies["wallet_legacy" + i].account["account_name"] = "wallet_legacy" + i;
-
-
+                legacies["wallet_legacy" + i] = legacy.keys[i];
+                legacies["wallet_legacy" + i]["address"] = e.public_key;
+                legacies["wallet_legacy" + i]["account_name"] = "wallet_legacy" + i;
             });
             addLegacyAccountsToWallet(dispatch, legacies);
 

@@ -39,7 +39,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "electron-dev": "concurrently \"npm start\" \"wait-on http://localhost:3000 && NODE_ENV=development electron .\"",
+    "electron-dev": "NODE_ENV=development electron .",
     "electron-dev-browser": "concurrently \"BROWSER=none npm start\" \"wait-on http://localhost:3000 && NODE_ENV=development electron .\"",
     "electron-only": "electron .",
     "make-mac-installer": "npm run build && electron-builder build -m",

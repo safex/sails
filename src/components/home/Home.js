@@ -1,19 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
-import { Row, Col, Button, Dropdown, DropdownButton, Modal, Form } from 'react-bootstrap';
+import { Row, Col, Button, Dropdown, Modal, Form } from 'react-bootstrap';
 import Accounts from './Accounts';
 import History from './History';
 import { addNewAccount, changeModalState, addSeedsAccount, addKeysAccount, addFileAccount, openFile } from '../../modules/home.module';
 
-const mapStateToProps = (state) => {
-    return {
-        accounts: state.accounts,
-        legacy_accounts: state.legacy_accounts,
-        home_modals: state.home_modals,
-        account_labels: state.account_labels
-    }
-}
 
 function ModalSeeds(props) {
 
@@ -97,7 +89,7 @@ function ModalKeys(props) {
                             <Form.Control type="text" />
                         </Form.Group>
                     </Form.Row>
-
+                    {/* 
                     <Form.Row>
                         <Form.Group as={Col} controlId="add_keys_type">
                             <Form.Label as="legend" > {props.type} </Form.Label>
@@ -127,6 +119,7 @@ function ModalKeys(props) {
                             <h5>{props.note} : <small>{props.note_text}</small></h5>
                         </Col>
                     </Form.Row>
+                     */}
 
                 </Form>
 
@@ -138,15 +131,12 @@ function ModalKeys(props) {
                         document.getElementById("add_keys_view").value,
                         document.getElementById("add_keys_spend").value,
                         document.getElementById("add_keys_label").value,
-                        document.querySelector('input[name=add_keys_type]:checked').value,
                         props.accounts,
-                        props.legacy_accounts,
                         props.labels);
                     document.getElementById("add_keys_address").value = "";
                     document.getElementById("add_keys_view").value = "";
                     document.getElementById("add_keys_spend").value = "";
                     document.getElementById("add_keys_label").value = "";
-                    document.querySelector('input[name=add_keys_type]:checked').value = "0";
                     changeModalState(props.dispatch, { modal_keys: false });
                 }}>{props.submit}</Button>
                 <Button variant="danger" onClick={() => { changeModalState(props.dispatch, { modal_keys: false }) }}>{props.close}</Button>
@@ -251,9 +241,6 @@ class Home extends Component {
     render() {
         return (
             <>
-                {/* <Row>
-                    <Col xs={12} ><h2> {this.props.t("home")}</h2></Col>
-                </Row> */}
                 <Row >
                     <Col xs={12} md={4}>
                         <Accounts />
@@ -343,6 +330,15 @@ class Home extends Component {
                 />
             </>
         );
+    }
+}
+
+
+const mapStateToProps = (state) => {
+    return {
+        accounts: state.accounts,
+        home_modals: state.home_modals,
+        account_labels: state.account_labels
     }
 }
 export default withTranslation('home')(connect(mapStateToProps)(Home));
