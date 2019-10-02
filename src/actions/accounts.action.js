@@ -18,9 +18,9 @@ let addAccounts = function (accounts) {
         item: accounts
     }
 }
-let removeAccounts = function (accounts) {
+let removeAccounts = function () {
     return {
-        type: REMOVE_ACCOUNTS,
+        type: REMOVE_ACCOUNTS
     }
 }
 export {
