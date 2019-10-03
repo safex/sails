@@ -104,7 +104,7 @@ class LegacySAFEXCard extends Component {
 class WizardLegacy extends Component {
     render() {
         let btc_card = this.props.legacy_accounts ? Object.values(this.props.legacy_accounts).map((x, i) => { return <LegacyBTCCard key={`legacy-btc-${i}-${x.btc_bal}-${x.pending_btc_bal}-${x.safex_bal}-${x.pending_safex_bal}`} account={x} t={this.props.t} /> }) : [];
-        let safex_card = this.props.accounts ? Object.values(this.props.accounts).map((x, i) => { return <LegacySAFEXCard key={`legacy-safex-${i}`} account={x} t={this.props.t} /> }) : [];
+        let safex_card = this.props.accounts ? Object.values(this.props.accounts).map((x, i) => { if (x) { return <LegacySAFEXCard key={`legacy-safex-${i}`} account={x} t={this.props.t} /> } else return null; }) : [];
         let btc_bal = Object.values(this.props.legacy_accounts) !== [] ? Object.values(this.props.legacy_accounts).reduce((s, x) => { return s + Number(x.btc_bal ? x.btc_bal : 0); }, 0) : 0;
         let safex_bal = Object.values(this.props.legacy_accounts) !== [] ? Object.values(this.props.legacy_accounts).reduce((s, x) => { return s + Number(x.safex_bal ? x.safex_bal : 0); }, 0) : 0;
         return (

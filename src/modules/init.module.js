@@ -200,7 +200,11 @@ let callbackForSetActiveAccount = function (res, dispatch, data, legacy) {
         dispatch(addActiveAccount(data));
         if (legacy && legacy.hasOwnProperty("safex_keys") && legacy.safex_keys.length > 0) {
             legacy.safex_keys.forEach((e, i) => {
-                restoreFromKeys(dispatch, e.public_addr, e.spend.sec, e.view.sec, "wallet " + i);
+                if ((e.public_addr !== undefined) && (e.spend !== undefined) && (e.view !== undefined)) {
+                    restoreFromKeys(dispatch, e.public_addr, e.spend.sec, e.view.sec, "wallet " + i);
+                }
+                else console.log("FROM INIT => UNDEFINED ", e);
+
             })
         }
         if (legacy && legacy.hasOwnProperty("keys") && legacy.keys.length > 0) {

@@ -121,16 +121,9 @@ function createWindow() {
   //show when loaded
   mainWindow.once('ready-to-show', () => {
     mainWindow.show();
-  })
-
-
-
-
+  });
 }
 
-function initAll() {
-  createWindow();
-}
 
 electron.ipcMain.on('app-close', () => {
   app.quit();
@@ -149,7 +142,7 @@ electron.ipcMain.on('app-maximize', () => {
   }
 });
 
-app.on("ready", initAll, () => {
+app.on("ready", createWindow, () => {
   mainWindow = new BrowserWindow();
 });
 
@@ -167,7 +160,7 @@ app.on("activate", function () {
   // On OS X it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
   if (mainWindow === null) {
-    initAll()
+    createWindow();
   }
 });
 
