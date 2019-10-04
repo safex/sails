@@ -15,9 +15,9 @@ let getAccountsInfoApi = function () {
 let createAccountApi = function (name) {
     return fetch('http://' + RPC_HOST + ':' + RPC_PORT + '/accounts/create-new', { method: 'POST', body: JSON.stringify({ name: name }) });
 }
-// let deleteAccountApi = function (address) {
-//     return fetch('http://'+RPC_HOST+':'+RPC_PORT+'/accounts/delete', { method: 'POST', data: { address: address } });
-// }
+let deleteAccountApi = function (name) {
+    return fetch('http://' + RPC_HOST + ':' + RPC_PORT + '/account/remove', { method: 'POST', body: JSON.stringify({ name: name }) });
+}
 let recoverAccountKeysApi = function (address, spendkey, viewkey, name) {
     return fetch('http://' + RPC_HOST + ':' + RPC_PORT + '/accounts/create-keys', { method: 'POST', body: JSON.stringify({ address: address, spendkey: spendkey, viewkey: viewkey, name: name }) });
 }
@@ -37,7 +37,7 @@ export {
     infoAccountsApi,
     getAccountsInfoApi,
     createAccountApi,
-    //  deleteAccountApi,
+    deleteAccountApi,
     recoverAccountKeysApi,
     recoverAccountSeedsApi,
     // statusAccountApi,

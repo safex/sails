@@ -238,7 +238,9 @@ function ModalFile(props) {
 
 
 class Home extends Component {
+
     render() {
+        console.log("from home", this.props.accounts);
         return (
             <>
                 <Row >

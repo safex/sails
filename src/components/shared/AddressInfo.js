@@ -22,10 +22,10 @@ class AddressInfo extends Component {
             </ButtonToolbar>
           </Col>
         </Row>
-        <br/>
+        <br />
         <Row>
           <Col>
-            <Alert variant="secondary" style={{ "word-break": "break-all" }}> {this.props.active_account.hasOwnProperty("account") ? this.props.active_account.account.address : ""} </Alert>
+            <Alert variant="secondary" style={{ wordBreak: "break-all" }}> {this.props.active_account.hasOwnProperty("account") ? this.props.active_account.account.address : ""} </Alert>
           </Col>
         </Row>
       </div>

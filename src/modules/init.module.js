@@ -204,7 +204,6 @@ let callbackForSetActiveAccount = function (res, dispatch, data, legacy) {
                     restoreFromKeys(dispatch, e.public_addr, e.spend.sec, e.view.sec, "wallet " + i);
                 }
                 else console.log("FROM INIT => UNDEFINED ", e);
-
             })
         }
         if (legacy && legacy.hasOwnProperty("keys") && legacy.keys.length > 0) {

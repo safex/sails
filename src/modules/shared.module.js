@@ -42,7 +42,7 @@ let getActiveAccountFromWallet = function (dispatch) {
 }
 
 let openAccounts = function (dispatch, account, save) {
-        lordOfTheFetch(openAccountsApi, [account.account_name], callbackForOpenAccounts, [dispatch, save, true], { dispatch: dispatch });
+    lordOfTheFetch(openAccountsApi, [account.account_name], callbackForOpenAccounts, [dispatch, save, true], { dispatch: dispatch });
 }
 
 let saveActiveToWallet = function (dispatch, account, dispatchActiveAccount) {
@@ -50,10 +50,10 @@ let saveActiveToWallet = function (dispatch, account, dispatchActiveAccount) {
 }
 
 let syncAccount = function (dispatch, account) {
-   syncAccountNew(dispatch, account);
+    syncAccountNew(dispatch, account);
 }
 let getHistory = function (dispatch, account) {
-  getHistoryNew(dispatch, account);
+    getHistoryNew(dispatch, account);
 }
 
 
@@ -85,18 +85,18 @@ let callbackForOpenAccounts = function (res, dispatch, save, dispatchActiveAccou
     if (res.status !== 0) {
         dispatch(addError(res.status));
     }
-    let tmp = res.result.info;
-    if (!tmp.hasOwnProperty("label")) { tmp.label = tmp.account_name };
-    if (save) {
-        saveActiveToWallet(dispatch, tmp, dispatchActiveAccount);
+    if (res.result.hasOwnProperty("info")) {
+        let tmp = res.result.info;
+        if (!tmp.hasOwnProperty("label")) { tmp.label = tmp.account_name };
+        if (save) {
+            saveActiveToWallet(dispatch, tmp, dispatchActiveAccount);
+        }
+        else if (dispatchActiveAccount) {
+            dispatch(addActiveAccount(tmp));
+            syncAccount(dispatch, tmp);
+            getHistory(dispatch, tmp);
+        }
     }
-    else if (dispatchActiveAccount) {
-        dispatch(addActiveAccount(tmp));
-        syncAccount(dispatch, tmp);
-        getHistory(dispatch, tmp);
-    }
-
-
 }
 
 let callbackForSetActiveAccountInWallet = function (res, dispatch, data, dispatchToAccount) {

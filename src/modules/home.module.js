@@ -221,7 +221,7 @@ let callbackForGetLabels = function (res, dispatch, accounts) {
         let labels = JSON.parse(res.result.value);
         for (let l in labels) {
             if (acc.hasOwnProperty(l)) {
-                acc[l].account.label = labels[l];
+                acc[l].label = labels[l];
             }
         }
         dispatch(addAccounts(acc));

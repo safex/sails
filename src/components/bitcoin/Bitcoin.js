@@ -27,7 +27,7 @@ class LegacyCard extends Component {
                 <Col xs={12} md={2}>
                   <Button variant="outline-primary" size="sm" block>{this.props.t("copy_button").toUpperCase()}</Button>
                 </Col>
-                <Col xs={12} md={6} style={{ "word-break": "break-all" }}>
+                <Col xs={12} md={6} style={{ wordBreak: "break-all" }}>
                   {this.props.account.public_key}
                 </Col>
                 <Col xs={12} md={2}>

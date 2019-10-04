@@ -7,7 +7,8 @@ let lordOfTheFetch = function (func, func_data = [], callback = null, callback_d
         .then(jsonResponse)
         .then((res) => {
             if (res.status !== 0) {
-                setTimeout((secondTry)(func, func_data, callback, callback_data, additional), 2000)
+                if (res.result.msg === "Wallet is syncing") setTimeout(lordOfTheFetch(func, func_data, callback, callback_data, additional), 2000);
+                else setTimeout((secondTry)(func, func_data, callback, callback_data, additional), 2000)
             }
             else if (callback)
                 callback(...[res, ...callback_data]);
