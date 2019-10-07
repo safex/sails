@@ -1,6 +1,7 @@
-import React,{Component} from 'react';
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
+import { Row, Col, Button, ButtonGroup, ButtonToolbar, Alert } from 'react-bootstrap';
 
 const mapStateToProps = (state) => {
   return {
@@ -8,16 +9,27 @@ const mapStateToProps = (state) => {
   };
 };
 
-
 class AddressInfo extends Component {
 
   render() {
-    return <div>
-      <button>{this.props.t("copy")}</button>
-      <button>{this.props.t("qr_code")}</button>
-      <p>{this.props.t("receive")}</p>
-      <p>{this.props.active_account?"":"X"}</p>
-    </div>;
+    return (
+      <div >
+        <Row>
+          <Col>
+            <ButtonToolbar className="justify-content-end">
+              <Button variant="outline-primary">{this.props.t("copy")}</Button> &nbsp;
+              <Button variant="outline-info">{this.props.t("receive")}</Button>
+            </ButtonToolbar>
+          </Col>
+        </Row>
+        <br />
+        <Row>
+          <Col>
+            <Alert variant="secondary" style={{ wordBreak: "break-all" }}> {this.props.active_account.hasOwnProperty("account") ? this.props.active_account.account.address : ""} </Alert>
+          </Col>
+        </Row>
+      </div>
+    );
   }
 }
 export default withTranslation('address_info')(connect(mapStateToProps)(AddressInfo));

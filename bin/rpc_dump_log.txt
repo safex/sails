@@ -1,0 +1,391 @@
+2019/08/20 08:58:40 -----------------------------------------------------------------------------------------
+2019/08/20 08:58:40 endpoint:  http://127.0.0.1:38001/get_info body:  
+2019/08/20 08:58:40 *****************************************************************************************
+2019/08/20 08:58:40  Response: -----------------------------------------------------------------------------------------
+2019/08/20 08:58:40 {
+  "alt_blocks_count": 0,
+  "block_size_limit": 40000,
+  "block_size_median": 81,
+  "bootstrap_daemon_address": "",
+  "cumulative_difficulty": 24803,
+  "difficulty": 200,
+  "free_space": 406748426240,
+  "grey_peerlist_size": 0,
+  "height": 127,
+  "height_without_bootstrap": 127,
+  "incoming_connections_count": 1,
+  "issued_coins": 0,
+  "mainnet": false,
+  "migrated_tokens": 0,
+  "offline": false,
+  "outgoing_connections_count": 1,
+  "rpc_connections_count": 4,
+  "stagenet": false,
+  "start_time": 1566207793,
+  "status": "OK",
+  "target": 120,
+  "target_height": 0,
+  "testnet": true,
+  "top_block_hash": "3337ec064bb894ec31148e3ac8f404f4eebd5f453dd827f92257bf4a081ab5af",
+  "tx_count": 6,
+  "tx_pool_size": 0,
+  "untrusted": false,
+  "was_bootstrap_ever_used": false,
+  "white_peerlist_size": 0
+}
+2019/08/20 08:58:40 -----------------------------------------------------------------------------------------
+2019/08/20 08:58:45 {primary       }
+2019/08/20 08:59:38 -----------------------------------------------------------------------------------------
+2019/08/20 08:59:38 endpoint:  http://127.0.0.1:38001/get_info body:  
+2019/08/20 08:59:38 *****************************************************************************************
+2019/08/20 08:59:38  Response: -----------------------------------------------------------------------------------------
+2019/08/20 08:59:38 {
+  "alt_blocks_count": 0,
+  "block_size_limit": 40000,
+  "block_size_median": 81,
+  "bootstrap_daemon_address": "",
+  "cumulative_difficulty": 24803,
+  "difficulty": 200,
+  "free_space": 406748372992,
+  "grey_peerlist_size": 0,
+  "height": 127,
+  "height_without_bootstrap": 127,
+  "incoming_connections_count": 1,
+  "issued_coins": 0,
+  "mainnet": false,
+  "migrated_tokens": 0,
+  "offline": false,
+  "outgoing_connections_count": 1,
+  "rpc_connections_count": 4,
+  "stagenet": false,
+  "start_time": 1566207793,
+  "status": "OK",
+  "target": 120,
+  "target_height": 0,
+  "testnet": true,
+  "top_block_hash": "3337ec064bb894ec31148e3ac8f404f4eebd5f453dd827f92257bf4a081ab5af",
+  "tx_count": 6,
+  "tx_pool_size": 0,
+  "untrusted": false,
+  "was_bootstrap_ever_used": false,
+  "white_peerlist_size": 0
+}
+2019/08/20 08:59:38 -----------------------------------------------------------------------------------------
+2019/08/20 08:59:53 -----------------------------------------------------------------------------------------
+2019/08/20 08:59:53 endpoint:  http://127.0.0.1:38001/get_info body:  
+2019/08/20 08:59:53 *****************************************************************************************
+2019/08/20 08:59:53  Response: -----------------------------------------------------------------------------------------
+2019/08/20 08:59:53 {
+  "alt_blocks_count": 0,
+  "block_size_limit": 40000,
+  "block_size_median": 81,
+  "bootstrap_daemon_address": "",
+  "cumulative_difficulty": 24803,
+  "difficulty": 200,
+  "free_space": 406748344320,
+  "grey_peerlist_size": 0,
+  "height": 127,
+  "height_without_bootstrap": 127,
+  "incoming_connections_count": 1,
+  "issued_coins": 0,
+  "mainnet": false,
+  "migrated_tokens": 0,
+  "offline": false,
+  "outgoing_connections_count": 2,
+  "rpc_connections_count": 4,
+  "stagenet": false,
+  "start_time": 1566207793,
+  "status": "OK",
+  "target": 120,
+  "target_height": 0,
+  "testnet": true,
+  "top_block_hash": "3337ec064bb894ec31148e3ac8f404f4eebd5f453dd827f92257bf4a081ab5af",
+  "tx_count": 6,
+  "tx_pool_size": 0,
+  "untrusted": false,
+  "was_bootstrap_ever_used": false,
+  "white_peerlist_size": 0
+}
+2019/08/20 08:59:53 -----------------------------------------------------------------------------------------
+2019/08/20 08:59:57 {primary       }
+2019/08/20 09:00:37 -----------------------------------------------------------------------------------------
+2019/08/20 09:00:37 endpoint:  http://127.0.0.1:38001/get_info body:  
+2019/08/20 09:00:37 *****************************************************************************************
+2019/08/20 09:00:37  Response: -----------------------------------------------------------------------------------------
+2019/08/20 09:00:37 {
+  "alt_blocks_count": 0,
+  "block_size_limit": 40000,
+  "block_size_median": 81,
+  "bootstrap_daemon_address": "",
+  "cumulative_difficulty": 24803,
+  "difficulty": 200,
+  "free_space": 406748307456,
+  "grey_peerlist_size": 0,
+  "height": 127,
+  "height_without_bootstrap": 127,
+  "incoming_connections_count": 1,
+  "issued_coins": 0,
+  "mainnet": false,
+  "migrated_tokens": 0,
+  "offline": false,
+  "outgoing_connections_count": 2,
+  "rpc_connections_count": 4,
+  "stagenet": false,
+  "start_time": 1566207793,
+  "status": "OK",
+  "target": 120,
+  "target_height": 0,
+  "testnet": true,
+  "top_block_hash": "3337ec064bb894ec31148e3ac8f404f4eebd5f453dd827f92257bf4a081ab5af",
+  "tx_count": 6,
+  "tx_pool_size": 0,
+  "untrusted": false,
+  "was_bootstrap_ever_used": false,
+  "white_peerlist_size": 0
+}
+2019/08/20 09:00:37 -----------------------------------------------------------------------------------------
+2019/08/20 09:00:40 {primary       }
+2019/08/20 09:01:08 -----------------------------------------------------------------------------------------
+2019/08/20 09:01:08 endpoint:  http://127.0.0.1:38001/get_info body:  
+2019/08/20 09:01:08 *****************************************************************************************
+2019/08/20 09:01:08  Response: -----------------------------------------------------------------------------------------
+2019/08/20 09:01:08 {
+  "alt_blocks_count": 0,
+  "block_size_limit": 40000,
+  "block_size_median": 81,
+  "bootstrap_daemon_address": "",
+  "cumulative_difficulty": 24803,
+  "difficulty": 200,
+  "free_space": 406748291072,
+  "grey_peerlist_size": 0,
+  "height": 127,
+  "height_without_bootstrap": 127,
+  "incoming_connections_count": 1,
+  "issued_coins": 0,
+  "mainnet": false,
+  "migrated_tokens": 0,
+  "offline": false,
+  "outgoing_connections_count": 1,
+  "rpc_connections_count": 4,
+  "stagenet": false,
+  "start_time": 1566207793,
+  "status": "OK",
+  "target": 120,
+  "target_height": 0,
+  "testnet": true,
+  "top_block_hash": "3337ec064bb894ec31148e3ac8f404f4eebd5f453dd827f92257bf4a081ab5af",
+  "tx_count": 6,
+  "tx_pool_size": 0,
+  "untrusted": false,
+  "was_bootstrap_ever_used": false,
+  "white_peerlist_size": 0
+}
+2019/08/20 09:01:08 -----------------------------------------------------------------------------------------
+2019/08/20 09:01:13 {primary       }
+2019/08/20 14:58:45 -----------------------------------------------------------------------------------------
+2019/08/20 14:58:45 endpoint:  http://127.0.0.1:38001/get_info body:  
+2019/08/20 14:58:45 *****************************************************************************************
+2019/08/20 14:58:45  Response: -----------------------------------------------------------------------------------------
+2019/08/20 14:58:45 {
+  "alt_blocks_count": 0,
+  "block_size_limit": 40000,
+  "block_size_median": 81,
+  "bootstrap_daemon_address": "",
+  "cumulative_difficulty": 24803,
+  "difficulty": 200,
+  "free_space": 406611456000,
+  "grey_peerlist_size": 0,
+  "height": 127,
+  "height_without_bootstrap": 127,
+  "incoming_connections_count": 1,
+  "issued_coins": 0,
+  "mainnet": false,
+  "migrated_tokens": 0,
+  "offline": false,
+  "outgoing_connections_count": 2,
+  "rpc_connections_count": 4,
+  "stagenet": false,
+  "start_time": 1566207793,
+  "status": "OK",
+  "target": 120,
+  "target_height": 0,
+  "testnet": true,
+  "top_block_hash": "3337ec064bb894ec31148e3ac8f404f4eebd5f453dd827f92257bf4a081ab5af",
+  "tx_count": 6,
+  "tx_pool_size": 0,
+  "untrusted": false,
+  "was_bootstrap_ever_used": false,
+  "white_peerlist_size": 0
+}
+2019/08/20 14:58:45 -----------------------------------------------------------------------------------------
+2019/08/20 14:58:45 {primary       }
+2019/08/20 14:58:45 {primary       }
+2019/08/20 14:58:45 {primary       }
+2019/08/20 14:58:45 {primary       }
+2019/08/20 14:59:08 {/home/zvrk/workarea/sails/res9.sails 1 127.0.0.1 38001 testnet       }
+2019/08/20 14:59:08 {primary       }
+2019/08/20 14:59:08 {primary       }
+2019/08/20 14:59:08 {primary       }
+2019/08/20 14:59:08 {primary       }
+2019/08/20 15:00:23 -----------------------------------------------------------------------------------------
+2019/08/20 15:00:23 endpoint:  http://127.0.0.1:38001/get_info body:  
+2019/08/20 15:00:23 *****************************************************************************************
+2019/08/20 15:00:23  Response: -----------------------------------------------------------------------------------------
+2019/08/20 15:00:23 {
+  "alt_blocks_count": 0,
+  "block_size_limit": 40000,
+  "block_size_median": 81,
+  "bootstrap_daemon_address": "",
+  "cumulative_difficulty": 24803,
+  "difficulty": 200,
+  "free_space": 406610976768,
+  "grey_peerlist_size": 0,
+  "height": 127,
+  "height_without_bootstrap": 127,
+  "incoming_connections_count": 1,
+  "issued_coins": 0,
+  "mainnet": false,
+  "migrated_tokens": 0,
+  "offline": false,
+  "outgoing_connections_count": 2,
+  "rpc_connections_count": 4,
+  "stagenet": false,
+  "start_time": 1566207793,
+  "status": "OK",
+  "target": 120,
+  "target_height": 0,
+  "testnet": true,
+  "top_block_hash": "3337ec064bb894ec31148e3ac8f404f4eebd5f453dd827f92257bf4a081ab5af",
+  "tx_count": 6,
+  "tx_pool_size": 0,
+  "untrusted": false,
+  "was_bootstrap_ever_used": false,
+  "white_peerlist_size": 0
+}
+2019/08/20 15:00:23 -----------------------------------------------------------------------------------------
+2019/08/20 15:00:23 {primary       }
+2019/08/20 15:00:23 {primary       }
+2019/08/20 15:00:23 {primary       }
+2019/08/20 15:00:23 {primary       }
+2019/08/20 15:00:56 {/home/zvrk/workarea/sails/res9.sails 1 127.0.0.1 38001 testnet       }
+2019/08/20 15:00:56 -----------------------------------------------------------------------------------------
+2019/08/20 15:00:56 endpoint:  http://127.0.0.1:38001/get_info body:  
+2019/08/20 15:00:56 *****************************************************************************************
+2019/08/20 15:00:56  Response: -----------------------------------------------------------------------------------------
+2019/08/20 15:00:56 {
+  "alt_blocks_count": 0,
+  "block_size_limit": 40000,
+  "block_size_median": 81,
+  "bootstrap_daemon_address": "",
+  "cumulative_difficulty": 24803,
+  "difficulty": 200,
+  "free_space": 406610956288,
+  "grey_peerlist_size": 0,
+  "height": 127,
+  "height_without_bootstrap": 127,
+  "incoming_connections_count": 1,
+  "issued_coins": 0,
+  "mainnet": false,
+  "migrated_tokens": 0,
+  "offline": false,
+  "outgoing_connections_count": 2,
+  "rpc_connections_count": 4,
+  "stagenet": false,
+  "start_time": 1566207793,
+  "status": "OK",
+  "target": 120,
+  "target_height": 0,
+  "testnet": true,
+  "top_block_hash": "3337ec064bb894ec31148e3ac8f404f4eebd5f453dd827f92257bf4a081ab5af",
+  "tx_count": 6,
+  "tx_pool_size": 0,
+  "untrusted": false,
+  "was_bootstrap_ever_used": false,
+  "white_peerlist_size": 0
+}
+2019/08/20 15:00:56 -----------------------------------------------------------------------------------------
+2019/08/20 15:00:56 {primary       }
+2019/08/20 15:00:56 {primary       }
+2019/08/20 15:00:56 {primary       }
+2019/08/20 15:00:56 {primary       }
+2019/08/20 15:01:46 {/home/zvrk/workarea/sails/res9.sails 1 127.0.0.1 38001 testnet       }
+2019/08/20 15:01:46 -----------------------------------------------------------------------------------------
+2019/08/20 15:01:46 endpoint:  http://127.0.0.1:38001/get_info body:  
+2019/08/20 15:01:46 *****************************************************************************************
+2019/08/20 15:01:46  Response: -----------------------------------------------------------------------------------------
+2019/08/20 15:01:46 {
+  "alt_blocks_count": 0,
+  "block_size_limit": 40000,
+  "block_size_median": 81,
+  "bootstrap_daemon_address": "",
+  "cumulative_difficulty": 24803,
+  "difficulty": 200,
+  "free_space": 406610866176,
+  "grey_peerlist_size": 0,
+  "height": 127,
+  "height_without_bootstrap": 127,
+  "incoming_connections_count": 1,
+  "issued_coins": 0,
+  "mainnet": false,
+  "migrated_tokens": 0,
+  "offline": false,
+  "outgoing_connections_count": 2,
+  "rpc_connections_count": 4,
+  "stagenet": false,
+  "start_time": 1566207793,
+  "status": "OK",
+  "target": 120,
+  "target_height": 0,
+  "testnet": true,
+  "top_block_hash": "3337ec064bb894ec31148e3ac8f404f4eebd5f453dd827f92257bf4a081ab5af",
+  "tx_count": 6,
+  "tx_pool_size": 0,
+  "untrusted": false,
+  "was_bootstrap_ever_used": false,
+  "white_peerlist_size": 0
+}
+2019/08/20 15:01:46 -----------------------------------------------------------------------------------------
+2019/08/20 15:01:46 {primary       }
+2019/08/20 15:01:46 {primary       }
+2019/08/20 15:01:47 {primary       }
+2019/08/20 15:15:47 {primary       }
+2019/08/20 15:15:47 {primary       }
+2019/08/21 09:12:38 {primary       }
+2019/08/21 09:12:38 {primary       }
+2019/08/21 10:28:25 -----------------------------------------------------------------------------------------
+2019/08/21 10:28:25 endpoint:  http://127.0.0.1:38001/get_info body:  
+2019/08/21 10:28:25 *****************************************************************************************
+2019/08/21 10:28:25  Response: -----------------------------------------------------------------------------------------
+2019/08/21 10:28:25 {
+  "alt_blocks_count": 0,
+  "block_size_limit": 40000,
+  "block_size_median": 81,
+  "bootstrap_daemon_address": "",
+  "cumulative_difficulty": 24803,
+  "difficulty": 200,
+  "free_space": 406586793984,
+  "grey_peerlist_size": 0,
+  "height": 127,
+  "height_without_bootstrap": 127,
+  "incoming_connections_count": 1,
+  "issued_coins": 0,
+  "mainnet": false,
+  "migrated_tokens": 0,
+  "offline": false,
+  "outgoing_connections_count": 1,
+  "rpc_connections_count": 4,
+  "stagenet": false,
+  "start_time": 1566207793,
+  "status": "OK",
+  "target": 120,
+  "target_height": 0,
+  "testnet": true,
+  "top_block_hash": "3337ec064bb894ec31148e3ac8f404f4eebd5f453dd827f92257bf4a081ab5af",
+  "tx_count": 6,
+  "tx_pool_size": 0,
+  "untrusted": false,
+  "was_bootstrap_ever_used": false,
+  "white_peerlist_size": 0
+}
+2019/08/21 10:28:25 -----------------------------------------------------------------------------------------
+2019/08/21 10:31:25 {/home/zvrk/workarea/sails/new.sails 1 127.0.0.1 38001 testnet       }

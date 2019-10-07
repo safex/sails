@@ -1,10 +1,13 @@
 {
-    "address":"Address",
-    "label":"Label",
+    "address": "Address",
+    "label": "Label",
     "add": "Add Contact",
-    "copy":"Copy",
-    "send_sfx":"Send SFX",
-    "send_sft":"Send SFT",
-    "update":"Update",
-    "delete":"Delete"
+    "copy": "Copy",
+    "send_sfx": "Send SFX",
+    "send_sft": "Send SFT",
+    "update": "Update",
+    "delete": "Delete",
+    "reset": "Reset",
+    "double_values": "Address and label can't be repeated!",
+    "required_field": "This field is required"
 }

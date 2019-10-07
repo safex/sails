@@ -60,7 +60,7 @@ let decryptContent = function(data,pwd){
         }
     }
     catch (e) {
-            return Promise.reject(e);
+            return Promise.reject("FILE_DECRYPT");
     }
 
 }

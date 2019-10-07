@@ -1,13 +1,13 @@
-import {WALLET_EXISTS} from '../actions/action.types';
+import { WALLET_EXISTS } from '../actions/action.types';
 
 
-let walletExistsReducer = function (state = false, action){ 
-    switch(action.type){
-      case WALLET_EXISTS:
-        return action.item;
-      default:
-        return state ;     
-    }
+let walletExistsReducer = function (state = false, action) {
+  switch (action.type) {
+    case WALLET_EXISTS:
+      return action.item;
+    default:
+      return state;
+  }
 }
 
 export {

@@ -1,39 +1,42 @@
-import React,{Component} from 'react';
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
+import { Row, Col } from 'react-bootstrap';
+import { getAccounts } from '../../modules/home.module';
 import Account from './Account';
-import {getAccounts, getLegacyAccounts} from '../../modules/home.module';
-let homeM = require('../../modules/home.module');
 
 const mapStateToProps = (state) => {
   return {
-    accounts: state.accounts,
-    legacy_accounts:state.legacy_accounts,
-    active_account:state.active_account
+    accounts: state.accounts
   };
 };
 
 class Accounts extends Component {
-  
-    componentDidMount(){
-      // getAccounts(this.props.dispatch);
-      // getLegacyAccounts(this.props.dispatch);
-    }
+
+  componentDidMount() {
+    getAccounts(this.props.dispatch);
+  }
 
 
 
-    render() {
-        let accounts;
-        for(let address in this.props.accounts){
-          accounts+=<Account account={this.props.accounts[address]} type={1} /> ;
-        }
-        for(let address in this.props.legacy_accounts){
-          accounts+=<Account account={this.props.accounts[address]} type={0} /> ;
-        }
-        return   <div>
-        {accounts}
-        <button onClick={()=>{}}>{this.props.t("accounts.add")}</button>
-         </div>
+  render() {
+    let accounts = null;
+    if (this.props.accounts) { accounts = Object.values(this.props.accounts).map((x, i) => { let rand = (Math.random() * 100) / 100; return <Account key={`account-0-${i}-${rand}`} account={x} /> }); }
+    return (
+      <>
+        <Row>
+          <Col>
+            <h3>{this.props.t("accounts")}</h3>
+          </Col>
+        </Row>
+        <Row style={{ maxHeight: "290px", "height": "290px", oferflowY: "auto" }}>
+          <Col>
+            {accounts}
+          </Col>
+        </Row>
+      </>
+
+    );
   }
 }
 export default withTranslation('home')(connect(mapStateToProps)(Accounts));

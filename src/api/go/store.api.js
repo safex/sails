@@ -1,11 +1,12 @@
+import { RPC_HOST, RPC_PORT } from '../../setups/conf';
 
-let getStore= function(key){
-    return fetch('http://localhost:2905/store/get',{method:'POST',body:JSON.stringify({key:key})});
+let getStore = function (key) {
+    return fetch('http://' + RPC_HOST + ':' + RPC_PORT + '/store/get', { method: 'POST', body: JSON.stringify({ key: key }) });
 
 }
 
-let setStore= function(obj){
-    return fetch('http://localhost:2905/store/put',{method:'POST',body:JSON.stringify(obj)});
+let setStore = function (obj) {
+    return fetch('http://' + RPC_HOST + ':' + RPC_PORT + '/store/put', { method: 'POST', body: JSON.stringify(obj) });
 }
 export {
     getStore,

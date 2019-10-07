@@ -7,7 +7,8 @@ import { Container, Alert } from 'react-bootstrap';
 
 const mapStateToProps = (state) => {
     return {
-        wizard: state.wizard
+        wizard: state.wizard,
+        daemon: state.daemon
     };
 };
 
@@ -24,6 +25,8 @@ class Wizard extends Component {
                 switch (this.props.wizard.step) {
                     case 1:
                         component = <WizardData
+                            daemon={this.props.daemon}
+                            key="restore-wizard-data"
                             component="restore"
                             history={this.props.history}
                             prop_names={{ "restore_type": "mnemonic", "restore_mnemonic": "", "restore_address": "", "restore_view": "", "restore_spend": "" }}
@@ -31,6 +34,8 @@ class Wizard extends Component {
                         break;
                     case 2:
                         component = <WizardFilepath
+                            daemon={this.props.daemon}
+                            key="restore-wizard-filepath"
                             component="restore"
                             history={this.props.history}
                             prop_names={{ "create_filepath": "" }}
@@ -46,6 +51,8 @@ class Wizard extends Component {
                         break;
                     case 3:
                         component = <WizardConfirmPassword
+                            daemon={this.props.daemon}
+                            key="restore-wizard-confirm-password"
                             component="restore"
                             history={this.props.history}
                             prop_names={{ "create_password": "", "create_confirm_password": "" }}
@@ -55,6 +62,8 @@ class Wizard extends Component {
                         break;
                     case 4:
                         component = <WizardReview
+                            daemon={this.props.daemon}
+                            key="restore-wizard-review"
                             component="restore"
                             history={this.props.history}
                             form_fields={["create_filepath", "create_password"]}
@@ -62,9 +71,10 @@ class Wizard extends Component {
                         break;
                     default:
                         component = <Alert
+                            key="restore-wizard-alert"
                             variant="danger"
                             history={this.props.history}
-                            dismissible>
+                            dismissible >
                             <Alert.Heading>Oh snap! You got an error!</Alert.Heading>
                             <p> Report it to the Safex wallet team :D</p>
                         </Alert>;
@@ -75,6 +85,8 @@ class Wizard extends Component {
                 switch (this.props.wizard.step) {
                     case 1:
                         component = <WizardFilepath
+                            daemon={this.props.daemon}
+                            key="create-wizard-filepath"
                             component="create"
                             history={this.props.history}
                             prop_names={{ "create_filepath": "" }}
@@ -90,6 +102,8 @@ class Wizard extends Component {
                         break;
                     case 2:
                         component = <WizardConfirmPassword
+                            daemon={this.props.daemon}
+                            key="create-wizard-confirm-password"
                             component="create"
                             history={this.props.history}
                             prop_names={{ "create_password": "", "create_confirm_password": "" }}
@@ -99,6 +113,8 @@ class Wizard extends Component {
                         break;
                     case 3:
                         component = <WizardReview
+                            daemon={this.props.daemon}
+                            key="create-wizard-review"
                             component="create"
                             history={this.props.history}
                             form_fields={["create_filepath", "create_password"]}
@@ -106,6 +122,7 @@ class Wizard extends Component {
                         break;
                     default:
                         component = <Alert
+                            key="create-wizard-alert"
                             variant="danger"
                             history={this.props.history}
                             dismissible>
@@ -119,6 +136,8 @@ class Wizard extends Component {
                 switch (this.props.wizard.step) {
                     case 1:
                         component = <WizardFilepath
+                            daemon={this.props.daemon}
+                            key="open-wizard-filepath"
                             component="open"
                             history={this.props.history}
                             prop_names={{ "open_filepath": "" }}
@@ -134,6 +153,8 @@ class Wizard extends Component {
                         break;
                     case 2:
                         component = <WizardPassword
+                            daemon={this.props.daemon}
+                            key="open-wizard-password"
                             component="open"
                             history={this.props.history}
                             prop_names={{ "open_password": "" }}
@@ -143,6 +164,7 @@ class Wizard extends Component {
                         break;
                     default:
                         component = <Alert
+                            key="open-wizard-alert"
                             variant="danger"
                             history={this.props.history}
                             dismissible>
@@ -156,6 +178,8 @@ class Wizard extends Component {
                 switch (this.props.wizard.step) {
                     case 1:
                         component = <WizardFilepath
+                            daemon={this.props.daemon}
+                            key="legacy-wizard-filepath-open"
                             legacy_type={this.props.legacy_type}
                             component="legacy"
                             history={this.props.history}
@@ -172,6 +196,8 @@ class Wizard extends Component {
                         break;
                     case 2:
                         component = <WizardPassword
+                            daemon={this.props.daemon}
+                            key="legacy-wizard-password"
                             component="legacy"
                             history={this.props.history}
                             prop_names={{ "open_password": "" }}
@@ -181,12 +207,16 @@ class Wizard extends Component {
                         break;
                     case 3:
                         component = <WizardLegacy
+                            daemon={this.props.daemon}
+                            key="legacy-wizard-legacy"
                             component="legacy"
                             history={this.props.history}
                             back={() => { wizardBack(this.props.dispatch, [], (dispatch) => { initLegacyWallet(dispatch); }, [this.props.dispatch]) }} />;
                         break;
                     case 4:
                         component = <WizardFilepath
+                            daemon={this.props.daemon}
+                            key="legacy-wizard-filepath-create"
                             legacy_type={this.props.legacy_type}
                             component="legacy"
                             history={this.props.history}
@@ -203,6 +233,8 @@ class Wizard extends Component {
                         break;
                     case 5:
                         component = <WizardConfirmPassword
+                            daemon={this.props.daemon}
+                            key="legacy-wizard-confirm-password"
                             component="legacy"
                             history={this.props.history}
                             prop_names={{ "create_password": "", "create_confirm_password": "" }}
@@ -212,6 +244,8 @@ class Wizard extends Component {
                         break;
                     case 6:
                         component = <WizardReview
+                            daemon={this.props.daemon}
+                            key="legacy-wizard-review"
                             component="legacy"
                             history={this.props.history}
                             form_fields={["create_filepath", "create_password"]}
@@ -219,6 +253,7 @@ class Wizard extends Component {
                         break;
                     default:
                         component = <Alert
+                            key="legacy-wizard-aler"
                             variant="danger"
                             history={this.props.history}
                             dismissible>
@@ -233,9 +268,21 @@ class Wizard extends Component {
         }
 
         return (
+
             <Container>
-                {component}
+                <div style={{
+                    position: "absolute",
+                    top: "50%",
+                    left: "50%",
+                    transform: "translate(-50%,-50%)",
+                    width: "80%"
+                }}>
+                    {component}
+                </div>
+
             </Container>
+
+
         );
 
     }

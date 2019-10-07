@@ -15,15 +15,18 @@ import {
     INIT_WIZARD_ERRORS,
     INIT_WIZARD_TOUCHED
 } from '../actions/action.types';
-let wizardReducer = function (state = { step: 1, data: {
-    keys_modal: false, 
-    restore_filepath: '', 
-    restore_password: '', 
-    create_filepath: '', 
-    create_password: '', 
-    create_confirm_password: '', 
-    create_wallet_name: '', 
-    validated: false }, errors: {}, touched: {} }, action) {
+let wizardReducer = function (state = {
+    step: 1, data: {
+        keys_modal: false,
+        restore_filepath: '',
+        restore_password: '',
+        create_filepath: '',
+        create_password: '',
+        create_confirm_password: '',
+        create_wallet_name: '',
+        validated: false
+    }, errors: {}, touched: {}
+}, action) {
     switch (action.type) {
         case ADD_WIZARD_STEP:
             return { ...state, ...{ step: (state.step + 1) } }; //add upper limit
@@ -38,14 +41,18 @@ let wizardReducer = function (state = { step: 1, data: {
             curr.data.hasOwnProperty(action.item) && delete curr.data[action.item];
             return { ...curr };
         case RESET_WIZARD_DATA:
-            return { ...state,  data: {keys_modal: false, 
-                restore_filepath: '', 
-                restore_password: '', 
-                create_filepath: '', 
-                create_password: '', 
-                create_confirm_password: '', 
-                create_wallet_name: '', 
-                validated: false} };
+            return {
+                ...state, data: {
+                    keys_modal: false,
+                    restore_filepath: '',
+                    restore_password: '',
+                    create_filepath: '',
+                    create_password: '',
+                    create_confirm_password: '',
+                    create_wallet_name: '',
+                    validated: false
+                }
+            };
         case ADD_WIZARD_ERRORS:
             return { ...state, ...{ errors: { ...state.errors, ...action.item } } };
         case REMOVE_WIZARD_ERRORS:
@@ -63,11 +70,11 @@ let wizardReducer = function (state = { step: 1, data: {
         case RESET_WIZARD_TOUCHED:
             return { ...state, ...{ touched: {} } };
         case INIT_WIZARD_DATA:
-            return {...state, data:{...action.item}};
+            return { ...state, data: { ...action.item } };
         case INIT_WIZARD_ERRORS:
-            return {...state, errors:{...action.item}};
+            return { ...state, errors: { ...action.item } };
         case INIT_WIZARD_TOUCHED:
-            return {...state, touched:{...action.item}};
+            return { ...state, touched: { ...action.item } };
         default:
             return state
     }

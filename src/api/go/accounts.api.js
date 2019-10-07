@@ -1,38 +1,47 @@
-let openAccountsApi = function(name){
-    return fetch('http://localhost:2905/account/open',{method:'POST',body:JSON.stringify({name:name})});
+import { RPC_HOST, RPC_PORT } from '../../setups/conf';
+
+let syncAccountsApi = function () {
+    return fetch('http://' + RPC_HOST + ':' + RPC_PORT + '/begin-updating', { method: 'POST', body: JSON.stringify({}) });
 }
-let infoAccountsApi = function(name){
-    return fetch('http://localhost:2905/account/info',{method:'POST',body:JSON.stringify({name:name})});
+let openAccountsApi = function (name) {
+    return fetch('http://' + RPC_HOST + ':' + RPC_PORT + '/account/open', { method: 'POST', body: JSON.stringify({ name: name }) });
 }
-let getAccountsApi = function(){
-    return fetch('http://localhost:2905/accounts/get',{method:'POST',data:{}});
+let infoAccountsApi = function (name) {
+    return fetch('http://' + RPC_HOST + ':' + RPC_PORT + '/account/info', { method: 'POST', body: JSON.stringify({ name: name }) });
 }
-let createAccountApi = function(){
-    return fetch('http://localhost:2905/accounts/create',{method:'POST',data:{}});
+let getAccountsInfoApi = function () {
+    return fetch('http://' + RPC_HOST + ':' + RPC_PORT + '/accounts/all-info', { method: 'GET', data: {} });
 }
-let deleteAccountApi = function(address){
-    return fetch('http://localhost:2905/accounts/delete',{method:'POST',data:{address:address}});
+let createAccountApi = function (name) {
+    return fetch('http://' + RPC_HOST + ':' + RPC_PORT + '/accounts/create-new', { method: 'POST', body: JSON.stringify({ name: name }) });
 }
-let recoverAccountKeysApi = function(spendkey,viewkey){
-    return fetch('http://localhost:2905/accounts/recover',{method:'POST',data:{spendkey:spendkey, viewkey:viewkey}});
+let deleteAccountApi = function (name) {
+    return fetch('http://' + RPC_HOST + ':' + RPC_PORT + '/account/remove', { method: 'POST', body: JSON.stringify({ name: name }) });
 }
-let recoverAccountSeedsApi = function(seed){
-    return fetch('http://localhost:2905/accounts/recover',{method:'POST',data:{seed:seed}});
+let recoverAccountKeysApi = function (address, spendkey, viewkey, name) {
+    return fetch('http://' + RPC_HOST + ':' + RPC_PORT + '/accounts/create-keys', { method: 'POST', body: JSON.stringify({ address: address, spendkey: spendkey, viewkey: viewkey, name: name }) });
 }
-let historyAccountApi = function(address){
-    return fetch('http://localhost:2905/accounts/history',{method:'POST',data:{address:address}});
+let recoverAccountSeedsApi = function (seed, name) {
+    return fetch('http://' + RPC_HOST + ':' + RPC_PORT + '/accounts/create-seed', { method: 'POST', body: JSON.stringify({ seed: seed, name: name }) });
 }
-let statusAccountApi = function(address){
-    return fetch('http://localhost:2905/accounts/status',{method:'POST',data:{address:address}});
+
+let recoverAccountFileApi = function (file, password, name) {
+    return fetch('http://' + RPC_HOST + ':' + RPC_PORT + '/accounts/create-keys-file', { method: 'POST', body: JSON.stringify({ keys_file_path: file, keys_file_password: password, name: name }) });
 }
+
+// let statusAccountApi = function (address) {
+//     return fetch('http://'+RPC_HOST+':'+RPC_PORT+'/accounts/status', { method: 'POST', data: { address: address } });
+// }
 export {
     openAccountsApi,
     infoAccountsApi,
-    getAccountsApi,
+    getAccountsInfoApi,
     createAccountApi,
     deleteAccountApi,
     recoverAccountKeysApi,
     recoverAccountSeedsApi,
-    historyAccountApi,
-    statusAccountApi
+    // statusAccountApi,
+    syncAccountsApi,
+    recoverAccountFileApi
+
 }

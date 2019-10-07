@@ -1,60 +1,165 @@
-let {changeLanguage}=require('../actions/language.action');
-let {addActiveAccount} = require('../actions/active_account.action');
-let {resetApp} = require('../actions/reset.action');
-let {getActiveAccountApi} = require('../api/go/active_account.api');
-let {getAccountsApi, openAccountsApi} = require('../api/go/accounts.api');
-let { processResponse, jsonResponse, errorResponse } = require('../libs/response');
+//actions
+import { changeLanguage } from '../actions/language.action';
+import { addActiveAccount } from '../actions/active_account.action';
+import { addError } from '../actions/error.action';
+import { resetApp } from '../actions/root.action';
+import { addAccountHistory } from '../actions/history.action';
+import { addDaemonHost, addDaemonPort, addDaemonModal } from '../actions/daemon.action';
 
-let changeLanguageF= function(that, value){
+
+//api
+import { closeApi } from '../api/go/init.api';
+import { getActiveAccountApi, setActiveAccountApi } from '../api/go/active_account.api';
+import { openAccountsApi, syncAccountsApi } from '../api/go/accounts.api';
+import { getTransactionHistory } from '../api/go/transaction.api'
+
+
+//libs
+import { lordOfTheFetch } from '../libs/one_fetch_to_rule_them_all';
+import { DAEMON_HOST, DAEMON_PORT } from '../setups/conf';
+
+//electron
+
+let { ipcRenderer } = window.require("electron");
+
+
+let changeLanguageF = function (that, value) {
     that.props.dispatch(changeLanguage(value));
-    that.props.i18n.changeLanguage(value);   
+    that.props.i18n.changeLanguage(value);
 }
 
-let logout = function(dispatch, history){
-    //dispatch(resetApp());
-   // history.push('/');
+let logout = function (event) {
+    closeWallet(this.props.dispatch, this.props.history);
 }
 
-let getActiveAccountFromWallet = function(dispatch){
-    getActiveAccountApi()
-    .then(processResponse)
-    .then(jsonResponse)
-    .then((data)=>{
-        if(data.status!=0) throw new Error(data.status);
-        else {
-            if(data.result) openAccounts(dispatch,JSON.parse(data.result.value));
-            else getActiveAccountFromAccounts(dispatch);
+
+let closeWallet = function (dispatch, history) {
+    lordOfTheFetch(closeApi, [], callbackForCloseWallet, [dispatch, history], { dispatch: dispatch });
+}
+
+let getActiveAccountFromWallet = function (dispatch) {
+    lordOfTheFetch(getActiveAccountApi, [], callbackForGetActiveAccountFromWallet, [dispatch], { dispatch: dispatch });
+}
+
+let openAccounts = function (dispatch, account, save) {
+    lordOfTheFetch(openAccountsApi, [account.account_name], callbackForOpenAccounts, [dispatch, save, true], { dispatch: dispatch });
+}
+
+let saveActiveToWallet = function (dispatch, account, dispatchActiveAccount) {
+    lordOfTheFetch(setActiveAccountApi, [account], callbackForSetActiveAccountInWallet, [dispatch, account, dispatchActiveAccount], { dispatch: dispatch });
+}
+
+let syncAccount = function (dispatch, account) {
+    syncAccountNew(dispatch, account);
+}
+let getHistory = function (dispatch, account) {
+    getHistoryNew(dispatch, account);
+}
+
+
+let getHistoryNew = function (dispatch, account) {
+    lordOfTheFetch(getTransactionHistory, [], callbackForGetHistoryNew, [dispatch], { dispatch: dispatch });
+}
+
+let syncAccountNew = function (dispatch, account) {
+    lordOfTheFetch(syncAccountsApi, [], callbackForSyncAccount, [dispatch, account], { dispatch: dispatch });
+}
+
+
+
+//callbacks
+let callbackForGetActiveAccountFromWallet = function (res, dispatch, labels) {
+    if (res.status === 0) {
+        console.log(JSON.parse(res.result.value));
+        openAccounts(dispatch, JSON.parse(res.result.value), false, labels);
+    }
+    else if (res.status === 13) {
+        openAccounts(dispatch, { account_name: "primary" }, true, labels);
+    }
+    else {
+        dispatch(addError(res.status));
+    }
+}
+
+let callbackForOpenAccounts = function (res, dispatch, save, dispatchActiveAccount) {
+    if (res.status !== 0) {
+        dispatch(addError(res.status));
+    }
+    if (res.result.hasOwnProperty("info")) {
+        let tmp = res.result.info;
+        if (!tmp.hasOwnProperty("label")) { tmp.label = tmp.account_name };
+        if (save) {
+            saveActiveToWallet(dispatch, tmp, dispatchActiveAccount);
         }
-    })
-    .catch(errorResponse);
+        else if (dispatchActiveAccount) {
+            dispatch(addActiveAccount(tmp));
+            syncAccount(dispatch, tmp);
+            getHistory(dispatch, tmp);
+        }
+    }
 }
 
-let openAccounts = function (dispatch,account){
-    openAccountsApi(account.account.account_name)
-    .then(processResponse)
-    .then(jsonResponse)
-    .then((open)=>{
-        if(open.status!=0) throw new Error(open.status);
-        else dispatch(addActiveAccount(account));
-    })
-    .catch(errorResponse);
-}
-let getActiveAccountFromAccounts = function(dispatch){
-    getAccountsApi()
-    .then(processResponse)
-    .then(jsonResponse)
-    .then((data)=>{
-        if(data.status!=0) throw new Error(data.status);
-        else {
-           //if exists dispatch first
-           //else try and find legacy accounts
+let callbackForSetActiveAccountInWallet = function (res, dispatch, data, dispatchToAccount) {
+    if (res.status !== 0) dispatch(addError(res.status));
+    else {
+        if (dispatchToAccount) {
+            dispatch(addActiveAccount(data));
         }
-    })
-    .catch(errorResponse);
+
+    }
 }
+let callbackForCloseWallet = function (res, dispatch, history) {
+    if (res.status !== 0) dispatch(addError(res.status));
+    else {
+        dispatch(resetApp());
+        history.push('/');
+    }
+}
+
+let callbackForGetHistoryNew = function (res, dispatch) {
+    if (res.status !== 0) dispatch(addError(res.status));
+    else { dispatch(addAccountHistory(res.result)); }
+}
+let callbackForSyncAccount = function (res, dispatch, account) {
+    if (res.status !== 0) dispatch(addError(res.status));
+    else { getHistory(dispatch, account); }
+}
+
+let toggleDaemonModal = function (show) {
+    this.props.dispatch(addDaemonModal(show));
+}
+
+let addDaemonData = function (event, type) {
+    if (type == "host") {
+        let val = event.target.value || DAEMON_HOST;
+        this.props.dispatch(addDaemonHost(val));
+    }
+    else {
+        let val = event.target.value || DAEMON_PORT;
+        this.props.dispatch(addDaemonPort(parseInt(val)));
+    }
+}
+
+let minimize = function () {
+    ipcRenderer.send('app-minimize');
+}
+let maximize = function () {
+    ipcRenderer.send('app-maximize');
+}
+let quit = function () {
+    ipcRenderer.send('app-close');
+}
+
+
+
 export {
     changeLanguageF,
     logout,
     getActiveAccountFromWallet,
-    getActiveAccountFromAccounts
+    toggleDaemonModal,
+    addDaemonData,
+    minimize,
+    maximize,
+    quit
+
 }

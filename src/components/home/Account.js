@@ -1,24 +1,34 @@
-import React,{Component} from 'react';
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
-let homeM = require('../../modules/home.module');
+import { Button, Row, Col } from 'react-bootstrap';
+
+import { setActiveAccount } from '../../modules/home.module';
+
+class Account extends Component {
+
+  render() {
+    let variant = "secondary";
+    if (this.props.active_account && this.props.hasOwnProperty("account") && this.props.active_account !== undefined && this.props.account !== undefined) {
+      if (this.props.active_account.address === this.props.account.address) { variant = "dark"; }
+    }
+
+    return (
+      <Row>
+        <Col>
+          <Button variant={variant} size="lg" onClick={setActiveAccount.bind(this)} block>
+            {this.props.account.label || "Enter your label here"}
+          </Button>
+        </Col>
+      </Row>
+
+    );
+  }
+}
 
 const mapStateToProps = (state) => {
   return {
-    active_account:state.active_account
+    active_account: state.active_account
   };
 };
-
-class Account extends Component {
-  
-    constructor(props){
-       super(props);
-    }
-
-
-    render() {
-
-        return   <div onClick={homeM.setActiveAccount(this.dispatch,{account:this.props.account, type:this.props.type})}> Account X </div>;
-  }
-}
 export default withTranslation('home')(connect(mapStateToProps)(Account));

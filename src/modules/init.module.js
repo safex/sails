@@ -1,142 +1,134 @@
 //actions
-const { addWalletExistsStatus } = require('../actions/wallet_exists.action.js');
-const { addLegacyWallet } = require('../actions/legacy_wallet.action');
-const WizardActions = require('../actions/wizard.action');
-const { addActiveAccount } = require('../actions/active_account.action');
+import { addWalletExistsStatus } from '../actions/wallet_exists.action.js';
+import { addLegacyWallet } from '../actions/legacy_wallet.action';
+import { resetAllBalances, addLegacyBalance, addLegacyBTCBalance, addLegacyBTCBalancePending, addLegacyAccounts } from '../actions/legacy_accounts.action';
+import { addAccounts } from '../actions/accounts.action';
+import * as WizardActions from '../actions/wizard.action';
+import { addActiveAccount } from '../actions/active_account.action';
+import { addError } from '../actions/error.action';
 
 //libs
-let { checkFileForFlags, readFilePromise, decryptContent } = require("../libs/legacy_wallet");
-let { processResponse, jsonResponse, errorResponse } = require('../libs/response');
-let { addError } = require('../actions/error.action');
+import { checkFileForFlags, readFilePromise, decryptContent } from "../libs/legacy_wallet";
+import { processResponse, jsonResponse } from '../libs/response';
+import { lordOfTheFetch } from '../libs/one_fetch_to_rule_them_all';
 
-//api
-let { initApi, accountsApi, activeAccountApi } = require("../api/go");
+
+// go api
+import { initApi, accountsApi, activeAccountApi, legacyAccountsApi } from "../api/go";
+
+//v7 api
+import { balancesApi } from "../api/legacy";
+
 
 //setups
-let { LEGACY_DEFAULT_WALLET_PATH, NET_TYPE } = require('../setups/conf');
+let { LEGACY_DEFAULT_WALLET_PATH, NET_TYPE, DAEMON_HOST, DAEMON_PORT } = require('../setups/conf');
 
-const { dialog } = window.require("electron").remote;
+let { dialog } = window.require("electron").remote;
 
 
+//for v7 wallet 
 let checkIfFileExists = function (dispatch) {
     readFilePromise(LEGACY_DEFAULT_WALLET_PATH)
         .then(checkFileForFlags)
         .then((status) => { setWalletExistsStatus(dispatch, status) })
-        .catch((error) => { dispatch(addError(error)) });
-
+        .catch((error) => { dispatch(addError(error.message)) });
 }
 
 let setWalletExistsStatus = function (dispatch, status) {
     dispatch(addWalletExistsStatus(status))
 }
 
-let create = function (dispatch, form, names = ['filepath', 'password']) {
-    initApi.createApi({ path: form[names[0]], password: form[names[1]], nettype: NET_TYPE })
-        .then(processResponse)
-        .then(jsonResponse)
-        .then((create) => {
-            if (create.status != 0) dispatch(addError(create.status));
-            else {
-                return accountsApi.openAccountsApi(create.result.accounts[0])
-                    .then(processResponse)
-                    .then(jsonResponse)
-                    .then((open) => {
-                        if (open.status != 0) dispatch(addError(open.status));
-                        else {
-                            return accountsApi.infoAccountsApi("primary") // @note izmeniti kad Steva upgrade
-                                .then(processResponse)
-                                .then(jsonResponse)
-                                .then((info) => {
-                                    if (info.status != 0) dispatch(addError(info.status));
-                                    else {
-                                        return activeAccountApi.setActiveAccountApi({ account: info.result, type: 0 })
-                                            .then(processResponse)
-                                            .then(jsonResponse)
-                                            .then((active) => {
-                                                if (active.status != 0) dispatch(addError(active.status));
-                                                else {
-                                                    dispatch(addActiveAccount({ account: info.result, type: 0 }));
-                                                }
-                                            })
-                                            .catch(errorResponse)
-                                    }
-                                })
-                                .catch(errorResponse);
-                        }
+//create wallet actions
+let create = function (dispatch, form, names = ['filepath', 'password'], daemon, legacy = null) {
+    let daemon_host = daemon.daemon_host || DAEMON_HOST;
+    let daemon_port = daemon.daemon_port || DAEMON_PORT;
+    lordOfTheFetch(initApi.createApi,
+        [{ path: form[names[0]], password: form[names[1]], nettype: NET_TYPE, daemon_host: daemon_host, daemon_port: daemon_port }],
+        callbackForCreate,
+        [dispatch, legacy],
+        { "dispatch": dispatch });
+}
 
-                    })
-                    .catch(errorResponse);
-            }
-
-
-        })
-        .catch(errorResponse);
+let openAccount = function (dispatch, legacy) {
+    lordOfTheFetch(accountsApi.openAccountsApi,
+        ["primary"],
+        callbackForOpenAccount,
+        [dispatch, legacy],
+        { "dispatch": dispatch });
 }
 
 
 
-let createLegacy = function (dispatch, form, names = ["create_filepath", "create_password"], legacy = null) {
-    initApi.createApi({ path: form[names[0]], password: form[names[1]], nettype: NET_TYPE })
-        .then(processResponse)
-        .then(jsonResponse)
-        .then((create) => {
-            if (create.status != 0) dispatch(addError(create.status));
-            else {
-                return accountsApi.openAccountsApi("primary")
-                    .then(processResponse)
-                    .then(jsonResponse)
-                    .then((open) => {
-                        if (open.status != 0) dispatch(addError(open.status));
-                        else {
-                            return accountsApi.infoAccountsApi("primary") //izmeniti kad Steva upgrade
-                                .then(processResponse)
-                                .then(jsonResponse)
-                                .then((info) => {
-                                    if (info.status != 0) dispatch(addError(info.status));
-                                    else {
-                                        return activeAccountApi.setActiveAccountApi({ account: info.result, type: 0 })
-                                            .then(processResponse)
-                                            .then(jsonResponse)
-                                            .then((active) => {
-                                                if (active.status != 0) dispatch(addError(active.status));
-                                                else {
-                                                    dispatch(addActiveAccount({ account: info.result, type: 0 }));
-                                                    //add legacy accounts;
-                                                    //add sfx accounts
-                                                }
-                                            })
-                                            .catch(errorResponse)
-                                    }
-                                })
-                                .catch(errorResponse);
-                        }
+let setActiveAccount = function (dispatch, data, legacy) {
 
-                    })
-                    .catch(errorResponse);
-            }
-
-
-        })
-        .catch(errorResponse);
+    lordOfTheFetch(activeAccountApi.setActiveAccountApi,
+        [data],
+        callbackForSetActiveAccount,
+        [dispatch, data, legacy],
+        { "dispatch": dispatch });
 }
 
-let open = function (dispatch, history, form, names = ["filepath", "password"]) {
-    initApi.openApi({ path: form[names[0]].trim(), password: form[names[1]].trim(), nettype: NET_TYPE })
-        .then(processResponse)
-        .then(jsonResponse)
-        .then((open) => {
-            if (open.status != 0) dispatch(addError(open.status));
-            else {
-                history.push('/w/home');
-            }
-        })
-        .catch(errorResponse);
+let addLegacyAccountsToWallet = function (dispatch, data) {
+    lordOfTheFetch(legacyAccountsApi.setLegacyAccountsApi,
+        [data],
+        callbackForAddLegacyAccounts,
+        [dispatch],
+        { "dispatch": dispatch });
+
+}
+
+
+
+
+
+//open wallet actions
+let open = function (dispatch, history, form, names = ["filepath", "password"], daemon) {
+    let daemon_host = daemon.daemon_host || DAEMON_HOST;
+    let daemon_port = daemon.daemon_port || DAEMON_PORT;
+    lordOfTheFetch(initApi.openApi,
+        [{ path: form[names[0]].trim(), password: form[names[1]].trim(), nettype: NET_TYPE, daemon_host: daemon_host, daemon_port: daemon_port }],
+        callbackForOpen,
+        [dispatch, history],
+        { "dispatch": dispatch });
+
 }
 
 let openLegacy = function (dispatch, form, names = ["legacy_filepath", "legacy_password"]) {
     readFilePromise(form[names[0]].trim())
         .then((data) => { return decryptContent(data, form[names[1]].trim()) })
-        .then((content) => { dispatch(addLegacyWallet(content)); })
+        .then((content) => { //
+            dispatch(addAccounts(Object.assign({}, content.safex_keys)));
+            dispatch(addLegacyWallet(content));
+            dispatch(addLegacyAccounts(content.keys))
+            content.keys.forEach(x => {
+
+                dispatch(resetAllBalances(x.public_key));
+                balancesApi.getBalanceApi(x.public_key)
+                    .then(processResponse)
+                    .then(jsonResponse)
+                    .then((oldones) => {
+                        dispatch(addLegacyBalance(x.public_key, oldones.balance));
+                    })
+                    .catch((error) => { dispatch(addError(error.message)); });
+                balancesApi.getBTCBalanceApi(x.public_key)
+                    .then(processResponse)
+                    .then((res) => { res.text() })
+                    .then((amount) => {
+                        dispatch(addLegacyBTCBalance(x.public_key, amount));
+                    })
+                    .catch((error) => { dispatch(addError(error.message)); });
+                balancesApi.getBTCBalancePendingApi(x.public_key)
+                    .then(processResponse)
+                    .then((res) => { res.text() })
+                    .then((amount) => {
+                        dispatch(addLegacyBTCBalancePending(x.public_key, amount));
+                    })
+                    .catch((error) => { dispatch(addError(error.message)); });
+
+            });
+
+
+        })
         .catch((error) => { dispatch(addError(error)); });
 }
 
@@ -145,95 +137,108 @@ let openLegacy = function (dispatch, form, names = ["legacy_filepath", "legacy_p
 
 //restore
 
-let restore = function (dispatch, form, names) {
+let restore = function (dispatch, form, names, daemon) {
+    let daemon_host = daemon.daemon_host || DAEMON_HOST;
+    let daemon_port = daemon.daemon_port || DAEMON_PORT;
+    let args = { path: form[names[0]].trim(), password: form[names[1]].trim(), nettype: NET_TYPE, daemon_host: daemon_host, daemon_port: daemon_port };
+    let func = null;
     if (form[names[3]] === "mnemonic") {
-        //&& form[names[1]].trim().split(' ').length === 25
-        initApi.restoreSeedsApi({ path: form[names[0]].trim(), password: form[names[1]].trim(), nettype: NET_TYPE, seed: form[names[4]].trim(), password_mnemonic: "" })
-            .then(processResponse)
-            .then(jsonResponse)
-            .then((create) => {
-                if (create.status != 0) dispatch(addError(create.status));
-                else {
-                    return accountsApi.openAccountsApi("primary")
-                        .then(processResponse)
-                        .then(jsonResponse)
-                        .then((open) => {
-                            if (open.status != 0) dispatch(addError(open.status));
-                            else {
-                                return accountsApi.infoAccountsApi("primary") //izmeniti kad Steva upgrade
-                                    .then(processResponse)
-                                    .then(jsonResponse)
-                                    .then((info) => {
-                                        if (info.status != 0) dispatch(addError(info.status));
-                                        else {
-                                            return activeAccountApi.setActiveAccountApi({ account: info.result, type: 0 })
-                                                .then(processResponse)
-                                                .then(jsonResponse)
-                                                .then((active) => {
-                                                    if (active.status != 0) dispatch(addError(active.status));
-                                                    else {
-                                                        dispatch(addActiveAccount({ account: info.result, type: 0 }));
-                                                    }
-                                                })
-                                                .catch(errorResponse)
-                                        }
-                                    })
-                                    .catch(errorResponse);
-                            }
-
-                        })
-                        .catch(errorResponse);
-                }
-
-
-            })
-            .catch(errorResponse);;
-
+        args = { ...args, seed: form[names[4]].trim(), password_mnemonic: "" }
+        func = initApi.restoreSeedsApi;
     }
     else {
-        initApi.restoreKeysApi({ path: form[names[0]].trim(), password: form[names[1]].trim(), nettype: NET_TYPE, address: form[names[5]].trim(), spendkey: form[names[7]].trim(), viewkey: form[names[6]].trim() })
-            .then(processResponse)
-            .then(jsonResponse)
-            .then((create) => {
-                if (create.status != 0) dispatch(addError(create.status));
-                else {
-                    return accountsApi.openAccountsApi("primary")
-                        .then(processResponse)
-                        .then(jsonResponse)
-                        .then((open) => {
-                            if (open.status != 0) dispatch(addError(open.status));
-                            else {
-                                return accountsApi.infoAccountsApi("primary") //izmeniti kad Steva upgrade
-                                    .then(processResponse)
-                                    .then(jsonResponse)
-                                    .then((info) => {
-                                        if (info.status != 0) dispatch(addError(info.status));
-                                        else {
-                                            return activeAccountApi.setActiveAccountApi({ account: info.result, type: 0 })
-                                                .then(processResponse)
-                                                .then(jsonResponse)
-                                                .then((active) => {
-                                                    if (active.status != 0) dispatch(addError(active.status));
-                                                    else {
-                                                        dispatch(addActiveAccount({ account: info.result, type: 0 }));
-                                                    }
-                                                })
-                                                .catch(errorResponse)
-                                        }
-                                    })
-                                    .catch(errorResponse);
-                            }
-
-                        })
-                        .catch(errorResponse);
-                }
-
-
-            })
-            .catch(errorResponse);;
+        args = { ...args, address: form[names[5]].trim(), spendkey: form[names[7]].trim(), viewkey: form[names[6]].trim() };
+        func = initApi.restoreKeysApi;
     }
 
+    lordOfTheFetch(func,
+        [args],
+        callbackForCreate,
+        [dispatch, null],
+        { "dispatch": dispatch });
+
+
+
+
 }
+
+
+let restoreFromKeys = function (dispatch, address, spendkey, viewkey, name) {
+    lordOfTheFetch(accountsApi.recoverAccountKeysApi,
+        [
+            address, spendkey, viewkey, name
+        ],
+        callbackForRestoreFromKeys,
+        [dispatch],
+        { "dispatch": dispatch });
+
+}
+
+
+//create
+
+let callbackForCreate = function (res, dispatch, legacy) {
+    if (res.status !== 0) dispatch(addError(res.status));
+    else {
+        openAccount(dispatch, legacy);
+    }
+}
+
+// open account
+let callbackForOpenAccount = function (res, dispatch, legacy) {
+    if (res.status !== 0) dispatch(addError(res.status));
+    else {
+        setActiveAccount(dispatch, res.result.info, legacy);
+    }
+}
+
+
+
+let callbackForSetActiveAccount = function (res, dispatch, data, legacy) {
+    if (res.status !== 0) dispatch(addError(res.status));
+    else {
+        dispatch(addActiveAccount(data));
+        if (legacy && legacy.hasOwnProperty("safex_keys") && legacy.safex_keys.length > 0) {
+            legacy.safex_keys.forEach((e, i) => {
+                if ((e.public_addr !== undefined) && (e.spend !== undefined) && (e.view !== undefined)) {
+                    restoreFromKeys(dispatch, e.public_addr, e.spend.sec, e.view.sec, "wallet " + i);
+                }
+                else console.log("FROM INIT => UNDEFINED ", e);
+            })
+        }
+        if (legacy && legacy.hasOwnProperty("keys") && legacy.keys.length > 0) {
+            let legacies = {};
+            legacy.keys.forEach((e, i) => {
+                legacies["wallet_legacy" + i] = legacy.keys[i];
+                legacies["wallet_legacy" + i]["address"] = e.public_key;
+                legacies["wallet_legacy" + i]["account_name"] = "wallet_legacy" + i;
+            });
+            addLegacyAccountsToWallet(dispatch, legacies);
+
+        }
+    }
+}
+
+//open
+let callbackForOpen = function (res, dispatch, history) {
+    if (res.status !== 0) dispatch(addError(res.status));
+    else {
+        history.push('/w/home');
+    }
+}
+
+//restore from keys
+let callbackForRestoreFromKeys = function (res, dispatch) {
+    console.log(res);
+
+}
+
+//add legacy accounts
+let callbackForAddLegacyAccounts = function (res, dispatch) {
+    if (res.status !== 0) dispatch(addError(res.status));
+}
+
+//wizard 
 
 let walletFile = function (dispatch, options = null, type = "create", name = "create_filepath", _touched = false, _errors = false) {
     let name_var = {};
@@ -267,7 +272,7 @@ let walletFile = function (dispatch, options = null, type = "create", name = "cr
             if (_touched) {
                 addWizardTouched(dispatch, { ..._touched, ...name_var });
             }
-            if (files != undefined && files.length > 0) {
+            if (files !== undefined && files.length > 0) {
                 name_var[name] = files[0];
                 addWizardData(dispatch, name_var);
 
@@ -291,7 +296,6 @@ let walletFile = function (dispatch, options = null, type = "create", name = "cr
 
 }
 
-//wizard 
 let initWizardState = function (dispatch) {
 
     dispatch(WizardActions.resetWizardStep());
@@ -312,9 +316,6 @@ let addWizardErrors = function (dispatch, data) {
 let addWizardTouched = function (dispatch, data) {
     dispatch(WizardActions.addWizardTouched(data));
 }
-
-
-
 
 let removeWizardData = function (dispatch, data = [], type = "data") {
     data.forEach((x) => {
@@ -371,7 +372,12 @@ let initWizardTouched = function (dispatch, data) {
 
 let initLegacyWallet = function (dispatch) {
     dispatch(addLegacyWallet({}));
+    dispatch(addLegacyAccounts([]));
 }
+
+
+
+
 
 
 
@@ -382,7 +388,6 @@ export {
     walletFile,
     //create
     create,
-    createLegacy,
     //open
     open,
     openLegacy,
@@ -400,8 +405,8 @@ export {
     removeWizardData,
     wizardBack,
     wizardNext
-    
-    
-   
+
+
+
 
 }

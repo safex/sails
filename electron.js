@@ -8,88 +8,146 @@ if (setupEvents.handleSquirrelEvent()) {
 const electron = require("electron");
 var crypto = require("crypto");
 // Module to create native browser window.
-const app= electron.app;
-const Menu= electron.Menu;
+const app = electron.app;
+const Menu = electron.Menu;
 const BrowserWindow = electron.BrowserWindow;
 
 const os = require("os");
 const path = require("path");
 const url = require("url");
 
+//for rpc
+const fp = require("find-free-port");
+const child = require('child_process');
+const executablePath = path.join(__dirname, "/bin/json_rpc");
+const password = crypto.randomBytes(20).toString('hex');
+
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
+let childWindow;
+let json_prc_process;
+let react_process;
+
+const startUrl = (process.env.NODE_ENV != "development" ? url.format({
+  pathname: path.join(__dirname, "/build/index.html"),
+  protocol: "file:",
+  slashes: true
+}) : 'http://localhost:3000/');
+
+const errorUrl = null;
+
+
+const conf = {
+  maximizable: true,
+  minimizable: true,
+  movable: true,
+  fullScreenable: true,
+  width: 1024,
+  height: 650,
+  maxWidth: 1024,
+  maxHeight: 650,
+  webPreferences: {
+    webSecurity: false,
+    nodeIntegration: true,
+    defaultFontFamily: "serif"
+  },
+  // useContentSize: true,
+  frame: false,
+  show: false,
+  title: "Sails"
+};
 
 function createWindow() {
   // Create the browser window.
-  mainWindow = new BrowserWindow({
-    backgroundColor: "#243782",
-    maximizable:true,
-   // width: 1024,
-   // height: 650,
-   // minWidth: 1024,
-   // minHeight: 650,
-    webPreferences: {
-      webSecurity: false,
-      nodeIntegration: true
-    },
-    useContentSize: true,
-    frame: false
-  });
+  mainWindow = new BrowserWindow(conf);
 
- // and load the index.html of the app.
-  let startUrl = (process.env.NODE_ENV != "development" ?   url.format({
-    pathname: path.join(__dirname, "/build/index.html"),
-    protocol: "file:",
-    slashes: true
-  }): 'http://localhost:3000/') ;
+  fp(10000, 11000, 'localhost')
+    .then(([port]) => {
+      //override port until refactoring
+      port = 2905;
+      /// !!!!!
+      const parameters = ["-port=" + port, '-password=' + password];
 
+      try {
+        let json_prc_process = child.execFile(executablePath, parameters);
+        if (json_prc_process) {
+          if (process.env.NODE_ENV != "development") {
+            mainWindow.loadURL(startUrl);
+          }
+          else {
+            react_process = child.exec("BROWSER=none npm start");
+            (function (mainWindow, startUrl) {
+              setTimeout(() => { mainWindow.loadURL(startUrl); }, 5000);
+            })(mainWindow, startUrl);
+          }
 
-  
-    mainWindow.loadURL(startUrl);
-    if (process.env.NODE_ENV === "development")
-      mainWindow.webContents.openDevTools();
+          electron.ipcMain.once('react-is-ready-to-receive-port', (event, arg) => {
+            event.reply('receive-port', port);
+          });
+
+        }
+      } catch (error) {
+        childWindow = new BrowserWindow({ parent: mainWindow, modal: true, show: false })
+        childWindow.loadURL(errorUrl);
+        childWindow.once('ready-to-show', () => {
+          childWindow.show();
+        });
+      }
+
+    })
+    .catch((err) => {
+      console.error(err);
+      childWindow = new BrowserWindow({ parent: mainWindow, modal: true, show: false })
+      childWindow.loadURL(errorUrl);
+      childWindow.once('ready-to-show', () => {
+        childWindow.show();
+      });
+    });
+
+  //add dev console
+  if (process.env.NODE_ENV === "development")
+    mainWindow.webContents.openDevTools();
 
   // Emitted when the window is closed.
-  mainWindow.on("closed", function() {
-    // Dereference the window object, usually you would store windows
-    // in an array if your app supports multi windows, this is the time
-    // when you should delete the corresponding element.
+  mainWindow.on("closed", function () {
+    if (json_prc_process) json_prc_process.kill();
+    if (react_process) react_process.kill();
     mainWindow = null;
+    childWindow - null;
+
   });
 
-  
+  //show when loaded
+  mainWindow.once('ready-to-show', () => {
+    mainWindow.show();
+  });
 }
 
-function createChild(port){
-  var child = require('child_process');
-  var executablePath =path.join(__dirname, "/bin/json_rpc");
-  let password=crypto.randomBytes(20).toString('hex');
-  var parameters = ["-port="+port,'-password='+password];
 
-  try {
-      child.execFile(executablePath,parameters, function(cerr,hildProcess){});
-  } catch (error) {
-    console.log(error);
+electron.ipcMain.on('app-close', () => {
+  app.quit();
+});
+electron.ipcMain.on('app-minimize', () => {
+  if (mainWindow) {
+    if (mainWindow.isMinimized()) { mainWindow.restore(); }
+    else { mainWindow.minimize(); }
   }
 
-}
+});
+electron.ipcMain.on('app-maximize', () => {
+  if (mainWindow) {
+    if (mainWindow.isMaximized()) { mainWindow.unmaximize(); }
+    else { mainWindow.maximize(); }
+  }
+});
 
-
-let win;
-
-function initAll(){
-  createWindow();
-  createChild(2905);
-}
-
-
-app.on("ready", initAll, () => {
-  win = new BrowserWindow();
+app.on("ready", createWindow, () => {
+  mainWindow = new BrowserWindow();
 });
 
 // Quit when all windows are closed.
-app.on("window-all-closed", function() {
+app.on("window-all-closed", function () {
   // On OS X it is common for applications and their menu bar
   // to stay active until the user quits explicitly with Cmd + Q
 
@@ -98,11 +156,11 @@ app.on("window-all-closed", function() {
   //}
 });
 
-app.on("activate", function() {
+app.on("activate", function () {
   // On OS X it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
   if (mainWindow === null) {
-    initAll()
+    createWindow();
   }
 });
 
