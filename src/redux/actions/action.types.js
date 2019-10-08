@@ -5,6 +5,7 @@ export const RESET_APP = 'RESET_APP';
 export const ADD_ACCOUNT = "ADD_ACCOUNT";
 export const ADD_ACCOUNTS = "ADD_ACCOUNTS";
 export const REMOVE_ACCOUNT = "REMOVE_ACCOUNT";
+export const REMOVE_ACCOUNTS = "REMOVE_ACCOUNTS";
 
 //legacy account
 export const ADD_LEGACY_ACCOUNT = "ADD_LEGACY_ACCOUNT";
@@ -70,3 +71,5 @@ export const ADD_ACTIVE_TAB = "ADD_ACTIVE_TAB";
 export const SPINNER_START = "SPINNER_START";
 export const SPINNER_END = "SPINNER_END";
 
+
+export const RPC_PORT = "RPC_PORT";

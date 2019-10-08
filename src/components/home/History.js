@@ -6,7 +6,7 @@ import Transaction from './Transaction';
 
 const mapStateToProps = (state) => {
   return {
-    historyT: state.history,
+    history: state.history,
     active_account: state.active_account
   };
 };
@@ -16,28 +16,20 @@ class History extends Component {
 
   render() {
 
-    let history = [];
-    if (this.props.active_account.type === 1) {
-      history = this.props.historyT || [];
-    }
-    else {
-      history = this.props.historyT.hasOwnProperty("ntx") ? Object.values(this.props.historyT) : [];
-    }
-    let transactions = null;
-    if (Array.isArray(history)) {
-      transactions = history.map((x, i) => { let rand = (Math.random() * 1000) / 1000; return <Transaction key={`transaction-${i}-${rand}`} transaction={x} /> });
-    }
+    let history = null;
+    if (this.props.history) { history = Object.values(this.props.history); }
+    let transactions = history.map((x, i) => { let rand = (Math.random() * 1000) / 1000; return <Transaction key={`transaction-${i}-${rand}`} transaction={x} /> });
 
     return (
       <>
         <Row>
           <Col>
-            <h2>{this.props.t("history")}</h2>
+            <h3>{this.props.t("history")}</h3>
           </Col>
         </Row>
-        <Row>
+        <Row style={{ maxHeight: "290px", height: "290px", overflowY: "auto" }}>
           <Col>
-            Number of transactions: {this.props.historyT.hasOwnProperty("ntx") ? this.props.historyT.ntx : this.props.historyT.length}
+            Number of transactions: {this.props.history.hasOwnProperty("ntx") ? this.props.history.ntx : 0}
             {transactions}
           </Col>
         </Row>

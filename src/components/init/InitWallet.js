@@ -14,11 +14,7 @@ class InitWallet extends Component {
 
 
   render() {
-    return (
-      <>
-        {this.props.wallet_exists ? <Legacy key="legacy" /> : <Main key="main" />}
-      </>
-    );
+    return (<div>{this.props.wallet_exists ? <Legacy key="legacy" /> : <Main key="main" />}</div>)
   }
 }
 const mapStateToProps = (state) => {

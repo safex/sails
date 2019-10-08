@@ -1,14 +1,16 @@
 import AddressInfo from './AddressInfo';
-import LegacyMenu from './LegacyMenu';
 import NetworkStatus from './NetworkStatus';
 import TopMenu from './TopMenu';
 import Error from './Error';
 import LanguageMenu from './LanguageMenu';
+import DaemonSetting from './DaemonSetting';
+import AppBar from './AppBar';
 export {
    AddressInfo,
-   LegacyMenu,
    NetworkStatus,
    TopMenu,
    Error,
-   LanguageMenu
+   LanguageMenu,
+   AppBar,
+   DaemonSetting
 }

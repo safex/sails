@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import error_types from '../../setups/error_types.json';
-import { addError, removeError } from '../../actions/error.action';
+import { addError, removeError } from '../../redux/actions/error.action';
 const mapStateToProps = (state) => {
   return {
     wallet_exists: state.wallet_exists,

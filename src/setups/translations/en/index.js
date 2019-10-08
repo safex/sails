@@ -8,6 +8,7 @@ import settings from './settings.json';
 import sfx from './sfx.json';
 import sft from './sft.json';
 import contacts from './contacts.json';
+import bitcoin from './bitcoin.json';
 
 export default {
     init,
@@ -19,5 +20,6 @@ export default {
     settings,
     sfx,
     sft,
-    contacts
+    contacts,
+    bitcoin
 }

@@ -1,4 +1,4 @@
-import { ADD_ACCOUNT, REMOVE_ACCOUNT, ADD_ACCOUNTS } from './action.types';
+import { ADD_ACCOUNT, REMOVE_ACCOUNT, ADD_ACCOUNTS, REMOVE_ACCOUNTS } from './action.types';
 import { ACCOUNT_OPEN } from '../../libs/api_endpoints';
 import { spinnerStart, spinnerEnd } from './spinner.action';
 import { addError } from './error.action';
@@ -49,7 +49,7 @@ export const openAccount = (account, set_active = false) => {
                 }
                 else {
                     if (set_active) {
-                        dispatch(setActiveAccount({ account: data.result.info, type: 0 }));
+                        dispatch(setActiveAccount(data.result.info));
                     }
 
                 }
@@ -62,4 +62,15 @@ export const openAccount = (account, set_active = false) => {
 
     }
 }
+
+export const removeAccounts = function () {
+    return (dispatch) => {
+        dispatch({
+            type: REMOVE_ACCOUNTS
+        });
+
+    }
+}
+
+
 

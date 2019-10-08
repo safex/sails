@@ -30,7 +30,8 @@ let initial_state = {
     account_labels: {},
     daemon: { host: '127.0.0.1', port: 38001 },
     active_tab: "home",
-    spinner: false
+    spinner: false,
+    rpc_config: 2905
 };
 
 export { initial_state }

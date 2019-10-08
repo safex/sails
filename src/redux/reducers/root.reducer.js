@@ -18,6 +18,7 @@ import { accountLabelsReducer } from './account_labels.reducer';
 import { daemonReducer } from './daemon.reducer';
 import { activeTabReducer } from './active_tab.reducer';
 import { spinnerReducer } from './spinner.reducer';
+import { rpcConfigReducer } from './rpc_config.reducer';
 
 let appReducer = combineReducers({
     wallet_exists: walletExistsReducer,
@@ -34,13 +35,15 @@ let appReducer = combineReducers({
     account_labels: accountLabelsReducer,
     daemon: daemonReducer,
     active_tab: activeTabReducer,
-    spinner: spinnerReducer
+    spinner: spinnerReducer,
+    rpc_config: rpcConfigReducer
 });
 
 const rootReducer = (state, action) => {
     if (action.type === RESET_APP) {
         initial_state.language = state.language;
         initial_state.daemon = state.daemon; initial_state.daemon_modal = false;
+        initial_state.rpc_config = state.rpc_config;
         state = initial_state;
     }
     return appReducer(state, action)

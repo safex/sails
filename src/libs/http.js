@@ -90,6 +90,7 @@ export class Http {
         if (err.message === "Failed to fetch") {
           // Presume this is a CORS error
           err = new HttpError("Server cannot be reached", 503);
+          //notify electron
         }
         console.error(
           `${requestId} <<< ${method} ${path}: ${err.status}  ${err.message}`,

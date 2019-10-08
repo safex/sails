@@ -1,32 +1,31 @@
 import React, { Component } from 'react';
 import routes_main from '../../setups/routes_main';
-import LanguageMenu from '../shared/LanguageMenu';
-import DaemonSetting from '../shared/DaemonSetting';
-
+import { LanguageMenu, DaemonSetting, AppBar } from '../shared/';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
-import { Container, Row, Col } from 'react-bootstrap'
+import { Navbar } from 'react-bootstrap'
 class App extends Component {
 
 
   render() {
     return (
-      <Container>
-        <Row>
-          <Col>
-            <LanguageMenu />
-          </Col>
-          <Col>
-            <DaemonSetting />
-          </Col>
-        </Row>
-        <Row>
-          <Col>
-            {routes_main}
-          </Col>
-        </Row>
-
-      </Container>
+      <div>
+        <Navbar bg="dark" expand="lg">
+          <Navbar.Toggle />
+          <Navbar.Collapse className="justify-content-end">
+            <Navbar.Text>
+              <LanguageMenu />
+            </Navbar.Text>
+            <Navbar.Text>
+              <DaemonSetting />
+            </Navbar.Text>
+            <Navbar.Text>
+              <AppBar />
+            </Navbar.Text>
+          </Navbar.Collapse>
+        </Navbar>
+        {routes_main}
+      </div>
     );
   }
 }

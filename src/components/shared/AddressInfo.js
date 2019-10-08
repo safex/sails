@@ -12,25 +12,27 @@ const mapStateToProps = (state) => {
 class AddressInfo extends Component {
 
   render() {
-    return (<Row>
-      <Col>
+    return (
+      <div>
         <Row>
           <Col>
-            <ButtonToolbar >
-              <ButtonGroup className="mr-2">
-                <Button variant="primary">{this.props.t("copy")}</Button>
-                <Button variant="info">{this.props.t("receive")}</Button>
-              </ButtonGroup>
-            </ButtonToolbar>
+            <Row>
+              <Col>
+                <ButtonToolbar className="justify-content-end">
+                  <Button variant="outline-primary">{this.props.t("copy")} </Button> &nbsp;
+                  <Button variant="outline-info">{this.props.t("receive")}</Button>
+                </ButtonToolbar>
+              </Col>
+            </Row>
+            <Row>
+              <Col>
+                <Alert variant="secondary" style={{ wordBreak: "break-all" }}> {this.props.active_account.hasOwnProperty("account") ? this.props.active_account.account.address : ""} </Alert>
+              </Col>
+            </Row>
           </Col>
         </Row>
-        <Row>
-          <Col>
-            <Alert variant="secondary"> {this.props.active_account.hasOwnProperty("account") ? this.props.active_account.account.address : ""} </Alert>
-          </Col>
-        </Row>
-      </Col>
-    </Row>);
+      </div>
+    );
   }
 }
-export default withTranslation('address_info')(connect(mapStateToProps)(AddressInfo));
+export default withTranslation('address_info')(connect(mapStateToProps)(AddressInfo)); 

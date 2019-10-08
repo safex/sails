@@ -1,4 +1,4 @@
-import { ADD_ACCOUNT, REMOVE_ACCOUNT, ADD_ACCOUNTS } from '../actions/action.types';
+import { ADD_ACCOUNT, REMOVE_ACCOUNT, ADD_ACCOUNTS, REMOVE_ACCOUNTS } from '../actions/action.types';
 let accountsReducer = function (state = {}, action) {
     switch (action.type) {
         case ADD_ACCOUNT:
@@ -11,6 +11,8 @@ let accountsReducer = function (state = {}, action) {
             return stR;
         case ADD_ACCOUNTS:
             return { ...action.item };
+        case REMOVE_ACCOUNTS:
+            return {};
         default:
             return state
     }

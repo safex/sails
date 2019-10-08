@@ -135,3 +135,16 @@ export const create = function () {
 
 }
 
+export const open = function () {
+    let daemon_host = this.props.daemon.daemon_host || DAEMON_HOST;
+    let daemon_port = this.props.daemon.daemon_port || DAEMON_PORT;
+    this.props.startOpeningWallet({
+        path: this.state.data.open_filepath.trim(),
+        password: this.state.data.open_password.trim(),
+        nettype: NET_TYPE,
+        daemon_host: daemon_host,
+        daemon_port: daemon_port
+    });
+
+}
+

@@ -41,7 +41,7 @@
     "legacy_detected_title": "Legacy Wallet Detected",
     "legacy_detected_description": "To proceed you will create a new v8 wallet file which will become your main wallet file.",
     "legacy_button": "Import legacy wallet file v7 and earlier",
-    "legacy_description": "Import a safexwallet.dat file here, a new file will be created",
+    "legacy_description": "Import a safexwallet.dat file, a new file will be created",
     "detected": "Detected",
     "bitcoins_on_all_wallets": "Bitcoin on all wallets",
     "safe_exchange_coins_total": "Safe Exchange Coins Total",

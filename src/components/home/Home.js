@@ -1,19 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
-import { Container, Row, Col, Button, Dropdown, DropdownButton, Modal, Form } from 'react-bootstrap';
+import { Row, Col, Button, Dropdown, Modal, Form } from 'react-bootstrap';
 import Accounts from './Accounts';
 import History from './History';
 import { addNewAccount, changeModalState, addSeedsAccount, addKeysAccount, addFileAccount, openFile } from '../../modules/home.module';
-
-const mapStateToProps = (state) => {
-    return {
-        accounts: state.accounts,
-        legacy_accounts: state.legacy_accounts,
-        home_modals: state.home_modals,
-        account_labels: state.account_labels
-    }
-}
 
 function ModalSeeds(props) {
 
@@ -98,36 +89,6 @@ function ModalKeys(props) {
                         </Form.Group>
                     </Form.Row>
 
-                    <Form.Row>
-                        <Form.Group as={Col}>
-                            <Form.Label as="legend" controlId="add_keys_type"> {props.type} </Form.Label>
-                            <Col>
-                                <Form.Check
-                                    defaultChecked="true"
-                                    type="radio"
-                                    label="SFX/SFT"
-                                    name="add_keys_type"
-                                    inline="true"
-                                    id="type_sfx_sft"
-                                    value="0"
-                                />
-                                <Form.Check
-                                    type="radio"
-                                    label="SAFEX"
-                                    name="add_keys_type"
-                                    inline="true"
-                                    id="type_safex"
-                                    value="1"
-                                />
-                            </Col>
-                        </Form.Group>
-                    </Form.Row>
-                    <Form.Row>
-                        <Col>
-                            <h5>{props.note} : <small>{props.note_text}</small></h5>
-                        </Col>
-                    </Form.Row>
-
                 </Form>
 
             </Modal.Body>
@@ -138,15 +99,12 @@ function ModalKeys(props) {
                         document.getElementById("add_keys_view").value,
                         document.getElementById("add_keys_spend").value,
                         document.getElementById("add_keys_label").value,
-                        document.querySelector('input[name=add_keys_type]:checked').value,
                         props.accounts,
-                        props.legacy_accounts,
                         props.labels);
                     document.getElementById("add_keys_address").value = "";
                     document.getElementById("add_keys_view").value = "";
                     document.getElementById("add_keys_spend").value = "";
                     document.getElementById("add_keys_label").value = "";
-                    document.querySelector('input[name=add_keys_type]:checked').value = "0";
                     changeModalState(props.dispatch, { modal_keys: false });
                 }}>{props.submit}</Button>
                 <Button variant="danger" onClick={() => { changeModalState(props.dispatch, { modal_keys: false }) }}>{props.close}</Button>
@@ -251,33 +209,40 @@ class Home extends Component {
     render() {
         return (
             <>
-                <Container>
-                    <Row>
-                        <Col><h1> {this.props.t("home")}</h1></Col>
-                    </Row>
-                    <Row>
-                        <Col xs={4}>
-                            <Accounts />
-                            <DropdownButton
-                                title={this.props.t("accounts_add")}
-                                variant="info"
-                                id="add_account_options"
-                                key="add_account_options"
-                                size="md"
-                                block="true" >
-                                <Dropdown.Item eventKey="file" onClick={() => { changeModalState(this.props.dispatch, { modal_file: true }) }}>{this.props.t("accounts_file")}</Dropdown.Item>
-                                <Dropdown.Item eventKey="keys" onClick={() => { changeModalState(this.props.dispatch, { modal_keys: true }) }}>{this.props.t("accounts_keys")}</Dropdown.Item>
-                                <Dropdown.Item eventKey="seed" onClick={() => { changeModalState(this.props.dispatch, { modal_seeds: true }) }}> {this.props.t("accounts_seed")} </Dropdown.Item>
-                                <Dropdown.Divider />
-                                <Dropdown.Item eventKey="new" onClick={(event) => { changeModalState(this.props.dispatch, { modal_new: true }) }}>{this.props.t("accounts_new")} </Dropdown.Item>
-                            </DropdownButton>
-                        </Col>
-                        <Col xs={8}>
-                            <History />
-                            <Button type="button" size="md" block="true">{this.props.t("export")}</Button>
-                        </Col>
-                    </Row>
-                </Container>
+                <Row >
+                    <Col xs={12} md={4}>
+                        <Accounts />
+                        <Row>
+                            <Col>
+                                <Dropdown>
+                                    <Dropdown.Toggle variant="info"
+                                        id="add_account_options"
+                                        key="add_account_options"
+                                        size="md"
+                                        block="true">
+                                        {this.props.t("accounts_add")}
+                                    </Dropdown.Toggle>
+
+                                    <Dropdown.Menu>
+                                        <Dropdown.Item eventKey="file" onClick={() => { changeModalState(this.props.dispatch, { modal_file: true }) }}>{this.props.t("accounts_file")}</Dropdown.Item>
+                                        <Dropdown.Item eventKey="keys" onClick={() => { changeModalState(this.props.dispatch, { modal_keys: true }) }}>{this.props.t("accounts_keys")}</Dropdown.Item>
+                                        <Dropdown.Item eventKey="seed" onClick={() => { changeModalState(this.props.dispatch, { modal_seeds: true }) }}> {this.props.t("accounts_seed")} </Dropdown.Item>
+                                        <Dropdown.Divider />
+                                        <Dropdown.Item eventKey="new" onClick={(event) => { changeModalState(this.props.dispatch, { modal_new: true }) }}>{this.props.t("accounts_new")} </Dropdown.Item>
+                                    </Dropdown.Menu>
+                                </Dropdown>
+                            </Col>
+                        </Row>
+
+                    </Col>
+                    <Col xs={12} md={8} >
+                        <History />
+                        <Row>
+                            <Col><Button type="button" size="md" block="true">{this.props.t("export")}</Button></Col>
+                        </Row>
+
+                    </Col>
+                </Row>
                 <ModalSeeds
                     show={this.props.home_modals.modal_seeds}
                     accounts={this.props.accounts}
@@ -335,4 +300,14 @@ class Home extends Component {
         );
     }
 }
+
+
+const mapStateToProps = (state) => {
+    return {
+        accounts: state.accounts,
+        home_modals: state.home_modals,
+        account_labels: state.account_labels
+    }
+}
+
 export default withTranslation('home')(connect(mapStateToProps)(Home));

@@ -4,13 +4,6 @@ import { withTranslation } from 'react-i18next';
 import { Row, Col, Modal, Table, Button, Container, Card } from 'react-bootstrap';
 import { addWizardData, wizardNext } from '../../modules/init.module';
 
-const mapStateToProps = (state) => {
-    return {
-        wizard: state.wizard,
-        legacy_wallet: state.legacy_wallet,
-        legacy_accounts: state.legacy_accounts
-    };
-};
 
 class LegacyBTCCard extends Component {
     render() {
@@ -47,8 +40,8 @@ class LegacyBTCCard extends Component {
                                 <td>{this.props.t("pending_btc_balance")}</td>
                             </tr>
                             <tr>
-                                <td>{this.props.account.btc_bal}</td>
-                                <td>{this.props.account.pending_btc_bal}</td>
+                                <td>{parseFloat(this.props.account.btc_bal).toFixed(8)}</td>
+                                <td>{parseFloat(this.props.account.pending_btc_bal).toFixed(8)}</td>
                             </tr>
 
                         </tbody>
@@ -90,23 +83,6 @@ class LegacySAFEXCard extends Component {
                                 <td>{this.props.t("public_spend")}</td>
                                 <td>{this.props.account.spend.pub}</td>
                             </tr>
-                            <tr>
-                                <td>{this.props.t("safex_tokens")}</td>
-                                <td>{this.props.t("safex_tokens_pending")}</td>
-                            </tr>
-                            <tr>
-                                <td>0</td>
-                                <td>0</td>
-                            </tr>
-                            <tr>
-                                <td>{this.props.t("safex_cash")}</td>
-                                <td>{this.props.t("safex_cash_pending")}</td>
-                            </tr>
-                            <tr>
-                                <td>0</td>
-                                <td>0</td>
-                            </tr>
-
                         </tbody>
                     </Table>
                 </Card.Body>
@@ -119,13 +95,10 @@ class LegacySAFEXCard extends Component {
 
 class WizardLegacy extends Component {
     render() {
-        console.log(this.props.legacy_accounts);
-        let btc_card = this.props.legacy_accounts ? Object.values(this.props.legacy_accounts).map((x, i) => { return <LegacyBTCCard key={`legacy-btc-${i}`} account={x} t={this.props.t} /> }) : [];
-        let safex_card = this.props.accounts ? Object.values(this.props.accounts).map((x, i) => { return <LegacySAFEXCard key={`legacy-safex-${i}`} account={x} t={this.props.t} /> }) : [];
+        let btc_card = this.props.legacy_accounts ? Object.values(this.props.legacy_accounts).map((x, i) => { return <LegacyBTCCard key={`legacy-btc-${i}-${x.btc_bal}-${x.pending_btc_bal}-${x.safex_bal}-${x.pending_safex_bal}`} account={x} t={this.props.t} /> }) : [];
+        let safex_card = this.props.accounts ? Object.values(this.props.accounts).map((x, i) => { if (x) { return <LegacySAFEXCard key={`legacy-safex-${i}`} account={x} t={this.props.t} /> } else return null; }) : [];
         let btc_bal = Object.values(this.props.legacy_accounts) !== [] ? Object.values(this.props.legacy_accounts).reduce((s, x) => { return s + Number(x.btc_bal ? x.btc_bal : 0); }, 0) : 0;
         let safex_bal = Object.values(this.props.legacy_accounts) !== [] ? Object.values(this.props.legacy_accounts).reduce((s, x) => { return s + Number(x.safex_bal ? x.safex_bal : 0); }, 0) : 0;
-        let sft = 0;
-        let sfx = 0;
         if (this.props.show_on_step === false) return null;
         if (this.props.step !== this.props.show_on_step) return null;
         return (
@@ -160,15 +133,6 @@ class WizardLegacy extends Component {
                                     <td>{this.props.t("safex_key_sets")}</td>
                                     <td>{this.props.legacy_wallet.hasOwnProperty('safex_keys') ? this.props.legacy_wallet.safex_keys.length : 0}</td>
                                 </tr>
-                                <tr>
-                                    <td>{this.props.t("safex_tokens")} </td>
-                                    <td>{sft} SFT</td>
-                                </tr>
-                                <tr>
-                                    <td>{this.props.t("safex_cash")}</td>
-                                    <td>{(parseFloat(sfx) / 10000000000).toFixed(10)} SFX</td>
-                                </tr>
-
                             </tbody>
                         </Table>
                     </Col>

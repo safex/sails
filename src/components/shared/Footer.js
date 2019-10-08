@@ -10,10 +10,23 @@ class Footer extends Component {
 
   render() {
     return (
-      <Row>
-        <Col xs={4}><NetworkStatus /></Col>
-        <Col xs={8}><AddressInfo /></Col>
-      </Row>
+      <>
+        <Row style={
+          {
+            position: "absolute",
+            right: 0,
+            bottom: 0,
+            left: 0,
+            width: "100%"
+
+          }
+        }>
+          <Col md={4} xs={12}><NetworkStatus /></Col>
+          <Col md={8} xs={12}><AddressInfo /></Col>
+        </Row >
+      </>
+
+
     );
   }
 }

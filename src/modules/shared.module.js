@@ -18,6 +18,8 @@ import { getTransactionHistory } from '../api/go/transaction.api'
 import { lordOfTheFetch } from '../libs/one_fetch_to_rule_them_all';
 import { DAEMON_HOST, DAEMON_PORT } from '../setups/conf';
 
+let { ipcRenderer } = window.require("electron");
+
 let changeLanguageF = function (that, value) {
     that.props.dispatch(changeLanguage(value));
     that.props.i18n.changeLanguage(value);
@@ -37,42 +39,25 @@ let getActiveAccountFromWallet = function (dispatch) {
 }
 
 let openAccounts = function (dispatch, account, save) {
-    if (account.type) {
-        dispatch(addActiveAccount(account));
-        // syncAccount(dispatch, account);
-        getHistory(dispatch, account);
-        //fake open primary
-
-        lordOfTheFetch(openAccountsApi, ["primary"], callbackForOpenAccounts, [dispatch, save, false], { dispatch: dispatch });
-    }
-    else {
-        lordOfTheFetch(openAccountsApi, [account.account.account_name], callbackForOpenAccounts, [dispatch, save, true], { dispatch: dispatch });
-    }
+    lordOfTheFetch(openAccountsApi, [account.account_name], callbackForOpenAccounts, [dispatch, save, true], { dispatch: dispatch });
 
 }
 
 let saveActiveToWallet = function (dispatch, account, dispatchActiveAccount) {
-    lordOfTheFetch(setActiveAccountApi, [{ account: account, type: 0 }], callbackForSetActiveAccountInWallet, [dispatch, account, dispatchActiveAccount], { dispatch: dispatch });
+    lordOfTheFetch(setActiveAccountApi, [account], callbackForSetActiveAccountInWallet, [dispatch, account, dispatchActiveAccount], { dispatch: dispatch });
 }
 
 let syncAccount = function (dispatch, account) {
-    if (account.type === 1) syncAccountOld(dispatch, account);
-    else syncAccountNew(dispatch, account);
+    syncAccountNew(dispatch, account);
 }
 let getHistory = function (dispatch, account) {
-    if (account.type === 1) getHistoryOld(dispatch, account);
-    else getHistoryNew(dispatch, account);
+    getHistoryNew(dispatch, account);
 }
 
-let getHistoryOld = function (dispatch, account) {
-
-}
 let getHistoryNew = function (dispatch, account) {
     lordOfTheFetch(getTransactionHistory, [], callbackForGetHistoryNew, [dispatch], { dispatch: dispatch });
 }
 
-let syncAccountOld = function (dispatch, account) {
-}
 let syncAccountNew = function (dispatch, account) {
     lordOfTheFetch(syncAccountsApi, [], callbackForSyncAccount, [dispatch, account], { dispatch: dispatch });
 }
@@ -96,20 +81,18 @@ let callbackForOpenAccounts = function (res, dispatch, save, dispatchActiveAccou
     if (res.status !== 0) {
         dispatch(addError(res.status));
     }
-    let tmp = res.result.info;
-
-    //ovde je greska
-    //ovde mora da se izvuce labela
-    if (!tmp.hasOwnProperty("label")) { tmp.label = tmp.account_name };
-    if (save) {
-        saveActiveToWallet(dispatch, tmp, dispatchActiveAccount);
+    if (res.result.hasOwnProperty("info")) {
+        let tmp = res.result.info;
+        if (!tmp.hasOwnProperty("label")) { tmp.label = tmp.account_name };
+        if (save) {
+            saveActiveToWallet(dispatch, tmp, dispatchActiveAccount);
+        }
+        else if (dispatchActiveAccount) {
+            dispatch(addActiveAccount(tmp));
+            syncAccount(dispatch, tmp);
+            getHistory(dispatch, tmp);
+        }
     }
-    else if (dispatchActiveAccount) {
-        dispatch(addActiveAccount({ account: tmp, type: 0 }));
-        syncAccount(dispatch, { account: tmp, type: 0 });
-        getHistory(dispatch, { account: tmp, type: 0 });
-    }
-
 
 }
 
@@ -117,7 +100,7 @@ let callbackForSetActiveAccountInWallet = function (res, dispatch, data, dispatc
     if (res.status !== 0) dispatch(addError(res.status));
     else {
         if (dispatchToAccount) {
-            dispatch(addActiveAccount({ account: data, type: 0 }));
+            dispatch(addActiveAccount(data));
         }
 
     }
@@ -154,6 +137,17 @@ let addDaemonData = function (event, type) {
     }
 }
 
+let minimize = function () {
+    ipcRenderer.send('app-minimize');
+}
+let maximize = function () {
+    ipcRenderer.send('app-maximize');
+}
+let quit = function () {
+    console.log("quit");
+    ipcRenderer.send('app-close');
+}
+
 
 
 export {
@@ -161,6 +155,9 @@ export {
     logout,
     getActiveAccountFromWallet,
     toggleDaemonModal,
-    addDaemonData
+    addDaemonData,
+    minimize,
+    maximize,
+    quit
 
 }

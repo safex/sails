@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
-import { addWizardData, wizardNext, addWizardErrors, addWizardTouched, create, restore } from '../../modules/init.module';
+//import { addWizardData, wizardNext, addWizardErrors, addWizardTouched, create, restore } from '../../modules/init.module';
 import { Row, Col, Form, Button } from 'react-bootstrap';
 
 

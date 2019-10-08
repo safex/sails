@@ -1,7 +1,7 @@
-import { accountsApi, activeAccountApi, transactionApi, legacyAccountsApi, accountLabelsApi } from '../api/go';
-import { legacyTransactionApi } from '../api/legacy';
-import { addAccounts } from '../redux/actions/accounts.action';
-import { replaceLegacyAccounts } from '../redux/actions/legacy_accounts.action';
+import { accountsApi, activeAccountApi, transactionApi,  accountLabelsApi } from '../api/go';
+//import { legacyTransactionApi } from '../api/legacy';
+import { addAccounts, removeAccounts } from '../redux/actions/accounts.action';
+//import { replaceLegacyAccounts } from '../redux/actions/legacy_accounts.action';
 import { addActiveAccount } from '../redux/actions/active_account.action';
 import { addAccountHistory, resetAccountHistory } from '../redux/actions/history.action';
 import { addError } from '../redux/actions/error.action';
@@ -10,20 +10,20 @@ import { addAccountLabels } from '../redux/actions/account_labels.action';
 import { lordOfTheFetch } from '../libs/one_fetch_to_rule_them_all';
 
 let { dialog } = window.require("electron").remote;
-const bitcoin = null;
+//const bitcoin = null;
 // const bitcoin = window.require('bitcoinjs-lib');
 
 let getAccounts = function (dispatch) {
+    dispatch(removeAccounts());
     lordOfTheFetch(accountsApi.getAccountsInfoApi, [], callbackForGetAccounts, [dispatch], { dispatch: dispatch });
 }
 
-let getLegacyAccounts = function (dispatch) {
-    lordOfTheFetch(legacyAccountsApi.getLegacyAccountsApi, [], callbackForGetLegacyAccounts, [dispatch], { dispatch: dispatch });
-}
+// let getLegacyAccounts = function (dispatch) {
+//     lordOfTheFetch(legacyAccountsApi.getLegacyAccountsApi, [], callbackForGetLegacyAccounts, [dispatch], { dispatch: dispatch });
+// }
 let setActiveAccount = function () {
     if (this.props.account) {
-        let dispatchAfter = (this.props.type !== 1 ? false : true);
-        lordOfTheFetch(activeAccountApi.setActiveAccountApi, [{ account: this.props.account, type: this.props.type }], callbackForSetActiveAccount, [this.props.dispatch, { account: this.props.account, type: this.props.type }, dispatchAfter], { dispatch: this.propsdispatch });
+        lordOfTheFetch(activeAccountApi.setActiveAccountApi, [this.props.account], callbackForSetActiveAccount, [this.props.dispatch, this.props.account], { dispatch: this.props.dispatch });
     }
 }
 
@@ -33,7 +33,7 @@ let openAccount = function (dispatch, name = "primary", account_to_be_dispatched
 
 
 let syncAccount = function (dispatch, account, account_to_be_dispatched) {
-    lordOfTheFetch(accountsApi.syncAccountsApi, [], callbackForSyncAccount, [dispatch, account, account_to_be_dispatched], { dispatch: dispatch });
+    lordOfTheFetch(accountsApi.syncAccountsApi, [], callbackForSyncAccount, [dispatch, account_to_be_dispatched], { dispatch: dispatch });
 }
 
 
@@ -42,18 +42,17 @@ let syncAccount = function (dispatch, account, account_to_be_dispatched) {
 //     lordOfTheFetch(activeAccountApi.getActiveAccountApi, [], callbackForGetActiveAccount, [dispatch], { dispatch: dispatch });
 // }
 
-let getHistory = function (dispatch, active_account) {
-    if (active_account.type === 1) { getHistoryOld(dispatch, active_account); }
-    else { getHistoryNew(dispatch); }
+let getHistory = function (dispatch) {
+    getHistoryNew(dispatch);
 }
 
 let getHistoryNew = function (dispatch) {
     lordOfTheFetch(transactionApi.getTransactionHistory, [], callbackForGetHistoryNew, [dispatch], { dispatch: dispatch });
 }
 
-let getHistoryOld = function (dispatch, active_account) {
-    lordOfTheFetch(legacyTransactionApi.getHistoryApi, [active_account.account.address], callbackForGetHistoryOld, [dispatch], { dispatch: dispatch });
-}
+// let getHistoryOld = function (dispatch, active_account) {
+//     lordOfTheFetch(legacyTransactionApi.getHistoryApi, [active_account.account.address], callbackForGetHistoryOld, [dispatch], { dispatch: dispatch });
+// }
 
 let addNewAccount = function (dispatch, label, accounts, labels) {
     if (accounts) {
@@ -72,44 +71,10 @@ let addSeedsAccount = function (dispatch, seeds, label, accounts, labels) {
 
 }
 
-let addKeysAccount = function (dispatch, address, view, spend, type, label, accounts, legacy_accounts, labels) {
-
-    if (type === "0") {
-        let name = "wallet_";
-        name += Object.keys(accounts).length;
-        lordOfTheFetch(accountsApi.recoverAccountKeysApi, [address.trim(), spend.trim(), view.trim(), name], callbackForAddNewAccount, [dispatch, name, label, labels], { dispatch: dispatch });
-    }
-    else {
-        try {
-            let name = "wallet_legacy_";
-            name += Object.keys(legacy_accounts).length;
-            let legacies = legacy_accounts;
-            var key_pair = bitcoin.ECPair.fromWIF(view.trim());
-            const { address } = bitcoin.payments.p2pkh({ pubkey: key_pair.publicKey });
-
-            var key_json = {};
-            key_json['public_key'] = address;
-            key_json['private_key'] = view.trim();
-            key_json['safex_bal'] = 0;
-            key_json['btc_bal'] = 0;
-            key_json['pending_safex_bal'] = 0;
-            key_json['pending_btc_bal'] = 0;
-            key_json['archived'] = false;
-            key_json['label'] = label || "Enter your label here";
-            legacies[name] = { account: key_json, type: 1 };
-            legacies[name].account["address"] = address;
-            legacies[name].account["account_name"] = name;
-            lordOfTheFetch(legacyAccountsApi.setLegacyAccountsApi,
-                [legacies],
-                callbackForAddLegacyAccounts,
-                [dispatch],
-                { "dispatch": dispatch });
-
-        } catch (error) {
-            dispatch(addError(error.message));
-        }
-
-    }
+let addKeysAccount = function (dispatch, address, view, spend, label, accounts, labels) {
+    let name = "wallet_";
+    name += Object.keys(accounts).length;
+    lordOfTheFetch(accountsApi.recoverAccountKeysApi, [address.trim(), spend.trim(), view.trim(), name], callbackForAddNewAccount, [dispatch, name, label, labels], { dispatch: dispatch });
 
 }
 
@@ -141,8 +106,8 @@ let callbackForGetAccounts = function (res, dispatch) {
         res.result.accounts.forEach((x, i) => {
 
             if (x.account_name !== "") {
-                accounts[x.account_name] = { account: x, type: 0 };
-                accounts[x.account_name].account.label = x.account_name;
+                accounts[x.account_name] = x;
+                accounts[x.account_name].label = x.account_name;
             }
             if (i === (res.result.accounts.length - 1)) {
                 getLabels(dispatch, accounts);
@@ -155,28 +120,22 @@ let callbackForGetAccounts = function (res, dispatch) {
 }
 
 // getLegacyAccounts
-let callbackForGetLegacyAccounts = function (res, dispatch) {
-    if (res.status === 0) {
-        if (res.result.value !== "") dispatch(replaceLegacyAccounts(JSON.parse(res.result.value)));
-    }
-    else if (res.status !== 13) {
-        dispatch(addError(res.status));
-    }
-}
+// let callbackForGetLegacyAccounts = function (res, dispatch) {
+//     if (res.status === 0) {
+//         if (res.result.value !== "") dispatch(replaceLegacyAccounts(JSON.parse(res.result.value)));
+//     }
+//     else if (res.status !== 13) {
+//         dispatch(addError(res.status));
+//     }
+// }
 
 
 // setActiveAccount
-let callbackForSetActiveAccount = function (res, dispatch, account, dispatchAfter) {
+let callbackForSetActiveAccount = function (res, dispatch, account) {
     if (res.status !== 0) dispatch(addError(res.status));
     else {
         dispatch(resetAccountHistory());
-        if (dispatchAfter) {
-            dispatch(addActiveAccount(account));
-            getHistory(dispatch, account);
-        }
-        else {
-            openAccount(dispatch, account.account.account_name, account);
-        }
+        openAccount(dispatch, account.account.account_name, account);
     }
 }
 
@@ -188,9 +147,9 @@ let callbackForOpenAccount = function (res, dispatch, account_to_be_dispatched) 
 }
 
 // syncAccount
-let callbackForSyncAccount = function (res, dispatch, account, account_to_be_dispatched) {
+let callbackForSyncAccount = function (res, dispatch, account_to_be_dispatched) {
     if (res.status !== 0) dispatch(addError(res.status));
-    else { dispatch(addActiveAccount(account_to_be_dispatched)); getHistory(dispatch, account_to_be_dispatched); }
+    else { dispatch(addActiveAccount(account_to_be_dispatched)); getHistory(dispatch); }
 }
 
 // get history new
@@ -199,10 +158,10 @@ let callbackForGetHistoryNew = function (res, dispatch) {
     else { dispatch(addAccountHistory(res.result)); }
 }
 
-let callbackForGetHistoryOld = function (res, dispatch) {
+// let callbackForGetHistoryOld = function (res, dispatch) {
 
-    dispatch(addAccountHistory(res));
-}
+//     dispatch(addAccountHistory(res));
+// }
 
 let callbackForAddNewAccount = function (res, dispatch, name, label, labels) {
     if (res.status !== 0) dispatch(addError(res.status));
@@ -229,7 +188,7 @@ let callbackForGetLabels = function (res, dispatch, accounts) {
         let labels = JSON.parse(res.result.value);
         for (let l in labels) {
             if (acc.hasOwnProperty(l)) {
-                acc[l].account.label = labels[l];
+                acc[l].label = labels[l];
             }
         }
         dispatch(addAccounts(acc));
@@ -242,9 +201,9 @@ let callbackForGetLabels = function (res, dispatch, accounts) {
         dispatch(addError(res.status));
     }
 }
-let callbackForAddLegacyAccounts = function (res, dispatch) {
-    if (res.status !== 0) dispatch(addError(res.status));
-}
+// let callbackForAddLegacyAccounts = function (res, dispatch) {
+//     if (res.status !== 0) dispatch(addError(res.status));
+// }
 
 // let callbackForGetActiveAccountUltimateFetch = function (res, dispatch) {
 //     if (res.status === 0) { dispatch(addActiveAccount(JSON.parse(res.result.value))); getHistory(JSON.parse(res.result.value), dispatch); }
@@ -280,7 +239,7 @@ export {
     setActiveAccount,
     // getActiveAccount,
     getAccounts,
-    getLegacyAccounts,
+    //getLegacyAccounts,
     getHistory,
     addNewAccount,
     changeModalState,

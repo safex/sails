@@ -2,25 +2,24 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import { LEGACY_DEFAULT_WALLET_PATH } from '../../setups/conf';
-import { walletFile, addWizardData, wizardNext, addWizardTouched, addWizardErrors } from '../../modules/init.module';
 import { Row, Col, Form, Button } from 'react-bootstrap';
 
 
 
-const handleSubmit = (event, dispatch) => {
-    const form = event.currentTarget;
-    if (form.checkValidity() === false) {
-        event.preventDefault();
-        event.stopPropagation();
-        addWizardData(dispatch, { validated: false });
-    }
-    else {
-        addWizardData(dispatch, { validated: true });
-        wizardNext(dispatch);
+// const handleSubmit = (event, dispatch) => {
+//     const form = event.currentTarget;
+//     if (form.checkValidity() === false) {
+//         event.preventDefault();
+//         event.stopPropagation();
+//         addWizardData(dispatch, { validated: false });
+//     }
+//     else {
+//         addWizardData(dispatch, { validated: true });
+//         wizardNext(dispatch);
 
-    }
+//     }
 
-};
+// };
 let is_valid = function (data) {
     return ((this.props.touched.hasOwnProperty(data) && this.props.touched[data]) && (this.props.errors.hasOwnProperty(data) && !this.props.errors[data]));
 }
@@ -49,7 +48,7 @@ class WizardFilepath extends Component {
                 this.props.handleChange({ target: { name: names[0], value: LEGACY_DEFAULT_WALLET_PATH } });
             }
         }
-        
+
         if (this.props.show_on_step === false) return null;
         if (this.props.step !== this.props.show_on_step) return null;
         return (

@@ -51,7 +51,7 @@ class WizardReview extends Component {
                                     <Card.Header>{this.props.t("address")}</Card.Header>
                                     <Card.Body>
                                         <Card.Text>
-                                            {this.props.hasOwnProperty("active_account") ? (this.props.active_account.hasOwnProperty("account") ? this.props.active_account.account.address : '') : ""}
+                                            {this.props.hasOwnProperty("active_account") ? (this.props.active_account.hasOwnProperty("address") ? this.props.active_account.address : '') : ""}
                                         </Card.Text>
                                     </Card.Body>
                                 </Card>
@@ -64,7 +64,7 @@ class WizardReview extends Component {
                                     <Card.Header>{this.props.t("mnemonic")}</Card.Header>
                                     <Card.Body>
                                         <Card.Text>
-                                            {this.props.hasOwnProperty("active_account") ? (this.props.active_account.hasOwnProperty("account") ? this.props.active_account.account.mnemonic : '') : ""}
+                                            {this.props.hasOwnProperty("active_account") ? (this.props.active_account.hasOwnProperty("mnemonic") ? this.props.active_account.mnemonic : '') : ""}
                                         </Card.Text>
                                     </Card.Body>
                                 </Card>

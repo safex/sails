@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
-import { Form, Button, Col } from 'react-bootstrap';
+import { Form, Button, Col, ButtonToolbar } from 'react-bootstrap';
 import { resetContactData, contactInputChange, contactSubmit } from '../../modules/contacts.module';
 
 const mapStateToProps = (state) => {
@@ -53,19 +53,16 @@ class AddContact extends Component {
         <br />
         <Form.Row>
           <Col>
-            <Button variant="primary" type="submit">
-              {this.props.t("add")}
-            </Button>
+            <ButtonToolbar className="justify-content-end">
+              <Button variant="success" type="submit">
+                {this.props.t("add")}
+              </Button> &nbsp;
+          <Button variant="danger" type="button" onClick={() => { resetContactData(this.props.dispatch) }}>
+                {this.props.t("reset")}
+              </Button>
+            </ButtonToolbar>
           </Col>
-          <Col>
-            <Button variant="danger" type="button" onClick={(event) => { resetContactData(this.props.dispatch) }}>
-              {this.props.t("reset")}
-            </Button>
-          </Col>
-
-
         </Form.Row>
-
       </Form>
     );
   }

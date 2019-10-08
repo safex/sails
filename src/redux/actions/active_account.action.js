@@ -21,7 +21,7 @@ export const addActiveAccount = function (account) {
 export const setActiveAccount = (account) => {
     return (dispatch) => {
         dispatch(spinnerStart());
-        if ((account.type == 0) && !account.account.hasOwnProperty("label")) {
+        if (!account.hasOwnProperty("label")) {
             return http
                 .post(STORE_GET, { key: "account_labels" }, null, null)
                 .then(data => {
@@ -33,8 +33,8 @@ export const setActiveAccount = (account) => {
                         dispatch(addError(data.status));
                     }
                     let new_account = account;
-                    if (labels.hasOwnProperty(account.account.account_name)) new_account.account.label = labels[account.account.account_name];
-                    else new_account.account.label = account.account.account_name;
+                    if (labels.hasOwnProperty(account.account_name)) new_account.label = labels[account.account_name];
+                    else new_account.account.label = account.account_name;
                     dispatch(setActiveAccount(new_account));
 
                 })
@@ -74,7 +74,9 @@ export const getActiveAccount = () => {
             .then(data => {
                 dispatch(spinnerEnd());
                 if (data.status === 0) {
-                    dispatch(addActiveAccount(JSON.parse(data.result.value)))
+                    let acc = JSON.parse(data.result.value);
+                    dispatch(addActiveAccount(acc));
+                    dispatch(openAccount(acc.account_name, false));
                 }
                 else if (data.status === 13) {
                     dispatch(openAccount("primary", true))

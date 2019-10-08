@@ -1,8 +1,8 @@
 //actions
 
 import { addWalletExistsStatus } from '../redux/actions/wallet_exists.action.js';
-import { addLegacyWallet } from '../redux/actions/legacy_wallet.action';
 import { resetAllBalances, addLegacyBalance, addLegacyBTCBalance, addLegacyBTCBalancePending, addLegacyAccounts } from '../redux/actions/legacy_accounts.action';
+import { addAccounts } from '../redux/actions/accounts.action';
 import * as WizardActions from '../redux/actions/legacy_accounts.action';
 import { addActiveAccount } from '../redux/actions/active_account.action';
 import { addError } from '../redux/actions/error.action';
@@ -97,7 +97,7 @@ let openLegacy = function (dispatch, form, names = ["legacy_filepath", "legacy_p
     readFilePromise(form[names[0]].trim())
         .then((data) => { return decryptContent(data, form[names[1]].trim()) })
         .then((content) => { //
-            dispatch(addLegacyWallet(content));
+            // dispatch(addLegacyWallet(content));
             dispatch(addLegacyAccounts(content.keys))
             content.keys.forEach(x => {
 
@@ -197,7 +197,10 @@ let callbackForSetActiveAccount = function (res, dispatch, data, legacy) {
         dispatch(addActiveAccount(data));
         if (legacy && legacy.hasOwnProperty("safex_keys") && legacy.safex_keys.length > 0) {
             legacy.safex_keys.forEach((e, i) => {
-                restoreFromKeys(dispatch, e.public_addr, e.spend.sec, e.view.sec, "wallet " + i);
+                if ((e.public_addr !== undefined) && (e.spend !== undefined) && (e.view !== undefined)) {
+                    restoreFromKeys(dispatch, e.public_addr, e.spend.sec, e.view.sec, "wallet " + i);
+                }
+                else console.log("FROM INIT => UNDEFINED ", e);
             })
         }
         if (legacy && legacy.hasOwnProperty("keys") && legacy.keys.length > 0) {

@@ -5,19 +5,22 @@ import ErrorResponse from '../shared/ErrorResponse';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import routes_second from '../../setups/routes_second';
-import { Row, Col, Spinner } from 'react-bootstrap';
+import { Row, Col, Spinner, Container } from 'react-bootstrap';
 
 class Wallet extends Component {
 
 
 
   render() {
+
     return (
       <>
         <TopMenu />
-        <ErrorResponse />
-        {this.props.spinner ? <Row><Col sm={{offset: 5 }}><Spinner animation="border" role="status" /> </Col></Row> : ""}
-        {routes_second}
+        <Container>
+          <ErrorResponse />
+          {this.props.spinner ? <Row><Col sm={{ offset: 5 }}><Spinner animation="border" role="status" /> </Col></Row> : ""}
+          {routes_second}
+        </Container>
         <Footer />
       </>
     );
