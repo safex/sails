@@ -245,7 +245,7 @@ class Wizard extends Component {
                     show_on_step: 1,
                     prop_names: ["open_filepath"],
                     type: "legacy",
-                    legacy_type: props.legacy_type,
+                    legacy_type: props.hasOwnProperty('legacy_type') ? props.legacy_type : false,
                     options: {
                         title: this.props.t("choose_filepath"),
                         filters: [{
@@ -281,7 +281,7 @@ class Wizard extends Component {
 
                         if (validation) {
                             nextStep.bind(this)();
-                            openLegacy.bind(this);
+                            // openLegacy.bind(this);
                         }
 
                     }
@@ -328,7 +328,7 @@ class Wizard extends Component {
                             type="open"
                             legacy_type={
                                 this.additional[this.props.component].hasOwnProperty("filepath_open") ?
-                                    (this.additional[this.props.component].filepath_open.hasOwnProperty('legacy') ? this.additional[this.props.component].filepath_open.legacy : false) : false
+                                    (this.additional[this.props.component].filepath_open.hasOwnProperty('legacy_type') ? this.additional[this.props.component].filepath_open.legacy_type : false) : false
                             }
                             options={
                                 this.additional[this.props.component].hasOwnProperty("filepath_open") ?

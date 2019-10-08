@@ -189,4 +189,4 @@ class WizardLegacy extends Component {
         );
     }
 }
-export default withTranslation('init')(connect(mapStateToProps)(WizardLegacy));
+export default withTranslation('init')(connect()(WizardLegacy));

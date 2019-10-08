@@ -34,7 +34,7 @@ export const setActiveAccount = (account) => {
                     }
                     let new_account = account;
                     if (labels.hasOwnProperty(account.account_name)) new_account.label = labels[account.account_name];
-                    else new_account.account.label = account.account_name;
+                    else new_account.label = account.account_name;
                     dispatch(setActiveAccount(new_account));
 
                 })

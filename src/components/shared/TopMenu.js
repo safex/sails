@@ -34,7 +34,7 @@ class TopMenu extends Component {
               <Nav.Link href='/w/settings' active={this.props.active_tab == "setting" ? true : false}>{this.props.t("settings")}</Nav.Link>
               <Nav.Link href='/w/migrations' active={this.props.active_tab == "migrations" ? true : false}>{this.props.t("migrations")}</Nav.Link>
               <Nav.Link href='/w/bitcoin' active={this.props.active_tab == "bitcoin" ? true : false}>{this.props.t("bitcoin")}</Nav.Link>
-              <Nav.Link onClick={this.props.logout(this.props.history)}>{this.props.t("logout")}</Nav.Link>
+              <Nav.Link onClick={() => { this.props.logout(this.props.history) }}>{this.props.t("logout")}</Nav.Link>
             </Nav>
           </Navbar.Collapse>
         </Navbar>
