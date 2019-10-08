@@ -73,7 +73,7 @@ class Settings extends Component {
           can_delete={can_delete}
           account_name={x.account_name}
           edit_function={this.setModalLabelState}
-          delete_function={this.setModalDeleteStates}
+          delete_function={this.setModalDeleteState}
           edit_label={this.props.t("edit")}
           delete_label={this.props.t("delete")} />
 

@@ -1,9 +1,15 @@
 {
     "edit_label": "Edit label",
+    "add_account": "Add account",
+    "private_key": "Private key",
+    "label": "Label",
+    "address": "Private Address",
     "copy_button": "Copy",
     "send_button": "Send",
     "receive_button": "Receive",
     "archive_button": "To archive",
     "history_button": "History",
-    "show_private_button": "Show Private"
+    "show_private_button": "Show Private",
+    "save_button": "Save",
+    "close_button": "Close"
 }

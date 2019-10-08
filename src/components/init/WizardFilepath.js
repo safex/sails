@@ -83,9 +83,10 @@ class WizardFilepath extends Component {
                                     isValid={is_valid.bind(this, names[0])()}
                                     isInvalid={is_invalid.bind(this, names[0])()}
                                     readOnly={true}
+                                    plaintext
                                 />
                                 <Form.Control.Feedback type="invalid">{this.props.t("required_field")}</Form.Control.Feedback>
-                                <Button variant="primary" 
+                                <Button variant="primary"
                                     // disabled={this.props.hasOwnProperty("legacy_type") && this.props.legacy_type == "default"}
                                     onClick={() => { walletFile(this.props.dispatch, options, this.props.type, names[0], this.props.wizard.touched, this.props.wizard.errors) }} >{this.props.t("browse_button")}</Button>
                             </Form.Group>

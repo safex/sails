@@ -73,42 +73,10 @@ let addSeedsAccount = function (dispatch, seeds, label, accounts, labels) {
 
 let addKeysAccount = function (dispatch, address, view, spend, label, accounts, labels) {
 
-    // if (type === "0") {
     let name = "wallet_";
     name += Object.keys(accounts).length;
     lordOfTheFetch(accountsApi.recoverAccountKeysApi, [address.trim(), spend.trim(), view.trim(), name], callbackForAddNewAccount, [dispatch, name, label, labels], { dispatch: dispatch });
-    // }
-    // else {
-    //     try {
-    //         let name = "wallet_legacy_";
-    //         name += Object.keys(legacy_accounts).length;
-    //         let legacies = legacy_accounts;
-    //         var key_pair = bitcoin.ECPair.fromWIF(view.trim());
-    //         const { address } = bitcoin.payments.p2pkh({ pubkey: key_pair.publicKey });
 
-    //         var key_json = {};
-    //         key_json['public_key'] = address;
-    //         key_json['private_key'] = view.trim();
-    //         key_json['safex_bal'] = 0;
-    //         key_json['btc_bal'] = 0;
-    //         key_json['pending_safex_bal'] = 0;
-    //         key_json['pending_btc_bal'] = 0;
-    //         key_json['archived'] = false;
-    //         key_json['label'] = label || "Enter your label here";
-    //         legacies[name] = { account: key_json, type: 1 };
-    //         legacies[name].account["address"] = address;
-    //         legacies[name].account["account_name"] = name;
-    //         lordOfTheFetch(legacyAccountsApi.setLegacyAccountsApi,
-    //             [legacies],
-    //             callbackForAddLegacyAccounts,
-    //             [dispatch],
-    //             { "dispatch": dispatch });
-
-    //     } catch (error) {
-    //         dispatch(addError(error.message));
-    //     }
-
-    // }
 
 }
 

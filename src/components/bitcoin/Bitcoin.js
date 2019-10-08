@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
-import { Row, Col, Card, OverlayTrigger, Tooltip, Button, ButtonGroup } from 'react-bootstrap';
+import { Row, Col, Card, OverlayTrigger, Tooltip, Button, ButtonGroup, Modal, Form } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPencilAlt, faDownload, faUpload } from '@fortawesome/free-solid-svg-icons';
-import { getLegacyAccounts } from '../../modules/bitcoin.module';
+import { getLegacyAccounts, enableEditLabelModal, enableAddAccountModal } from '../../modules/bitcoin.module';
 
 class LegacyCard extends Component {
   render() {
@@ -19,7 +19,7 @@ class LegacyCard extends Component {
                 placement="right"
                 overlay={<Tooltip id="tooltip-edit-label"> {this.props.t("edit_label")} </Tooltip>}
               >
-                <FontAwesomeIcon icon={faPencilAlt} style={{ cursor: "pointer" }} onClick={() => { alert("WIP") }} />
+                <FontAwesomeIcon icon={faPencilAlt} style={{ cursor: "pointer" }} onClick={() => { this.props.enableEditLabelModal(this.props.account) }} />
               </OverlayTrigger> &nbsp;
                     {this.props.account.label}</Card.Header>
             <Card.Body>
@@ -104,19 +104,54 @@ class LegacyCard extends Component {
 }
 
 class Bitcoin extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { edit_label_modal: false, add_account_modal: false, modal_heading: "", modal_content: "", modal_footer: "", account: null, new_label: "" };
+    this.initialState = this.state;
+
+
+
+  }
 
   componentDidMount() {
     getLegacyAccounts(this.props.dispatch);
   }
+
   render() {
     let legacy_accounts = null;
-    if (this.props.legacy_accounts) legacy_accounts = Object.values(this.props.legacy_accounts).map((x, i) => { return <LegacyCard t={this.props.t} account={x} />; });
+    if (this.props.legacy_accounts) legacy_accounts = Object.values(this.props.legacy_accounts).map((x, i) => { if (x) return <LegacyCard key={`legacy-${x.account_name}-${x.label}`} t={this.props.t} account={x} enableEditLabelModal={enableEditLabelModal.bind(this)} />; });
     return (
-      <Row style={{ maxHeight: "400px", height: "400px", overflowY: "auto" }}>
-        <Col xs={12} md={12}>
-          {legacy_accounts}
-        </Col>
-      </Row>
+      <div >
+        <Row className="justify-content-end" style={{ margin: "4px" }}>
+          <Col xs={12} md={3}>
+            <Button variant="info" onClick={enableAddAccountModal.bind(this)} block>{this.props.t("add_account").toUpperCase()}</Button>
+          </Col>
+        </Row>
+        <Row style={{ maxHeight: "330px", height: "330px", overflowY: "auto" }}>
+          <Col xs={12} md={12}>
+            {legacy_accounts}
+          </Col>
+        </Row>
+        <Modal
+          show={this.state.modal_show}
+          onHide={this.state.modal_close}
+          size="lg"
+          aria-labelledby="contained-modal-title-vcenter"
+          centered
+        >
+          <Modal.Header closeButton>
+            <Modal.Title id="contained-modal-title-vcenter">
+              {this.state.modal_heading || ""}
+            </Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            {this.state.modal_content}
+          </Modal.Body>
+          <Modal.Footer>
+            {this.state.modal_footer}
+          </Modal.Footer>
+        </Modal>
+      </div>
     );
   }
 }
