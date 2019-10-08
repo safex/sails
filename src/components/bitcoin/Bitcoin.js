@@ -1,12 +1,26 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
-import { Row, Col, Card, OverlayTrigger, Tooltip, Button, ButtonGroup, Modal, Form } from 'react-bootstrap';
+import { Row, Col, Card, OverlayTrigger, Tooltip, Button, ButtonGroup, Modal } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPencilAlt, faDownload, faUpload } from '@fortawesome/free-solid-svg-icons';
-import { getLegacyAccounts, enableEditLabelModal, enableAddAccountModal } from '../../modules/bitcoin.module';
+import {
+  getLegacyAccounts,
+  enableEditLabelModal,
+  enableAddAccountModal,
+  enableShowPrivateModal,
+  enableHistoryModal,
+  copyAddressToClipboard,
+  toArchive,
+  getBalances
+} from '../../modules/bitcoin.module';
 
 class LegacyCard extends Component {
+
+  componentDidMount() {
+    console.log("LEGACY CARD MOUNTED");
+    getBalances(this.props.dispatch, this.props.account);
+  }
   render() {
 
     return (
@@ -25,7 +39,7 @@ class LegacyCard extends Component {
             <Card.Body>
               <Row>
                 <Col xs={12} md={2}>
-                  <Button variant="outline-primary" size="sm" block>{this.props.t("copy_button").toUpperCase()}</Button>
+                  <Button variant="outline-primary" size="sm" block onClick={() => { copyAddressToClipboard(this.props.account.address) }}>{this.props.t("copy_button").toUpperCase()}</Button>
                 </Col>
                 <Col xs={12} md={6} style={{ wordBreak: "break-all" }}>
                   {this.props.account.public_key}
@@ -41,9 +55,9 @@ class LegacyCard extends Component {
               <Row>
                 <Col xs={12} md={6}>
                   <ButtonGroup size="sm">
-                    <Button onClick={() => { alert("WIP") }}>{this.props.t("archive_button").toUpperCase()}</Button>
-                    <Button onClick={() => { alert("WIP") }}>{this.props.t("history_button").toUpperCase()}</Button>
-                    <Button onClick={() => { alert("WIP") }}>{this.props.t("show_private_button").toUpperCase()}</Button>
+                    <Button onClick={() => { this.props.toArchive(this.props.account.account_name) }}>{this.props.t("archive_button").toUpperCase()}</Button>
+                    <Button onClick={() => { this.props.enableHistoryModal(this.props.account.address) }}>{this.props.t("history_button").toUpperCase()}</Button>
+                    <Button onClick={() => { this.props.enableShowPrivateModal(this.props.account.private_key) }}>{this.props.t("show_private_button").toUpperCase()}</Button>
                   </ButtonGroup>
                 </Col>
                 <Col xs={12} md={6} >
@@ -106,7 +120,7 @@ class LegacyCard extends Component {
 class Bitcoin extends Component {
   constructor(props) {
     super(props);
-    this.state = { edit_label_modal: false, add_account_modal: false, modal_heading: "", modal_content: "", modal_footer: "", account: null, new_label: "" };
+    this.state = { modal_show: false, modal_props: {}, modal_heading: "", modal_content: "", modal_footer: "", account: null, new_label: "", address: '', history: [] };
     this.initialState = this.state;
 
 
@@ -119,7 +133,21 @@ class Bitcoin extends Component {
 
   render() {
     let legacy_accounts = null;
-    if (this.props.legacy_accounts) legacy_accounts = Object.values(this.props.legacy_accounts).map((x, i) => { if (x) return <LegacyCard key={`legacy-${x.account_name}-${x.label}`} t={this.props.t} account={x} enableEditLabelModal={enableEditLabelModal.bind(this)} />; });
+    if (this.props.legacy_accounts) {
+      legacy_accounts = Object.values(this.props.legacy_accounts).map(
+        (x, i) => {
+          if (x)
+            return <LegacyCard
+              key={`legacy-${x.account_name}-${x.label}`}
+              t={this.props.t}
+              dispatch={this.props.dispatch}
+              account={x}
+              enableEditLabelModal={enableEditLabelModal.bind(this)}
+              enableShowPrivateModal={enableShowPrivateModal.bind(this)}
+              enableHistoryModal={enableHistoryModal.bind(this)}
+              toArchive={toArchive.bind(this)} />;
+        });
+    }
     return (
       <div >
         <Row className="justify-content-end" style={{ margin: "4px" }}>
@@ -135,9 +163,10 @@ class Bitcoin extends Component {
         <Modal
           show={this.state.modal_show}
           onHide={this.state.modal_close}
-          size="lg"
           aria-labelledby="contained-modal-title-vcenter"
-          centered
+          {...this.state.modal_props}
+          style={{ width: "100%" }}
+
         >
           <Modal.Header closeButton>
             <Modal.Title id="contained-modal-title-vcenter">
@@ -151,6 +180,7 @@ class Bitcoin extends Component {
             {this.state.modal_footer}
           </Modal.Footer>
         </Modal>
+
       </div>
     );
   }

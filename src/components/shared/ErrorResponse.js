@@ -24,7 +24,6 @@ class ErrorResponse extends Component {
 
     render() {
         if (this.props.error !== false) {
-            console.log(this.props.error);
             return (
                 <Modal show={this.state.show} onClick={() => { this.setState({ show: false }); this.props.dispatch(removeError()) }}>
                     <Modal.Header closeButton>

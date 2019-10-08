@@ -27,5 +27,6 @@
     "FILE_NOT_VALID": "FILE_NOT_VALID",
     "INAVLID_FILE_FORMAT": "INVALID_FILE_FORMAT",
     "FILE_DECRYPT": "The was an error while decrypting the file that might be caused by wrong password.",
-    "UNKNOWN": "An unknown error happened"
+    "UNKNOWN": "An unknown error happened",
+    "ACCOUNT_EXISTS": "This account already exists in wallet"
 }
