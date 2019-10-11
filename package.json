@@ -16,6 +16,7 @@
     "formik": "^1.5.8",
     "i18next": "^17.0.4",
     "node-pre-gyp": "^0.13.0",
+    "qrcode.react": "^0.9.3",
     "react": "^16.8.6",
     "react-bootstrap": "^1.0.0-beta.9",
     "react-dom": "^16.8.6",

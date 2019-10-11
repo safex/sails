@@ -72,19 +72,19 @@ function createWindow() {
       try {
         let json_prc_process = child.execFile(executablePath, parameters);
         if (json_prc_process) {
-          if (process.env.NODE_ENV != "development") {
-            mainWindow.loadURL(startUrl);
-          }
-          else {
-            react_process = child.exec("BROWSER=none npm start");
-            (function (mainWindow, startUrl) {
-              setTimeout(() => { mainWindow.loadURL(startUrl); }, 5000);
-            })(mainWindow, startUrl);
-          }
+        if (process.env.NODE_ENV != "development") {
+          mainWindow.loadURL(startUrl);
+        }
+        else {
+          react_process = child.exec("BROWSER=none npm start");
+          (function (mainWindow, startUrl) {
+            setTimeout(() => { mainWindow.loadURL(startUrl); }, 5000);
+          })(mainWindow, startUrl);
+        }
 
-          electron.ipcMain.once('react-is-ready-to-receive-port', (event, arg) => {
-            event.reply('receive-port', port);
-          });
+        electron.ipcMain.once('react-is-ready-to-receive-port', (event, arg) => {
+          event.reply('receive-port', port);
+        });
 
         }
       } catch (error) {

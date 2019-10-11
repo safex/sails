@@ -3,18 +3,22 @@ import { replaceLegacyAccounts, resetAllBalances, addLegacyBalance, addLegacyBTC
 import { addError } from '../actions/error.action';
 import { lordOfTheFetch } from '../libs/one_fetch_to_rule_them_all';
 import { processResponse, jsonResponse } from '../libs/response';
-import { getHistoryApi } from '../api/legacy/transaction.api';
+import { getHistoryApi, getFee, getTransactions, broadcastTransactions } from '../api/legacy/transaction.api';
 import { getBalanceApi, getBTCBalanceApi, getBTCBalancePendingApi } from '../api/legacy/balances.api';
 
 import '../components/bitcoin/bitcoin.css';
 
-import { Col, Form, Button } from 'react-bootstrap';
+import { Row, Col, Form, Button } from 'react-bootstrap';
 import React from 'react';
+
 
 
 
 const bitcoin = window.require('bitcoinjs-lib');
 
+export const getQRKey = function () {
+    return `receive-${this.state.address}-${this.state.amount}`;
+}
 
 export const getLegacyAccounts = function (dispatch) {
     lordOfTheFetch(legacyAccountsApi.getLegacyAccountsApi, [], callbackForGetLegacyAccounts, [dispatch], { dispatch: dispatch });
@@ -24,7 +28,7 @@ export const getLegacyAccounts = function (dispatch) {
 // getLegacyAccounts
 let callbackForGetLegacyAccounts = function (res, dispatch) {
     if (res.status === 0) {
-        if (res.result.value !== "") dispatch(replaceLegacyAccounts(JSON.parse(res.result.value)));
+        if ((res.result.value !== "") && (res.result.value !== undefined)) dispatch(replaceLegacyAccounts(JSON.parse(res.result.value)));
     }
     else if (res.status !== 13) {
         dispatch(addError(res.status));
@@ -88,22 +92,29 @@ const replaceAccountsAndReset = function (res, dispatch, reset, accounts) {
 
 
 export const resetEditLabelModal = function () {
-    this.setState({ modal_show: false, modal_props: {}, modal_header: "", modal_content: "", content_footer: "", new_label: "", account: null, modal_close: () => { } });
+    this.setState({ modal_show: false, modal_receive: false, modal_send: false, modal_props: {}, modal_header: "", modal_content: "", modal_footer: "", modal_key: "modal", new_label: "", account: null, modal_close: () => { } });
 }
 export const resetAddAccountModal = function () {
-    this.setState({ modal_show: false, modal_props: {}, modal_header: "", modal_content: "", content_footer: "", new_label: "", adress: "", modal_close: () => { } });
+    this.setState({ modal_show: false, modal_receive: false, modal_send: false, modal_props: {}, modal_header: "", modal_content: "", modal_footer: "", modal_key: "modal", new_label: "", adress: "", modal_close: () => { } });
 }
 export const resetShowPrivateModal = function () {
-    this.setState({ modal_show: false, modal_props: {}, modal_header: "", modal_content: "", content_footer: "", modal_close: () => { } });
+    this.setState({ modal_show: false, modal_receive: false, modal_send: false, modal_props: {}, modal_header: "", modal_content: "", modal_footer: "", modal_key: "modal", modal_close: () => { } });
 }
 export const resetHistoryModal = function () {
-    this.setState({ modal_show: false, modal_props: {}, modal_header: "", modal_content: "", content_footer: "", history: [], modal_close: () => { } });
+    this.setState({ modal_show: false, modal_receive: false, modal_send: false, modal_props: {}, modal_header: "", modal_content: "", modal_footer: "", modal_key: "modal", history: [], modal_close: () => { } });
 }
-
+export const resetReceiveModal = function () {
+    this.setState({ modal_show: false, modal_receive: false, modal_send: false, modal_props: {}, modal_header: "", modal_content: "", modal_footer: "", address: '', modal_key: "modal", amount: '0.00000001', modal_close: () => { } });
+}
+export const resetSendModal = function () {
+    this.setState({ modal_show: false, modal_receive: false, modal_send: false, modal_props: {}, modal_header: "", modal_content: "", modal_footer: "", modal_key: "modal", account: null, address: '', fee: 0, amount: "0.00000001", txs: null, btc_dollar: true, modal_close: () => { } });
+}
 
 export const enableEditLabelModal = function (account) {
     this.setState({
         modal_show: true,
+        modal_send: false,
+        modal_receive: false,
         account,
         modal_props: { size: "lg", centered: true },
         modal_close: resetEditLabelModal.bind(this),
@@ -119,7 +130,8 @@ export const enableEditLabelModal = function (account) {
                     </Form.Group>
                 </Form.Row>
             </Form>,
-        modal_heading: this.props.t("edit_label")
+        modal_heading: this.props.t("edit_label"),
+        modal_key: `edit-label-${account.account_name}`
 
     });
 }
@@ -128,6 +140,8 @@ export const enableEditLabelModal = function (account) {
 export const enableAddAccountModal = function () {
     this.setState({
         modal_show: true,
+        modal_send: false,
+        modal_receive: false,
         modal_props: { size: "lg", centered: true },
         modal_close: resetAddAccountModal.bind(this),
         modal_footer: <div>
@@ -157,11 +171,14 @@ export const enableAddAccountModal = function () {
 export const enableShowPrivateModal = function (key) {
     this.setState({
         modal_show: true,
+        modal_send: false,
+        modal_receive: false,
         modal_props: { size: "lg", centered: true },
         modal_close: resetShowPrivateModal.bind(this),
         modal_footer: <div> <Button variant="primary" onClick={resetShowPrivateModal.bind(this)}>{this.props.t("close_button")}</Button></div>,
         modal_content: <div className="text-center"> <p> {this.props.t("private_note")}</p> <p className="text-info border border-info"> {key}</p></div>,
-        modal_heading: this.props.t("private_key")
+        modal_heading: this.props.t("private_key"),
+        modal_key: `private-${key}`
     });
 }
 
@@ -169,14 +186,54 @@ export const enableHistoryModal = function (address) {
     lordOfTheFetch(getHistoryApi,
         [address],
         setHistoryStates.bind(this),
-        [],
-        { dispatch: this.props.dispatch, "call": "GET HISTORY API" });
+        [address],
+        { dispatch: this.props.dispatch });
 
 }
 
-export const setHistoryStates = function (res) {
+
+export const enableReceiveModal = function (address) {
+    this.setState({
+        modal_show: false,
+        modal_send: false,
+        modal_receive: true,
+        modal_props: { size: "xl", centered: true, dialogClassName: "modal-dialog-history" },
+        modal_close: resetReceiveModal.bind(this),
+        modal_footer: <div>
+            <Button variant="danger" onClick={resetReceiveModal.bind(this)}>{this.props.t("close_button")}</Button>
+        </div>,
+        address,
+        modal_key: `receive-${address}-${this.state.ammount}`,
+        modal_heading: this.props.t("receive_button"),
+
+    });
+}
+
+export const enableSendModal = function (account) {
+    this.setState({
+        modal_show: false,
+        modal_receive: false,
+        modal_send: true,
+        modal_props: { size: "xl", centered: true, dialogClassName: "modal-dialog-history" },
+        modal_close: resetSendModal.bind(this),
+        modal_footer: <div>
+            <Button variant="success" >{this.props.t("send_button")}</Button>
+            <Button variant="danger" onClick={resetSendModal.bind(this)}>{this.props.t("close_button")}</Button>
+        </div>,
+        account,
+        modal_heading: this.props.t("add_account")
+
+    });
+}
+
+
+
+
+export const setHistoryStates = function (res, address) {
     this.setState({
         modal_show: true,
+        modal_receive: false,
+        modal_send: false,
         modal_props: { size: "xl", scrollable: true, dialogClassName: "modal-dialog-history" },
         modal_close: resetHistoryModal.bind(this),
         modal_footer: <div> <Button variant="primary" onClick={resetHistoryModal.bind(this)}>{this.props.t("close_button")}</Button></div>,
@@ -189,7 +246,12 @@ export const setHistoryStates = function (res) {
 
 }
 export const handleChange = function (event) {
-    this.setState({ [event.target.name]: event.target.value });
+    let val = event.target.value;
+    if ((event.target.dataset.amount !== undefined) && (event.target.dataset.amount === "receive")) {
+        //ovde uraditi proveru da li ima max 8 decimala
+        // val = parseFloat(event.target.value).toFixed(8);
+    }
+    this.setState({ [event.target.name]: val });
 }
 
 export const copyAddressToClipboard = function (value) {
@@ -237,4 +299,86 @@ export const getBalances = function (dispatch, account) {
         .catch((error) => { dispatch(addError(error.message)); });
 
 
+}
+
+export const changeBTCDollar = function () {
+    console.log("clicked");
+    let btc_dollar = !this.state.btc_dollar;
+    console.log(btc_dollar);
+    this.setState({ btc_dollar: btc_dollar });
+    document.getElementById("btc_dollar").innerText = btc_dollar ? this.props.t("btc_to_dollar") : this.props.t("dollar_to_btc");
+    document.getElementById("amount_currency").innerText = btc_dollar ? "BTC" : "$";
+    document.getElementById("fee_currency").innerText = btc_dollar ? "BTC" : "$";
+    document.getElementById("total_currency").innerText = btc_dollar ? "BTC" : "$";
+
+}
+
+export const calculateFee = function (set_state = false) {
+    lordOfTheFetch(getFee, [], adjustFee.bind(this), [set_state], { dispatch: this.props.dispatch });
+}
+export const adjustFee = function (fee, set_state) {
+    if (set_state) this.setState({ fee: fee });
+    if (this.state.account && !set_state)
+        lordOfTheFetch(getTransactions, [this.state.account.address], generateTransactions.bind(this), [fee], { dispatch: this.props.dispatch });
+
+}
+
+export function generateTransactions(utxos, feedec) {
+    let destination = this.state.address;
+    let amountdec = this.state.amount;
+    let wif = this.state.account.address;
+    let key = bitcoin.ECPair.fromWIF(wif);
+    let running_total = 0;
+    let tx = new bitcoin.TransactionBuilder();
+    let inputs_num = 0;
+    let fee_adj;
+    let amount = parseInt(amountdec * 100000000);
+    let fee = parseInt(feedec * 100000000);
+    utxos.forEach(txn => {
+        if (running_total < (fee + amount)) {
+            running_total += txn.satoshis;
+            inputs_num += 1;
+        }
+    });
+    fee_adj = inputs_num * 180;
+
+    fee_adj += 100;
+
+    fee = Math.trunc(fee * (fee_adj / 1000));
+    inputs_num = 0;
+    running_total = 0;
+    utxos.forEach(txn => {
+        if (running_total < (fee + amount)) {
+            running_total += txn.satoshis;
+            tx.addInput(txn.txid, txn.vout);
+            inputs_num += 1;
+        }
+    });
+
+    const { address } = bitcoin.payments.p2pkh({ pubkey: key.publicKey })
+    //problem is right here when adding a Output
+    tx.addOutput(destination, Math.trunc(amount));
+
+
+    const left_overs = running_total - (amount + fee);
+    console.log("leftovers  = " + left_overs)
+    console.log("running_total  = " + running_total)
+    console.log("amount  = " + amount)
+    if (left_overs > 0) {
+        tx.addOutput(address, left_overs);
+    }
+
+    for (var i = 0; i < inputs_num; i++) {
+        tx.sign(i, key);
+    }
+    let json = { txs: tx.build().toHex(), fee: fee };
+    console.log(json);
+    this.setState(json);
+}
+
+export const sendTransactions = function () {
+    if (this.state.txs !== null) {
+        lordOfTheFetch(broadcastTransactions, [this.state.txs], resetSendModal.bind(this), [], { dispatch: this.props.dispatch });
+    }
+    else this.props.dispatch(addError("NO_TXS"));
 }

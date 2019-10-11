@@ -1,14 +1,11 @@
 import { processResponse, jsonResponse } from './response';
 import { addError } from '../actions/error.action';
-import { Logger } from 'builder-util/out/log';
 
 let lordOfTheFetch = function (func, func_data = [], callback = null, callback_data = null, additional = null) {
     func(...func_data)
         .then(processResponse)
         .then(jsonResponse)
         .then((res) => {
-            console.log(additional);
-            console.log(res);
             if (res.hasOwnProperty("status")) {
                 if (res.status !== 0) {
 
@@ -32,11 +29,13 @@ let lordOfTheFetch = function (func, func_data = [], callback = null, callback_d
             if (additional && additional.hasOwnProperty("msg"))
                 console.log(additional.msg);
             if (additional && additional.hasOwnProperty("dispatch")) {
+                console.log(func.name);
                 console.log(error);
                 additional.dispatch(addError(error.message || error.statusText || error || 'UNKNOWN'));
             }
             else {
-                console.log(error)
+                console.log(func.name);
+                console.log(error);
             }
         });
 }
@@ -53,6 +52,7 @@ let secondTry = function (func, func_data, callback, callback_data, additional) 
             if (additional && additional.hasOwnProperty("msg"))
                 console.log(additional.msg);
             if (additional && additional.hasOwnProperty("dispatch")) {
+                console.log(func.name);
                 console.log(error);
                 additional.dispatch(addError(error.message || error.statusText || error || 'UNKNOWN'));
             }
