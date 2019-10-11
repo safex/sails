@@ -242,7 +242,7 @@ class Bitcoin extends Component {
               <Form.Group as={Row} controlId="amount">
                 <Form.Label column xs={2}>{this.props.t("amount")} (<span id="amount_currency">BTC</span>)</Form.Label>
                 <Col xs={10}>
-                  <Form.Control type="text" name="amount" value={this.state.amount} onChange={(e) => { handleChange.bind(this)(e); calculateFee.bind(this) }} />
+                  <Form.Control type="text" name="amount" value={this.state.amount} onChange={(e) => { handleChange.bind(this)(e); calculateFee.bind(this)(false) }} />
                 </Col>
               </Form.Group>
               <Form.Group as={Row} controlId="fee">

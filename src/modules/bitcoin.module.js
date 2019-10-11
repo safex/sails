@@ -314,19 +314,21 @@ export const changeBTCDollar = function () {
 }
 
 export const calculateFee = function (set_state = false) {
+    console.log("CALL THIS");
     lordOfTheFetch(getFee, [], adjustFee.bind(this), [set_state], { dispatch: this.props.dispatch });
 }
 export const adjustFee = function (fee, set_state) {
-    if (set_state) this.setState({ fee: fee });
+    let wa = 0.000018;
+    if (set_state) this.setState({ fee: wa });
     if (this.state.account && !set_state)
-        lordOfTheFetch(getTransactions, [this.state.account.address], generateTransactions.bind(this), [fee], { dispatch: this.props.dispatch });
+        lordOfTheFetch(getTransactions, [this.state.account.address], generateTransactions.bind(this), [wa], { dispatch: this.props.dispatch });
 
 }
 
 export function generateTransactions(utxos, feedec) {
     let destination = this.state.address;
     let amountdec = this.state.amount;
-    let wif = this.state.account.address;
+    let wif = this.state.account.private_key;
     let key = bitcoin.ECPair.fromWIF(wif);
     let running_total = 0;
     let tx = new bitcoin.TransactionBuilder();
