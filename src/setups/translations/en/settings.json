@@ -1,0 +1,16 @@
+{
+    "export": "Export All Keys",
+    "enable": "Enable Bitcoin/Migration System",
+    "manage_accounts": "Manage accounts",
+    "edit": "Edit",
+    "delete": "Delete",
+    "change_label": "Change label",
+    "current_label": "Current label",
+    "new_label": "New label",
+    "submit": "Submit",
+    "reset": "Reset",
+    "delete_account": "Delete Account",
+    "r_u_sure": "Are you sure you want to delete the account",
+    "yes": "Yes",
+    "no": "No"
+}

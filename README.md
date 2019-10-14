@@ -1,9 +1,11 @@
 # sails
 sails wallet 
 # install info
-- use --recursive flag when cloning the rep
+- clone repo with command git clone -b develop --recursive https://github.com/safex/sails
+- checkout develop branch on gosafex submodule (in bc_node folder)
 - npm i 
-- npm run electron-dev (or npm run electron-dev-browser)
+- in src/setups/conf.js set up DAEMON_PORT and DAEMON_HOST variables for blockchain node
+- npm run electron-dev
 # project structure
 sails - main folder
 1. bc_node - blockchain part written in golang
@@ -22,6 +24,7 @@ sails - main folder
 5. bin - folder for gosafex executable
 
 # dev guildelines
+- Use git-flow branching model
 - if its possible use one component per file
 - Use PascalCase for component classes and camelCase for component instances and function names
 - Use the filename as the component name
@@ -34,3 +37,13 @@ sails - main folder
 - reducers and actions shoud be broken down on state propery level (ex. for wallet property of the state there will be wallet.reducer.js and wallet.action.js that will have all logic for manipulation of the wallet propery inside the state)
 - root.reducer.js combines all reducer
 - there should be only one redux store
+
+#possible bugs
+- if you are in development environment you need to wait for 5 seconds for application to load
+- if you are in development environment and when application load you see only white screen you need to increase timeout time in electron.js in line 81 -> setTimeout(() => { mainWindow.loadURL(startUrl); }, 5000);
+
+#translation
+1. in src/setups/translations copy "en" folder and rename it to desired language
+2. translate the json files in copied folder
+3. in src/setups/i18n.js import translated files and add them into resource object
+4. in src/components/shared/LanguageMenu.js add as option new language ( make sure that the option value matches the value of imported translations in resource object from previous step)

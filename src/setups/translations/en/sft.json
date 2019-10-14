@@ -1,0 +1,22 @@
+{
+    "adjust": "Adjust ring size",
+    "payment": "Payment ID",
+    "ammount": "Ammount",
+    "pid": "PID",
+    "address": "Address",
+    "note": "Note",
+    "send": "Send",
+    "options": "Options",
+    "contacts": "Contact list",
+    "balance_unlocked": "Balance (unlocked)",
+    "balance_locked": "Balance (locked)",
+    "cant_access": "You can't access this section. Go to Home section and choose a different account",
+    "sorry": "Sorry",
+    "button_close": "Close",
+    "button_confirm": "Confirm",
+    "button_add": "Add",
+    "confirm_transaction": "Send SFT",
+    "transaction_info": "Please check details and confirm transaction",
+    "label": "label",
+    "sfx_fee": "SFX balance (for fees)"
+}
