@@ -5,3 +5,4 @@ build/
 bin/json_rpc
 bc_node/
 dist/
+safexsdk.log
