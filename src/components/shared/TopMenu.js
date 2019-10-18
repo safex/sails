@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from "react-router";
 import { withTranslation } from 'react-i18next';
-import { getActiveAccountFromWallet, logout } from '../../modules/shared.module';
+import { getActiveAccountFromWallet, logout, openAccounts } from '../../modules/shared.module';
 import { Navbar, Nav } from 'react-bootstrap';
 
 const mapStateToProps = (state) => {
@@ -17,7 +17,12 @@ const mapStateToProps = (state) => {
 class TopMenu extends Component {
 
   componentDidMount() {
-    if (JSON.stringify(this.props.active_account)==="{}") { getActiveAccountFromWallet(this.props.dispatch, this.props.account_labels); }
+    if (JSON.stringify(this.props.active_account) === "{}") {
+      if (localStorage.getItem("active_account")) {
+        openAccounts(this.props.dispatch, JSON.parse(localStorage.getItem("active_account")), true);
+      }
+      else { getActiveAccountFromWallet(this.props.dispatch, this.props.account_labels) };
+    }
   }
 
   render() {

@@ -21,7 +21,7 @@ class Accounts extends Component {
 
   render() {
     let accounts = null;
-    if (this.props.accounts) { accounts = Object.values(this.props.accounts).map((x, i) => { let rand = (Math.random() * 100) / 100; return <Account key={`account-0-${i}-${rand}`} account={x} /> }); }
+    if (this.props.accounts) { accounts = Object.values(this.props.accounts).map((x, i) => { let rand = (Math.random() * 100) / 100; if(x){return <Account key={`account-0-${i}-${rand}`} account={x} /> }}); }
     return (
       <>
         <Row>

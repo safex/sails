@@ -4,7 +4,7 @@ import { withTranslation } from 'react-i18next';
 import { Row, Col, Button, Dropdown, DropdownButton, Modal, Form } from 'react-bootstrap';
 import Accounts from './Accounts';
 import History from './History';
-import { addNewAccount, changeModalState, addSeedsAccount, addKeysAccount, addFileAccount, openFile } from '../../modules/home.module';
+import { addNewAccount, changeModalState, addSeedsAccount, addKeysAccount, addFileAccount, openFile, getLegacyAccounts } from '../../modules/home.module';
 
 const mapStateToProps = (state) => {
     return {
@@ -248,7 +248,12 @@ function ModalFile(props) {
 
 
 class Home extends Component {
+    componentDidMount() {
+        getLegacyAccounts(this.props.dispatch);
+    }
     render() {
+        console.log("FROM HOME");
+        console.log(this.props.legacy_accounts);
         return (
             <>
                 {/* <Row>

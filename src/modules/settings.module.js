@@ -33,11 +33,12 @@ export const inputOnChange = function (e) {
 
 
 const callbackForSaveLabels = function (res, setState, dispatch, labels) {
+    console.log("SAVE LABELS");
     if (res.status !== 0) dispatch(addError(res.status));
     else {
 
         dispatch(addAccountLabels(labels));
-        getAccounts(dispatch)
+        getAccounts(dispatch, true)
     }
 }
 
@@ -45,6 +46,6 @@ const callbackForDeleteAccount = function (res, setState, dispatch) {
     if (res.status !== 0) dispatch(addError(res.status));
     else {
 
-        getAccounts(dispatch)
+        getAccounts(dispatch, true)
     }
 }

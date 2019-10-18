@@ -21,7 +21,7 @@
     "GETTING_MNEMONIC_FAILED": "Getting mnemonic failed",
     "FAILED_GETTING_TRANSACTION": "Failed getting transaction",
     "FAILED_GETTING_OUTPUT": "Failed getting output",
-    "FAILED_TO_CONNECT_TO_DAEMON": "Failed to connect to Daemon",
+    "FAILED_TO_CONNECT_TO_DAEMON": "Failed to connect to Daemon. Change the params and start again",
     "EMPTY_PASSWORD": "EMPTY_PASSWORD",
     "FILE_NOT_SELECTED": "FILE_NOT_SELECTED",
     "FILE_NOT_VALID": "FILE_NOT_VALID",

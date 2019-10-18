@@ -21,7 +21,7 @@ class AccountInfoCard extends Component {
             placement="left"
             overlay={<Tooltip id="tooltip-edit"> {this.props.edit_label} </Tooltip>}
           >
-            <FontAwesomeIcon icon={faPenAlt} style={{ cursor: "pointer" }} onClick={() => { this.props.edit_function(this.props.label, this.props.account_name) }} />
+            <FontAwesomeIcon icon={faPenAlt} style={{ cursor: "pointer" }} onClick={() => { this.props.edit_function(this.props.account_name, this.props.label) }} />
           </OverlayTrigger>
         </Col>
 
@@ -49,10 +49,10 @@ class Settings extends Component {
   }
 
   componentDidMount() {
-    getAccounts(this.props.dispatch);
+    getAccounts(this.props.dispatch, true);
   }
 
-  setModalLabelState(current_label, account_name) {
+  setModalLabelState(account_name, current_label) {
     this.setState({ current_label_value: current_label, account_name: account_name, modal_label: true });
   }
   setModalDeleteState(account_name, label) {
@@ -65,7 +65,9 @@ class Settings extends Component {
     let manage_accounts = null;
     if (this.props.accounts) {
       manage_accounts = Object.values(this.props.accounts).map((x, i) => {
-        let label = labels[x.account_name] !== undefined ? labels[x.account_name] : x.account_name;
+        console.log("ACCOUNT");
+        console.log(x);
+        let label = x.label || x.account_name;
         let can_delete = (x.account_name !== "primary") && (x.account_name !== active_name) ? true : false;
         return <AccountInfoCard
           key={`account-info-${i}-${label}`}

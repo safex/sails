@@ -5,10 +5,11 @@ import { lordOfTheFetch } from '../libs/one_fetch_to_rule_them_all';
 import { processResponse, jsonResponse } from '../libs/response';
 import { getHistoryApi, getFee, getTransactions, broadcastTransactions } from '../api/legacy/transaction.api';
 import { getBalanceApi, getBTCBalanceApi, getBTCBalancePendingApi } from '../api/legacy/balances.api';
+import { getBTCPriceApi, getBTCSAFEXApi } from '../api/legacy/prices.api';
 
 import '../components/bitcoin/bitcoin.css';
 
-import { Row, Col, Form, Button } from 'react-bootstrap';
+import { Col, Form, Button } from 'react-bootstrap';
 import React from 'react';
 
 
@@ -21,14 +22,23 @@ export const getQRKey = function () {
 }
 
 export const getLegacyAccounts = function (dispatch) {
-    lordOfTheFetch(legacyAccountsApi.getLegacyAccountsApi, [], callbackForGetLegacyAccounts, [dispatch], { dispatch: dispatch });
+    if (localStorage.getItem("legacy_accounts")) {
+        dispatch(replaceLegacyAccounts(JSON.parse(localStorage.getItem("legacy_accounts"))));
+    }
+    else {
+        lordOfTheFetch(legacyAccountsApi.getLegacyAccountsApi, [], callbackForGetLegacyAccounts, [dispatch], { dispatch: dispatch });
+    }
+
 }
 
 
 // getLegacyAccounts
 let callbackForGetLegacyAccounts = function (res, dispatch) {
     if (res.status === 0) {
-        if ((res.result.value !== "") && (res.result.value !== undefined)) dispatch(replaceLegacyAccounts(JSON.parse(res.result.value)));
+        if ((res.result.value !== "") && (res.result.value !== undefined)) {
+            localStorage.setItem("legacy_accounts", res.result.value);
+            dispatch(replaceLegacyAccounts(JSON.parse(res.result.value)));
+        }
     }
     else if (res.status !== 13) {
         dispatch(addError(res.status));
@@ -84,6 +94,7 @@ export const addAccount = function () {
 const replaceAccountsAndReset = function (res, dispatch, reset, accounts) {
     if (res.status !== 0) dispatch(addError(res.status));
     else {
+        localStorage.setItem("legacy_accounts", JSON.stringify(accounts));
         dispatch(replaceLegacyAccounts(accounts));
         if (reset !== false)
             reset();
@@ -107,7 +118,7 @@ export const resetReceiveModal = function () {
     this.setState({ modal_show: false, modal_receive: false, modal_send: false, modal_props: {}, modal_header: "", modal_content: "", modal_footer: "", address: '', modal_key: "modal", amount: '0.00000001', modal_close: () => { } });
 }
 export const resetSendModal = function () {
-    this.setState({ modal_show: false, modal_receive: false, modal_send: false, modal_props: {}, modal_header: "", modal_content: "", modal_footer: "", modal_key: "modal", account: null, address: '', fee: 0, amount: "0.00000001", txs: null, btc_dollar: true, modal_close: () => { } });
+    this.setState({ modal_show: false, modal_receive: false, modal_send: false, modal_props: {}, modal_header: "", modal_content: "", modal_footer: "", modal_key: "modal", account: null, address: '', fee: 0, amount: "0.00000001", txs: null, btc_dollar: true, btc_bal: 0, modal_close: () => { } });
 }
 
 export const enableEditLabelModal = function (account) {
@@ -210,20 +221,29 @@ export const enableReceiveModal = function (address) {
 }
 
 export const enableSendModal = function (account) {
-    this.setState({
-        modal_show: false,
-        modal_receive: false,
-        modal_send: true,
-        modal_props: { size: "xl", centered: true, dialogClassName: "modal-dialog-history" },
-        modal_close: resetSendModal.bind(this),
-        modal_footer: <div>
-            <Button variant="success" >{this.props.t("send_button")}</Button>
-            <Button variant="danger" onClick={resetSendModal.bind(this)}>{this.props.t("close_button")}</Button>
-        </div>,
-        account,
-        modal_heading: this.props.t("add_account")
+    if (account.btc_bal !== 0) {
+        this.setState({
+            modal_show: false,
+            modal_receive: false,
+            modal_send: true,
+            modal_props: { size: "xl", centered: true, dialogClassName: "modal-dialog-history" },
+            modal_close: resetSendModal.bind(this),
+            modal_footer: <div>
+                <Button variant="success" >{this.props.t("send_button")}</Button>
+                <Button variant="danger" onClick={resetSendModal.bind(this)}>{this.props.t("close_button")}</Button>
+            </div>,
+            account,
+            fee: 0,
+            modal_heading: this.props.t("add_account"),
+            btc_bal: account.btc_bal
 
-    });
+        });
+        calculateFee.bind(this)(true);
+    }
+    else {
+        alert("NO money in the bank!!!");
+    }
+
 }
 
 
@@ -252,6 +272,8 @@ export const handleChange = function (event) {
         // val = parseFloat(event.target.value).toFixed(8);
     }
     this.setState({ [event.target.name]: val });
+    if (event.target.name == "amount") { this.setState({ dollar_amount: (parseFloat(val) * this.state.btc_value).toFixed(8) }); }
+    if (event.target.name == "dollar_amount") { this.setState({ amount: (parseFloat(val) / this.state.btc_value).toFixed(8) }); }
 }
 
 export const copyAddressToClipboard = function (value) {
@@ -285,14 +307,14 @@ export const getBalances = function (dispatch, account) {
         .catch((error) => { dispatch(addError(error.message)); });
     getBTCBalanceApi(account.address)
         .then(processResponse)
-        .then((res) => { res.text() })
+        .then(jsonResponse)
         .then((amount) => {
             dispatch(addLegacyBTCBalance(account.account_name, amount));
         })
         .catch((error) => { dispatch(addError(error.message)); });
     getBTCBalancePendingApi(account.address)
         .then(processResponse)
-        .then((res) => { res.text() })
+        .then(jsonResponse)
         .then((amount) => {
             dispatch(addLegacyBTCBalancePending(account.account_name, amount));
         })
@@ -302,9 +324,7 @@ export const getBalances = function (dispatch, account) {
 }
 
 export const changeBTCDollar = function () {
-    console.log("clicked");
     let btc_dollar = !this.state.btc_dollar;
-    console.log(btc_dollar);
     this.setState({ btc_dollar: btc_dollar });
     document.getElementById("btc_dollar").innerText = btc_dollar ? this.props.t("btc_to_dollar") : this.props.t("dollar_to_btc");
     document.getElementById("amount_currency").innerText = btc_dollar ? "BTC" : "$";
@@ -313,74 +333,168 @@ export const changeBTCDollar = function () {
 
 }
 
-export const calculateFee = function (set_state = false) {
-    console.log("CALL THIS");
-    lordOfTheFetch(getFee, [], adjustFee.bind(this), [set_state], { dispatch: this.props.dispatch });
+export const calculateFee = function (set_state = false, callback = generateTransactions) {
+    this.setState({ txs: null });
+    lordOfTheFetch(getFee, [], adjustFee.bind(this), [set_state, callback], { dispatch: this.props.dispatch });
 }
-export const adjustFee = function (fee, set_state) {
-    let wa = 0.000018;
-    if (set_state) this.setState({ fee: wa });
+export const adjustFee = function (fee, set_state, callback) {
+    if (set_state) this.setState({ fee: fee });
     if (this.state.account && !set_state)
-        lordOfTheFetch(getTransactions, [this.state.account.address], generateTransactions.bind(this), [wa], { dispatch: this.props.dispatch });
+        lordOfTheFetch(getTransactions, [this.state.account.address], callback.bind(this), [fee], { dispatch: this.props.dispatch });
 
 }
 
 export function generateTransactions(utxos, feedec) {
     let destination = this.state.address;
     let amountdec = this.state.amount;
+    let amount = parseInt(amountdec * 100000000);
+    let fee = parseInt(feedec * 100000000);
     let wif = this.state.account.private_key;
     let key = bitcoin.ECPair.fromWIF(wif);
     let running_total = 0;
     let tx = new bitcoin.TransactionBuilder();
     let inputs_num = 0;
     let fee_adj;
-    let amount = parseInt(amountdec * 100000000);
-    let fee = parseInt(feedec * 100000000);
-    utxos.forEach(txn => {
-        if (running_total < (fee + amount)) {
-            running_total += txn.satoshis;
-            inputs_num += 1;
-        }
-    });
-    fee_adj = inputs_num * 180;
 
-    fee_adj += 100;
+    if (amount < this.state.btc_bal) {
+        utxos.forEach(txn => {
+            if (running_total < (fee + amount)) {
+                running_total += txn.satoshis;
+                inputs_num += 1;
+            }
+        });
+        fee_adj = (inputs_num * 180) + 100;
+
+        fee = Math.trunc(fee * (fee_adj / 1000));
+        inputs_num = 0;
+        running_total = 0;
+        utxos.forEach(txn => {
+            if (running_total < (fee + amount)) {
+                running_total += txn.satoshis;
+                tx.addInput(txn.txid, txn.vout);
+                inputs_num += 1;
+            }
+        });
+
+        const { address } = bitcoin.payments.p2pkh({ pubkey: key.publicKey })
+        //problem is right here when adding a Output
+        if (destination) {
+            tx.addOutput(destination, Math.trunc(amount));
+        }
+
+
+
+        const left_overs = running_total - (amount + fee);
+        console.log("leftovers  = " + left_overs)
+        console.log("running_total  = " + running_total)
+        console.log("amount  = " + amount)
+        if (left_overs > 0) {
+            tx.addOutput(address, left_overs);
+        }
+
+        for (var i = 0; i < inputs_num; i++) {
+            tx.sign(i, key);
+        }
+        let json = { txs: tx.build().toHex(), fee: parseFloat(fee * 1.0 / 100000000).toFixed(8) };
+        console.log(json);
+        this.setState(json);
+    }
+    else { alert("Not enought money"); }
+}
+
+export const sendTransactions = function () {
+    if (this.state.txs !== null && this.state.address !== "") {
+        lordOfTheFetch(broadcastTransactions, [this.state.txs], resetSendModal.bind(this), [], { dispatch: this.props.dispatch });
+    }
+    else this.props.dispatch(addError("NO_TXS"));
+}
+
+export const getBTCDollarValue = function (fromapi = false, callSAFEX = false) {
+    if (localStorage.getItem("btc_value") && !fromapi) {
+        this.setState({ btc_value: parseFloat(localStorage.getItem("btc_value")) });
+    }
+    else {
+        lordOfTheFetch(getBTCPriceApi, [], callbackForGetBTCPrice.bind(this), [callSAFEX], { dispatch: this.props.dispatch });
+    }
+
+}
+
+export const getSAFEXDollarValue = function (fromapi = false) {
+    if (localStorage.getItem("safex_value") && !fromapi) {
+        this.setState({ safex_value: parseFloat(localStorage.getItem("safex_value")) });
+    }
+    else {
+        lordOfTheFetch(getBTCSAFEXApi, [], callbackForGetSFTBTCPrice.bind(this), [], { dispatch: this.props.dispatch });
+    }
+}
+
+export const callbackForGetBTCPrice = function (res, callSAFEX) {
+    var btc = parseFloat(0).toFixed(2);
+    if (res[0].symbol === 'BTC') {
+        btc = parseFloat(res[0].price_usd).toFixed(2);
+    }
+    localStorage.setItem('btc_value', btc);
+    this.setState({ btc_value: btc, dollar_amount: parseFloat(parseFloat(this.state.amount) * btc).toFixed(8) });
+
+    if (callSAFEX) {
+        getSAFEXDollarValue.bind(this)(true);
+    }
+
+
+}
+
+export const callbackForGetSFTBTCPrice = function (res) {
+    let safex = parseFloat(0).toFixed(8);
+    if (localStorage.getItem("btc_value")) {
+        if (res.hasOwnProperty("close")) {
+            safex = (parseFloat(localStorage.getItem("btc_value")) * parseFloat(res.close).toFixed(8)).toFixed(8);
+        }
+        localStorage.setItem("safex_value", safex);
+        this.setState({ safex_value: safex });
+    }
+    else {
+        getBTCDollarValue.bind(this)(true, true);
+    }
+}
+
+export const calculateAll = function (utxos, feedec) {
+    let destination = this.state.address;
+    let fee = parseInt(feedec * 100000000);
+    let btc_bal = this.state.btc_bal;
+    let wif = this.state.account.private_key;
+    let key = bitcoin.ECPair.fromWIF(wif);
+    let inputs_num = 0;
+    let running_total = 0;
+    let fee_adj = (utxos.length * 180) + 100;
 
     fee = Math.trunc(fee * (fee_adj / 1000));
-    inputs_num = 0;
-    running_total = 0;
+    let tx = new bitcoin.TransactionBuilder();
+    let txs = null; //placeholder for signed and build txs
+
+
     utxos.forEach(txn => {
-        if (running_total < (fee + amount)) {
+        if (running_total < (btc_bal - fee)) {
             running_total += txn.satoshis;
             tx.addInput(txn.txid, txn.vout);
             inputs_num += 1;
         }
     });
 
-    const { address } = bitcoin.payments.p2pkh({ pubkey: key.publicKey })
-    //problem is right here when adding a Output
-    tx.addOutput(destination, Math.trunc(amount));
+    const { address } = bitcoin.payments.p2pkh({ pubkey: key.publicKey });
 
-
-    const left_overs = running_total - (amount + fee);
-    console.log("leftovers  = " + left_overs)
-    console.log("running_total  = " + running_total)
-    console.log("amount  = " + amount)
+    if (destination) {
+        tx.addOutput(destination, Math.trunc(btc_bal - fee));
+    }
+    const left_overs = running_total - btc_bal + fee;
     if (left_overs > 0) {
         tx.addOutput(address, left_overs);
     }
-
-    for (var i = 0; i < inputs_num; i++) {
-        tx.sign(i, key);
+    if (left_overs > 0 || destination) {
+        for (var i = 0; i < inputs_num; i++) {
+            tx.sign(i, key);
+        }
+        txs = tx.build().toHex();
     }
-    let json = { txs: tx.build().toHex(), fee: fee };
-    console.log(json);
+    let json = { txs: txs, fee: parseFloat(fee * 1.0 / 100000000).toFixed(8), amount: parseFloat((btc_bal - fee) * 1.0 / 100000000).toFixed(8), dollar_amount: (parseFloat((btc_bal - fee) * 1.0 / 100000000) * this.state.btc_value).toFixed(8) };
     this.setState(json);
-}
-
-export const sendTransactions = function () {
-    if (this.state.txs !== null) {
-        lordOfTheFetch(broadcastTransactions, [this.state.txs], resetSendModal.bind(this), [], { dispatch: this.props.dispatch });
-    }
-    else this.props.dispatch(addError("NO_TXS"));
 }

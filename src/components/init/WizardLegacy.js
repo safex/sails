@@ -47,8 +47,8 @@ class LegacyBTCCard extends Component {
                                 <td>{this.props.t("pending_btc_balance")}</td>
                             </tr>
                             <tr>
-                                <td>{parseFloat(this.props.account.btc_bal).toFixed(8)}</td>
-                                <td>{parseFloat(this.props.account.pending_btc_bal).toFixed(8)}</td>
+                                <td>{parseFloat(this.props.account.btc_bal*1.0/100000000).toFixed(8)}</td>
+                                <td>{parseFloat(this.props.account.pending_btc_bal*1.0/100000000).toFixed(8)}</td>
                             </tr>
 
                         </tbody>

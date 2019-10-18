@@ -38,6 +38,9 @@ let setWalletExistsStatus = function (dispatch, status) {
     dispatch(addWalletExistsStatus(status))
 }
 
+
+
+
 //create wallet actions
 let create = function (dispatch, form, names = ['filepath', 'password'], daemon, legacy = null) {
     let daemon_host = daemon.daemon_host || DAEMON_HOST;
@@ -112,22 +115,19 @@ let openLegacy = function (dispatch, form, names = ["legacy_filepath", "legacy_p
                     .catch((error) => { dispatch(addError(error.message)); });
                 balancesApi.getBTCBalanceApi(x.public_key)
                     .then(processResponse)
-                    .then((res) => { res.text() })
+                    .then(jsonResponse)
                     .then((amount) => {
                         dispatch(addLegacyBTCBalance(x.public_key, amount));
                     })
                     .catch((error) => { dispatch(addError(error.message)); });
                 balancesApi.getBTCBalancePendingApi(x.public_key)
                     .then(processResponse)
-                    .then((res) => { res.text() })
+                    .then(jsonResponse)
                     .then((amount) => {
                         dispatch(addLegacyBTCBalancePending(x.public_key, amount));
                     })
                     .catch((error) => { dispatch(addError(error.message)); });
-
             });
-
-
         })
         .catch((error) => { dispatch(addError(error)); });
 }
