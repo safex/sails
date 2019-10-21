@@ -29,7 +29,7 @@ class Legacy extends Component {
                     <ButtonToolbar className="justify-content-center">
                       <Button variant="primary" onClick={() => { setWalletExistsStatus(this.props.dispatch, false) }}>{this.props.t("escape_button")}</Button>
                       &nbsp;
-                      <Link to="/legacy/default" ><Button variant="primary">{this.props.t("proceed_button")}</Button></Link>
+                      <Button variant="primary">{this.props.t("proceed_button")}</Button>
                     </ButtonToolbar>
                   </Col>
                 </Row>

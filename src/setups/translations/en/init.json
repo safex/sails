@@ -4,6 +4,7 @@
     "proceed_button": "Proceed",
     "next_button": "Next",
     "browse_button": "Browse",
+    "connect_button": "Connect",
     "close_button": "Close",
     "required_field": "This field can't be blank.",
     "passwords_dont_match": "Password doesn't match",

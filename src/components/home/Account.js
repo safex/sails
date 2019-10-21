@@ -3,9 +3,13 @@ import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import { Button, Row, Col } from 'react-bootstrap';
 
-import { setActiveAccount } from '../../modules/home.module';
+import { setActiveAccount, getBalance } from '../../modules/home.module';
 
 class Account extends Component {
+
+  componentDidMount() {
+    //getBalance.bind(this)();
+  }
 
   render() {
     let variant = "secondary";
@@ -14,6 +18,7 @@ class Account extends Component {
     }
 
     return (
+
       <Row>
         <Col>
           <Button variant={variant} size="lg" onClick={setActiveAccount.bind(this)} block>

@@ -75,6 +75,7 @@ class SFX extends Component {
                     placeholder={this.props.t("amount")}
                     step="0.0000000001"
                     min="0.0000000000"
+                    max={this.state.balance_unlocked}
                     value={this.state.amount}
                     onChange={(e) => { this.setState({ amount: parseFloat(e.target.value).toFixed(10) }) }}
 

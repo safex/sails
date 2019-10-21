@@ -64,7 +64,7 @@ function createWindow() {
 
   fp(10000, 11000, 'localhost')
     .then(([port]) => {
-      //override port until refactoring
+      //override port until done testing
       port = 2905;
       /// !!!!!
       const parameters = ["-port=" + port, '-password=' + password];

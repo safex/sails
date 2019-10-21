@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom';
 import { withTranslation } from 'react-i18next';
 import { Legacy, Main } from './index';
 import { checkIfFileExists } from '../../modules/init.module';
+import { connectToDaemon } from '../../modules/shared.module';
+import ErrorResponse from '../shared/ErrorResponse';
 
 
 const mapStateToProps = (state) => {
@@ -17,11 +19,17 @@ class InitWallet extends Component {
 
   componentDidMount() {
     checkIfFileExists(this.props.dispatch);
+    connectToDaemon.bind(this)();
   }
 
 
   render() {
-    return (<div>{this.props.wallet_exists ? <Legacy key="legacy" /> : <Main key="main" />}</div>)
+    return (
+      <div>
+        <ErrorResponse />
+        {this.props.wallet_exists ? <Legacy key="legacy" /> : <Main key="main" />}
+      </div>
+    );
 
 
   }

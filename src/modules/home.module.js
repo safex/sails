@@ -1,7 +1,7 @@
 import { accountsApi, activeAccountApi, transactionApi, legacyAccountsApi, accountLabelsApi } from '../api/go';
 //import { legacyTransactionApi } from '../api/legacy';
 import { addAccounts, removeAccounts } from '../actions/accounts.action';
-//import { replaceLegacyAccounts } from '../actions/legacy_accounts.action';
+import { replaceLegacyAccounts } from '../actions/legacy_accounts.action';
 import { addActiveAccount } from '../actions/active_account.action';
 import { addAccountHistory, resetAccountHistory } from '../actions/history.action';
 import { addError } from '../actions/error.action';
@@ -12,14 +12,24 @@ import { lordOfTheFetch } from '../libs/one_fetch_to_rule_them_all';
 let { dialog } = window.require("electron").remote;
 //const bitcoin = window.require('bitcoinjs-lib');
 
-let getAccounts = function (dispatch) {
+let getAccounts = function (dispatch, fromwallet = false) {
     dispatch(removeAccounts());
-    lordOfTheFetch(accountsApi.getAccountsInfoApi, [], callbackForGetAccounts, [dispatch], { dispatch: dispatch });
+    if (localStorage.getItem("accounts") && !fromwallet) {
+      //  dispatch(addAccounts(JSON.parse(localStorage.getItem("accounts"))));
+        getLabels(dispatch, JSON.parse(localStorage.getItem("accounts")));
+    }
+    else {
+        lordOfTheFetch(accountsApi.getAccountsInfoApi, [], callbackForGetAccounts, [dispatch], { dispatch: dispatch });
+    }
+
 }
 
-// let getLegacyAccounts = function (dispatch) {
-//     lordOfTheFetch(legacyAccountsApi.getLegacyAccountsApi, [], callbackForGetLegacyAccounts, [dispatch], { dispatch: dispatch });
-// }
+let getLegacyAccounts = function (dispatch) {
+    if (!localStorage.getItem("legacy_accounts")) {
+        lordOfTheFetch(legacyAccountsApi.getLegacyAccountsApi, [], callbackForGetLegacyAccounts, [dispatch], { dispatch: dispatch });
+    }
+
+}
 
 let setActiveAccount = function () {
     if (this.props.account) {
@@ -73,42 +83,10 @@ let addSeedsAccount = function (dispatch, seeds, label, accounts, labels) {
 
 let addKeysAccount = function (dispatch, address, view, spend, label, accounts, labels) {
 
-    // if (type === "0") {
     let name = "wallet_";
     name += Object.keys(accounts).length;
     lordOfTheFetch(accountsApi.recoverAccountKeysApi, [address.trim(), spend.trim(), view.trim(), name], callbackForAddNewAccount, [dispatch, name, label, labels], { dispatch: dispatch });
-    // }
-    // else {
-    //     try {
-    //         let name = "wallet_legacy_";
-    //         name += Object.keys(legacy_accounts).length;
-    //         let legacies = legacy_accounts;
-    //         var key_pair = bitcoin.ECPair.fromWIF(view.trim());
-    //         const { address } = bitcoin.payments.p2pkh({ pubkey: key_pair.publicKey });
 
-    //         var key_json = {};
-    //         key_json['public_key'] = address;
-    //         key_json['private_key'] = view.trim();
-    //         key_json['safex_bal'] = 0;
-    //         key_json['btc_bal'] = 0;
-    //         key_json['pending_safex_bal'] = 0;
-    //         key_json['pending_btc_bal'] = 0;
-    //         key_json['archived'] = false;
-    //         key_json['label'] = label || "Enter your label here";
-    //         legacies[name] = { account: key_json, type: 1 };
-    //         legacies[name].account["address"] = address;
-    //         legacies[name].account["account_name"] = name;
-    //         lordOfTheFetch(legacyAccountsApi.setLegacyAccountsApi,
-    //             [legacies],
-    //             callbackForAddLegacyAccounts,
-    //             [dispatch],
-    //             { "dispatch": dispatch });
-
-    //     } catch (error) {
-    //         dispatch(addError(error.message));
-    //     }
-
-    // }
 
 }
 
@@ -137,16 +115,18 @@ let getLabels = function (dispatch, accounts) {
 let callbackForGetAccounts = function (res, dispatch) {
     if (res.status === 0) {
         let accounts = {};
-        res.result.accounts.forEach((x, i) => {
+        Promise.all(res.result.accounts.map(x => {
+            return new Promise(resolve => {
+                if (x.account_name !== "") {
+                    accounts[x.account_name] = x;
+                    accounts[x.account_name].label = x.account_name;
+                }
+                resolve();
 
-            if (x.account_name !== "") {
-                accounts[x.account_name] = x;
-                accounts[x.account_name].label = x.account_name;
-            }
-            if (i === (res.result.accounts.length - 1)) {
-                getLabels(dispatch, accounts);
-            }
-        })
+            });
+        })).then(() => {
+            getLabels(dispatch, accounts);
+        });
     }
     else if (res.status !== 13) {
         dispatch(addError(res.status));
@@ -154,20 +134,21 @@ let callbackForGetAccounts = function (res, dispatch) {
 }
 
 // // getLegacyAccounts
-// let callbackForGetLegacyAccounts = function (res, dispatch) {
-//     if (res.status === 0) {
-//         if (res.result.value !== "") dispatch(replaceLegacyAccounts(JSON.parse(res.result.value)));
-//     }
-//     else if (res.status !== 13) {
-//         dispatch(addError(res.status));
-//     }
-// }
+let callbackForGetLegacyAccounts = function (res, dispatch) {
+    if (res.status === 0) {
+        if (res.result.value !== "") { localStorage.setItem('legacy_accounts', res.result.value); }
+    }
+    else if (res.status !== 13) {
+        dispatch(addError(res.status));
+    }
+}
 
 
 // setActiveAccount
 let callbackForSetActiveAccount = function (res, dispatch, account) {
     if (res.status !== 0) dispatch(addError(res.status));
     else {
+        localStorage.setItem("active_account", JSON.stringify(account));
         dispatch(resetAccountHistory());
         openAccount(dispatch, account.account_name, account);
     }
@@ -211,7 +192,7 @@ let callbackForSaveLabels = function (res, dispatch, labels) {
     if (res.status !== 0) dispatch(addError(res.status));
     else {
         dispatch(addAccountLabels(labels));
-        getAccounts(dispatch);
+        getAccounts(dispatch, true);
     }
 }
 
@@ -224,11 +205,15 @@ let callbackForGetLabels = function (res, dispatch, accounts) {
                 acc[l].label = labels[l];
             }
         }
+        localStorage.setItem('accounts', JSON.stringify(acc));
         dispatch(addAccounts(acc));
+
 
     }
     else if (res.status === 13) {
+        localStorage.setItem('accounts', JSON.stringify(accounts));
         dispatch(addAccounts(accounts));
+
     }
     else {
         dispatch(addError(res.status));
@@ -272,7 +257,7 @@ export {
     setActiveAccount,
     // getActiveAccount,
     getAccounts,
-    //getLegacyAccounts,
+    getLegacyAccounts,
     getHistory,
     addNewAccount,
     changeModalState,

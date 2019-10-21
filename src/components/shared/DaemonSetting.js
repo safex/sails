@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
-import { toggleDaemonModal, addDaemonData } from '../../modules/shared.module';
+import { toggleDaemonModal, addDaemonData, connectToDaemon } from '../../modules/shared.module';
 import { Row, Col, OverlayTrigger, Tooltip, Modal, Button, Alert, Form } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSlidersH } from '@fortawesome/free-solid-svg-icons';
@@ -24,7 +24,7 @@ class DaemonSetting extends Component {
                     placement="left"
                     overlay={<Tooltip id="tooltip-setting"> {this.props.t("setting")} </Tooltip>}
                 >
-                    <FontAwesomeIcon style={{ marginLeft:"15px", color: "white", cursor: "pointer" }} icon={faSlidersH} onClick={toggleDaemonModal.bind(this, !this.props.daemon.daemon_modal)} />
+                    <FontAwesomeIcon style={{ marginLeft: "15px", color: "white", cursor: "pointer" }} icon={faSlidersH} onClick={toggleDaemonModal.bind(this, !this.props.daemon.daemon_modal)} />
                 </OverlayTrigger>
 
 
@@ -38,14 +38,14 @@ class DaemonSetting extends Component {
                                 <Col>
                                     <Form.Control
                                         placeholder={this.props.t("daemon_host")}
-                                        value={this.props.daemon.daemon_host}
+                                        value={this.props.daemon.host}
                                         onChange={(e) => { addDaemonData.bind(this, e, 'host')() }}
                                     />
                                 </Col>
                                 <Col>
                                     <Form.Control
                                         placeholder={this.props.t("daemon_port")}
-                                        value={this.props.daemon.daemon_port}
+                                        value={this.props.daemon.port}
                                         onChange={(e) => { addDaemonData.bind(this, e, 'port')() }}
                                     />
                                 </Col>
@@ -62,8 +62,8 @@ class DaemonSetting extends Component {
 
                     </Modal.Body>
                     <Modal.Footer>
+                        <Button variant="success" onClick={connectToDaemon.bind(this)}>  {this.props.t("connect_button")} </Button>
                         <Button variant="secondary" onClick={toggleDaemonModal.bind(this, false)}>  {this.props.t("close_button")} </Button>
-
                     </Modal.Footer>
                 </Modal>
             </>

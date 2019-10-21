@@ -6,7 +6,21 @@ let processResponse = function (response) {
 
 
 let jsonResponse = function (response) {
-    return response.json();
+    return new Promise((resolve) => {
+        if (response) {
+            response.json()
+                .then(json => resolve(json))
+                .catch(() => {
+                    response.text()
+                        .then(text => resolve(text))
+                        .catch(() => resolve(''))
+
+                })
+        } else {
+            resolve('');
+        }
+    })
+
 }
 
 let errorResponse = function (error) {

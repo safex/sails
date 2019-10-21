@@ -5,10 +5,7 @@ import { Navbar } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 class App extends Component {
-
-
   render() {
-    console.log(this.props.port);
     return (
       <div>
         <Navbar bg="dark" expand="lg">
