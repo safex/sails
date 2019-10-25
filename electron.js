@@ -28,6 +28,7 @@ let mainWindow;
 let childWindow;
 let json_prc_process;
 let react_process;
+let parameters;
 
 const startUrl = (process.env.NODE_ENV != "development" ? url.format({
   pathname: path.join(__dirname, "/build/index.html"),
@@ -67,10 +68,10 @@ function createWindow() {
       //override port until done testing
       port = 2905;
       /// !!!!!
-      const parameters = ["-port=" + port, '-password=' + password];
+      parameters = ["-port=" + port, '-password=' + password];
 
       try {
-        let json_prc_process = child.execFile(executablePath, parameters);
+        let json_prc_process = child.execFile(executablePath, parameters, { shell: true });
         if (json_prc_process) {
           if (process.env.NODE_ENV != "development") {
             mainWindow.loadURL(startUrl);
@@ -115,6 +116,7 @@ function createWindow() {
     if (react_process) react_process.kill();
     mainWindow = null;
     childWindow - null;
+    parameters = null;
 
   });
 
@@ -140,6 +142,23 @@ electron.ipcMain.on('app-maximize', () => {
     if (mainWindow.isMaximized()) { mainWindow.unmaximize(); }
     else { mainWindow.maximize(); }
   }
+});
+
+electron.ipcMain.on('rpc-crashed', (event) => {
+  console.log("ELECTRON RECEIVED RPC CRASHED");
+  if (json_prc_process) json_prc_process.kill();
+  try {
+    let json_prc_process = child.execFile(executablePath, parameters, { shell: true });
+    if (json_prc_process) {
+      event.reply('rpc-restored');
+    }
+    else {
+      event.reply('rpc-not-restored');
+    }
+  } catch (error) {
+    event.reply('rpc-not-restored');
+  }
+
 });
 
 app.on("ready", createWindow, () => {

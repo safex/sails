@@ -5,6 +5,7 @@ import { Row, Col, Button, Dropdown, DropdownButton, Modal, Form } from 'react-b
 import Accounts from './Accounts';
 import History from './History';
 import { addNewAccount, changeModalState, addSeedsAccount, addKeysAccount, addFileAccount, openFile, getLegacyAccounts } from '../../modules/home.module';
+import { addActiveTab } from '../../actions/active_tab.action';
 
 const mapStateToProps = (state) => {
     return {
@@ -13,6 +14,73 @@ const mapStateToProps = (state) => {
         home_modals: state.home_modals,
         account_labels: state.account_labels
     }
+}
+function ModalExportKeys(props) {
+
+    return (
+        <Modal show={props.show} onHide={() => { changeModalState(props.dispatch, { modal_export: false }) }} size="lg"
+            aria-labelledby="contained-modal-title-vcenter"
+            centered>
+            <Modal.Header closeButton>
+                <Modal.Title id="contained-modal-title-vcenter">
+                    {props.title}
+                </Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <h4>{props.body_title}</h4>
+                <Form >
+                    <Form.Row>
+                        <Form.Group as={Col} controlId="export_keys_type">
+                            <Form.Label as="legend" > {props.type} </Form.Label>
+                            <Col>
+                                <Form.Check
+                                    defaultChecked="true"
+                                    type="radio"
+                                    label={this.props.label_encrypted}
+                                    name="export_keys_type"
+                                    inline="true"
+                                    id="type_encrypted"
+                                    value="0"
+                                    onClick={() => { console.log(document.getElementById("row_password").classList) }}
+                                />
+                                <Form.Check
+                                    type="radio"
+                                    label={this.props.label_decrypted}
+                                    name="export_keys_type"
+                                    inline="true"
+                                    id="type_decrypted"
+                                    value="1"
+                                    onClick={() => { document.getElementById("row_password"); }}
+                                />
+                            </Col>
+                        </Form.Group>
+                    </Form.Row>
+                    <Form.Row id="row_password" className="visible">
+                        <Form.Group as={Col} controlId="export_keys_password">
+                            <Form.Label >{props.password}</Form.Label>
+                            <Form.Control type="text" />
+                        </Form.Group>
+                    </Form.Row>
+
+                    <Form.Row>
+                        <Form.Group as={Col} controlId="export_keys_password">
+                            <Form.Label >{props.password}</Form.Label>
+                            <Form.Control type="text" />
+                        </Form.Group>
+                    </Form.Row>
+                </Form>
+            </Modal.Body>
+            <Modal.Footer>
+                <Button variant="success" type="submit" onClick={(event) => {
+                    addSeedsAccount(props.dispatch, document.getElementById("add_new_seeds").value, document.getElementById("add_seeds_label").value, props.labels);
+                    document.getElementById("add_new_seeds").value = "";
+                    document.getElementById("add_seeds_label").value = "";
+                    changeModalState(props.dispatch, { modal_seeds: false });
+                }}>{props.submit}</Button>
+                <Button variant="danger" onClick={() => { changeModalState(props.dispatch, { modal_seeds: false }) }}>{props.close}</Button>
+            </Modal.Footer>
+        </Modal>
+    );
 }
 
 function ModalSeeds(props) {
@@ -47,7 +115,7 @@ function ModalSeeds(props) {
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="success" type="submit" onClick={(event) => {
-                    addSeedsAccount(props.dispatch, document.getElementById("add_new_seeds").value, document.getElementById("add_seeds_label").value, props.accounts, props.labels);
+                    addSeedsAccount(props.dispatch, document.getElementById("add_new_seeds").value, document.getElementById("add_seeds_label").value, props.labels);
                     document.getElementById("add_new_seeds").value = "";
                     document.getElementById("add_seeds_label").value = "";
                     changeModalState(props.dispatch, { modal_seeds: false });
@@ -98,36 +166,6 @@ function ModalKeys(props) {
                         </Form.Group>
                     </Form.Row>
 
-                    <Form.Row>
-                        <Form.Group as={Col} controlId="add_keys_type">
-                            <Form.Label as="legend" > {props.type} </Form.Label>
-                            <Col>
-                                <Form.Check
-                                    defaultChecked="true"
-                                    type="radio"
-                                    label="SFX/SFT"
-                                    name="add_keys_type"
-                                    inline="true"
-                                    id="type_sfx_sft"
-                                    value="0"
-                                />
-                                <Form.Check
-                                    type="radio"
-                                    label="SAFEX"
-                                    name="add_keys_type"
-                                    inline="true"
-                                    id="type_safex"
-                                    value="1"
-                                />
-                            </Col>
-                        </Form.Group>
-                    </Form.Row>
-                    <Form.Row>
-                        <Col>
-                            <h5>{props.note} : <small>{props.note_text}</small></h5>
-                        </Col>
-                    </Form.Row>
-
                 </Form>
 
             </Modal.Body>
@@ -138,15 +176,11 @@ function ModalKeys(props) {
                         document.getElementById("add_keys_view").value,
                         document.getElementById("add_keys_spend").value,
                         document.getElementById("add_keys_label").value,
-                        document.querySelector('input[name=add_keys_type]:checked').value,
-                        props.accounts,
-                        props.legacy_accounts,
                         props.labels);
                     document.getElementById("add_keys_address").value = "";
                     document.getElementById("add_keys_view").value = "";
                     document.getElementById("add_keys_spend").value = "";
                     document.getElementById("add_keys_label").value = "";
-                    document.querySelector('input[name=add_keys_type]:checked').value = "0";
                     changeModalState(props.dispatch, { modal_keys: false });
                 }}>{props.submit}</Button>
                 <Button variant="danger" onClick={() => { changeModalState(props.dispatch, { modal_keys: false }) }}>{props.close}</Button>
@@ -180,7 +214,6 @@ function ModalNew(props) {
                 <Button variant="success" type="submit" onClick={(event) => {
                     addNewAccount(props.dispatch,
                         document.getElementById("add_new_label").value,
-                        props.accounts,
                         props.labels);
                     document.getElementById("add_new_label").value = "";
                     changeModalState(props.dispatch, { modal_new: false });
@@ -233,7 +266,6 @@ function ModalFile(props) {
                         document.getElementById("add_file_path").value,
                         document.getElementById("add_file_password").value,
                         document.getElementById("add_new_label").value,
-                        props.accounts,
                         props.labels);
                     document.getElementById("add_new_label").value = "";
                     document.getElementById("add_file_path").value = "";
@@ -250,6 +282,8 @@ function ModalFile(props) {
 class Home extends Component {
     componentDidMount() {
         getLegacyAccounts(this.props.dispatch);
+        this.props.dispatch(addActiveTab("home"));
+
     }
     render() {
         console.log("FROM HOME");
@@ -295,7 +329,6 @@ class Home extends Component {
                 </Row>
                 <ModalSeeds
                     show={this.props.home_modals.modal_seeds}
-                    accounts={this.props.accounts}
                     dispatch={this.props.dispatch}
                     title={this.props.t("add_new_seed")}
                     body_title={this.props.t("25_word_mnemonic")}
@@ -306,7 +339,6 @@ class Home extends Component {
                 />
                 <ModalKeys
                     show={this.props.home_modals.modal_keys}
-                    accounts={this.props.accounts}
                     legacy_accounts={this.props.legacy_accounts}
                     dispatch={this.props.dispatch}
                     title={this.props.t("add_new_keys")}
@@ -318,13 +350,9 @@ class Home extends Component {
                     view={this.props.t("private_spend")}
                     label={this.props.t("label")}
                     labels={this.props.account_labels}
-                    type={this.props.t("type")}
-                    note={this.props.t("note")}
-                    note_text={this.props.t("note_text")}
                 />
                 <ModalNew
                     show={this.props.home_modals.modal_new}
-                    accounts={this.props.accounts}
                     dispatch={this.props.dispatch}
                     title={this.props.t("add_new")}
                     submit={this.props.t("button_add")}
@@ -334,7 +362,6 @@ class Home extends Component {
                 />
                 <ModalFile
                     show={this.props.home_modals.modal_file}
-                    accounts={this.props.accounts}
                     dispatch={this.props.dispatch}
                     title={this.props.t("add_new_file")}
                     submit={this.props.t("button_add")}

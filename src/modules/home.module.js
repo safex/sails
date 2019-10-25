@@ -9,17 +9,19 @@ import { addHomeModal } from '../actions/home_modals.action';
 import { addAccountLabels } from '../actions/account_labels.action';
 import { lordOfTheFetch } from '../libs/one_fetch_to_rule_them_all';
 
+import crypto from 'crypto';
+
 let { dialog } = window.require("electron").remote;
 //const bitcoin = window.require('bitcoinjs-lib');
 
-let getAccounts = function (dispatch, fromwallet = false) {
+let getAccounts = function (dispatch, fromwallet = false, rescan = false) {
     dispatch(removeAccounts());
     if (localStorage.getItem("accounts") && !fromwallet) {
-      //  dispatch(addAccounts(JSON.parse(localStorage.getItem("accounts"))));
+        //  dispatch(addAccounts(JSON.parse(localStorage.getItem("accounts"))));
         getLabels(dispatch, JSON.parse(localStorage.getItem("accounts")));
     }
     else {
-        lordOfTheFetch(accountsApi.getAccountsInfoApi, [], callbackForGetAccounts, [dispatch], { dispatch: dispatch });
+        lordOfTheFetch(accountsApi.getAccountsInfoApi, [], callbackForGetAccounts, [dispatch, rescan], { dispatch: dispatch });
     }
 
 }
@@ -46,6 +48,10 @@ let syncAccount = function (dispatch, account, account_to_be_dispatched) {
     lordOfTheFetch(accountsApi.syncAccountsApi, [], callbackForSyncAccount, [dispatch, account_to_be_dispatched], { dispatch: dispatch });
 }
 
+let rescanWallet = function (dispatch) {
+    lordOfTheFetch(accountsApi.rescanAccountsApi, [], callbackForRescanWallet, [dispatch], { dispatch: dispatch });
+}
+
 
 
 // let getActiveAccount = function (dispatch) {
@@ -64,46 +70,35 @@ let getHistoryNew = function (dispatch) {
 //     lordOfTheFetch(legacyTransactionApi.getHistoryApi, [active_account.account.address], callbackForGetHistoryOld, [dispatch], { dispatch: dispatch });
 // }
 
-let addNewAccount = function (dispatch, label, accounts, labels) {
-    if (accounts) {
-        let name = "wallet_";
-        name += Object.keys(accounts).length;
-        lordOfTheFetch(accountsApi.createAccountApi, [name], callbackForAddNewAccount, [dispatch, name, label, labels], { dispatch: dispatch });
-    }
-
+let addNewAccount = function (dispatch, label, labels) {
+    let name = crypto.randomBytes(10).toString('hex') + "N" + crypto.randomBytes(10).toString('hex');
+    lordOfTheFetch(accountsApi.createAccountApi, [name], callbackForAddNewAccount, [dispatch, name, label, labels, false], { dispatch: dispatch });
 }
 
-let addSeedsAccount = function (dispatch, seeds, label, accounts, labels) {
-    let name = "wallet_";
-    name += Object.keys(accounts).length;
-    lordOfTheFetch(accountsApi.recoverAccountSeedsApi, [seeds.trim(), name], callbackForAddNewAccount, [dispatch, name, label, labels], { dispatch: dispatch });
+let addSeedsAccount = function (dispatch, seeds, label, labels) {
+    let name = crypto.randomBytes(10).toString('hex') + "S" + crypto.randomBytes(10).toString('hex');
+    lordOfTheFetch(accountsApi.recoverAccountSeedsApi, [seeds.trim(), name], callbackForAddNewAccount, [dispatch, name, label, labels, true], { dispatch: dispatch });
 
 
 }
 
-let addKeysAccount = function (dispatch, address, view, spend, label, accounts, labels) {
-
-    let name = "wallet_";
-    name += Object.keys(accounts).length;
-    lordOfTheFetch(accountsApi.recoverAccountKeysApi, [address.trim(), spend.trim(), view.trim(), name], callbackForAddNewAccount, [dispatch, name, label, labels], { dispatch: dispatch });
-
-
+let addKeysAccount = function (dispatch, address, view, spend, label, labels) {
+    let name = crypto.randomBytes(10).toString('hex') + "K" + crypto.randomBytes(10).toString('hex');
+    lordOfTheFetch(accountsApi.recoverAccountKeysApi, [address.trim(), spend.trim(), view.trim(), name], callbackForAddNewAccount, [dispatch, name, label, labels, true], { dispatch: dispatch });
 }
 
 
-let addFileAccount = function (dispatch, filepath, password, label, accounts, labels) {
-    let name = "wallet_";
-    name += Object.keys(accounts).length;
-    lordOfTheFetch(accountsApi.recoverAccountFileApi, [filepath.trim(), password.trim(), name], callbackForAddNewAccount, [dispatch, name, label, labels], { dispatch: dispatch });
+let addFileAccount = function (dispatch, filepath, password, label, labels) {
+    let name = crypto.randomBytes(10).toString('hex') + "F" + crypto.randomBytes(10).toString('hex');
+    lordOfTheFetch(accountsApi.recoverAccountFileApi, [filepath.trim(), password.trim(), name], callbackForAddNewAccount, [dispatch, name, label, labels, true], { dispatch: dispatch });
 }
 
-let saveLabels = function (dispatch, labels) {
-    lordOfTheFetch(accountLabelsApi.setAccountLabelsApi, [labels], callbackForSaveLabels, [dispatch, labels], { dispatch: dispatch });
-
+let saveLabels = function (dispatch, labels, rescan = false) {
+    lordOfTheFetch(accountLabelsApi.setAccountLabelsApi, [labels], callbackForSaveLabels, [dispatch, labels, rescan], { dispatch: dispatch });
 }
 
-let getLabels = function (dispatch, accounts) {
-    lordOfTheFetch(accountLabelsApi.getAccountLabelsApi, [], callbackForGetLabels, [dispatch, accounts], { dispatch: dispatch });
+let getLabels = function (dispatch, accounts, rescan = false) {
+    lordOfTheFetch(accountLabelsApi.getAccountLabelsApi, [], callbackForGetLabels, [dispatch, accounts, rescan], { dispatch: dispatch });
 }
 
 
@@ -112,7 +107,7 @@ let getLabels = function (dispatch, accounts) {
 //callbacks
 
 // getAccounts
-let callbackForGetAccounts = function (res, dispatch) {
+let callbackForGetAccounts = function (res, dispatch, rescan = false) {
     if (res.status === 0) {
         let accounts = {};
         Promise.all(res.result.accounts.map(x => {
@@ -125,7 +120,7 @@ let callbackForGetAccounts = function (res, dispatch) {
 
             });
         })).then(() => {
-            getLabels(dispatch, accounts);
+            getLabels(dispatch, accounts, rescan);
         });
     }
     else if (res.status !== 13) {
@@ -178,25 +173,25 @@ let callbackForGetHistoryNew = function (res, dispatch) {
 //     dispatch(addAccountHistory(res));
 // }
 
-let callbackForAddNewAccount = function (res, dispatch, name, label, labels) {
+let callbackForAddNewAccount = function (res, dispatch, name, label, labels, rescan) {
     if (res.status !== 0) dispatch(addError(res.status));
     else {
         let tmp = { ...labels }; tmp[name] = label;
-        saveLabels(dispatch, tmp);
+        saveLabels(dispatch, tmp, rescan);
     }
 
 
 }
 
-let callbackForSaveLabels = function (res, dispatch, labels) {
+let callbackForSaveLabels = function (res, dispatch, labels, rescan = false) {
     if (res.status !== 0) dispatch(addError(res.status));
     else {
         dispatch(addAccountLabels(labels));
-        getAccounts(dispatch, true);
+        getAccounts(dispatch, true, rescan);
     }
 }
 
-let callbackForGetLabels = function (res, dispatch, accounts) {
+let callbackForGetLabels = function (res, dispatch, accounts, rescan) {
     if (res.status === 0) {
         let acc = accounts;
         let labels = JSON.parse(res.result.value);
@@ -207,21 +202,27 @@ let callbackForGetLabels = function (res, dispatch, accounts) {
         }
         localStorage.setItem('accounts', JSON.stringify(acc));
         dispatch(addAccounts(acc));
+        if (rescan) {
+            rescanWallet(dispatch);
+        }
 
 
     }
     else if (res.status === 13) {
         localStorage.setItem('accounts', JSON.stringify(accounts));
         dispatch(addAccounts(accounts));
+        if (rescan) {
+            rescanWallet(dispatch);
+        }
 
     }
     else {
         dispatch(addError(res.status));
     }
 }
-// let callbackForAddLegacyAccounts = function (res, dispatch) {
-//     if (res.status !== 0) dispatch(addError(res.status));
-// }
+let callbackForRescanWallet = function (res, dispatch) {
+    if (res.status !== 0) dispatch(addError(res.status));
+}
 
 // let callbackForGetActiveAccountUltimateFetch = function (res, dispatch) {
 //     if (res.status === 0) { dispatch(addActiveAccount(JSON.parse(res.result.value))); getHistory(JSON.parse(res.result.value), dispatch); }

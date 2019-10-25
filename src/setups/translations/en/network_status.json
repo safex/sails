@@ -1,7 +1,10 @@
 {
-    "connected":"Connected",
-    "disconnected":"Disconnected",
-    "network_status":"Network Status",
-    "bitcoin_network_status":"Bitcoin Network Status",
-    "chain_sync":"Chain Sync Status"
+    "connected": "Connected",
+    "disconnected": "Disconnected",
+    "network_status": "Network Status",
+    "bitcoin_network_status": "Bitcoin Network Status",
+    "chain_sync": "Chain Sync Status",
+    "daemon_status": "Daemon Status",
+    "sync": "Syncing",
+    "up_to_date": "Up to date"
 }

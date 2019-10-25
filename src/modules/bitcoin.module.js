@@ -3,13 +3,14 @@ import { replaceLegacyAccounts, resetAllBalances, addLegacyBalance, addLegacyBTC
 import { addError } from '../actions/error.action';
 import { lordOfTheFetch } from '../libs/one_fetch_to_rule_them_all';
 import { processResponse, jsonResponse } from '../libs/response';
-import { getHistoryApi, getFee, getTransactions, broadcastTransactions } from '../api/legacy/transaction.api';
+import { getHistoryApi, getHistoryOmniApi, getFee, getTransactions, broadcastTransactions } from '../api/legacy/transaction.api';
 import { getBalanceApi, getBTCBalanceApi, getBTCBalancePendingApi } from '../api/legacy/balances.api';
 import { getBTCPriceApi, getBTCSAFEXApi } from '../api/legacy/prices.api';
 
 import '../components/bitcoin/bitcoin.css';
 
 import { Col, Form, Button } from 'react-bootstrap';
+import History from '../components/bitcoin/History';
 import React from 'react';
 
 
@@ -101,24 +102,99 @@ const replaceAccountsAndReset = function (res, dispatch, reset, accounts) {
     }
 }
 
-
 export const resetEditLabelModal = function () {
-    this.setState({ modal_show: false, modal_receive: false, modal_send: false, modal_props: {}, modal_header: "", modal_content: "", modal_footer: "", modal_key: "modal", new_label: "", account: null, modal_close: () => { } });
+    this.setState({
+        modal_show: false,
+        modal_receive: false,
+        modal_send: false,
+        modal_props: {},
+        modal_header: "",
+        modal_content: "",
+        modal_footer: "",
+        modal_key: "modal",
+        new_label: "",
+        account: null,
+        modal_close: () => { }
+    });
 }
 export const resetAddAccountModal = function () {
-    this.setState({ modal_show: false, modal_receive: false, modal_send: false, modal_props: {}, modal_header: "", modal_content: "", modal_footer: "", modal_key: "modal", new_label: "", adress: "", modal_close: () => { } });
+    this.setState({
+        modal_show: false,
+        modal_receive: false,
+        modal_send: false,
+        modal_props: {},
+        modal_header: "",
+        modal_content: "",
+        modal_footer: "",
+        modal_key: "modal",
+        new_label: "",
+        adress: "",
+        modal_close: () => { }
+    });
 }
 export const resetShowPrivateModal = function () {
-    this.setState({ modal_show: false, modal_receive: false, modal_send: false, modal_props: {}, modal_header: "", modal_content: "", modal_footer: "", modal_key: "modal", modal_close: () => { } });
+    this.setState({
+        modal_show: false,
+        modal_receive: false,
+        modal_send: false,
+        modal_props: {},
+        modal_header: "",
+        modal_content: "",
+        modal_footer: "",
+        modal_key: "modal",
+        modal_close: () => { }
+    });
 }
 export const resetHistoryModal = function () {
-    this.setState({ modal_show: false, modal_receive: false, modal_send: false, modal_props: {}, modal_header: "", modal_content: "", modal_footer: "", modal_key: "modal", history: [], modal_close: () => { } });
+    this.setState({
+        modal_show: false,
+        modal_receive: false,
+        modal_send: false,
+        modal_props: {},
+        modal_header: "",
+        modal_content: "",
+        modal_footer: "",
+        modal_key: "modal",
+        history: [],
+        modal_close: () => { }
+    });
 }
 export const resetReceiveModal = function () {
-    this.setState({ modal_show: false, modal_receive: false, modal_send: false, modal_props: {}, modal_header: "", modal_content: "", modal_footer: "", address: '', modal_key: "modal", amount: '0.00000001', modal_close: () => { } });
+    this.setState({
+        modal_show: false,
+        modal_receive: false,
+        modal_send: false,
+        modal_props: {},
+        modal_header: "",
+        modal_content: "",
+        modal_footer: "",
+        address: '',
+        modal_key: "modal",
+        amount: '0.00000546',
+        modal_close: () => { }
+    });
 }
 export const resetSendModal = function () {
-    this.setState({ modal_show: false, modal_receive: false, modal_send: false, modal_props: {}, modal_header: "", modal_content: "", modal_footer: "", modal_key: "modal", account: null, address: '', fee: 0, amount: "0.00000001", txs: null, btc_dollar: true, btc_bal: 0, modal_close: () => { } });
+    this.setState({
+        modal_show: false,
+        modal_receive: false,
+        modal_send: false,
+        modal_props: {},
+        modal_header: "",
+        modal_content: "",
+        modal_footer: "",
+        modal_key: "modal",
+        account: null,
+        address: '',
+        fee: 0.00000500,
+        amount: "0.00000546",
+        dollar_amount: 0,
+        dollar_fee: 0,
+        txs: null,
+        btc_dollar: true,
+        btc_bal: 0,
+        modal_close: () => { }
+    });
 }
 
 export const enableEditLabelModal = function (account) {
@@ -194,12 +270,29 @@ export const enableShowPrivateModal = function (key) {
 }
 
 export const enableHistoryModal = function (address) {
-    lordOfTheFetch(getHistoryApi,
-        [address],
-        setHistoryStates.bind(this),
-        [address],
-        { dispatch: this.props.dispatch });
-
+    Promise.all([
+        getHistoryApi(address).then(processResponse).then(jsonResponse).then((res) => res.txs),
+        getHistoryOmniApi(address).then(processResponse).then(jsonResponse).then(res => res.transactions)
+    ])
+        .then(responses => {
+            console.log("RESPONSES ");
+            console.log(responses);
+            let txs = responses[1].concat(responses[0]).map(tx => ({
+                coin: tx.propertyname === "SafeExchangeCoin" ? "safex" : "bitcoin",
+                confirmations: tx.confirmations,
+                txid: tx.txid,
+                date_time: tx.propertyname === "SafeExchangeCoin" ? new Date(tx.blocktime * 1000) : new Date(tx.time * 1000),
+                reference_address: tx.propertyname === "SafeExchangeCoin" ? tx.referenceaddress : tx.vout[0].scriptPubKey.addresses[0],
+                sending_address: tx.propertyname === "SafeExchangeCoin" ? tx.sendingaddress : tx.vin[0].addr,
+                amount: tx.propertyname === "SafeExchangeCoin" ? tx.amount : (tx.vout !== undefined ? tx.vout[0].value : 0),
+                btc_fees: tx.propertyname === "SafeExchangeCoin" ? 0 : tx.fees,
+                direction: tx.propertyname === "SafeExchangeCoin" ? (tx.referenceaddress === address ? "receive" : "send") : (tx.vout[0].scriptPubKey.addresses[0] === address ? "receive" : "send")
+            }));
+            txs.sort((a, b) => {
+                return b.date_time.getTime() - a.date_time.getTime();
+            });
+            setHistoryStates.bind(this)(txs);
+        });
 }
 
 
@@ -233,12 +326,11 @@ export const enableSendModal = function (account) {
                 <Button variant="danger" onClick={resetSendModal.bind(this)}>{this.props.t("close_button")}</Button>
             </div>,
             account,
-            fee: 0,
             modal_heading: this.props.t("add_account"),
             btc_bal: account.btc_bal
 
         });
-        calculateFee.bind(this)(true);
+        calculateFee.bind(this)();
     }
     else {
         alert("NO money in the bank!!!");
@@ -249,7 +341,7 @@ export const enableSendModal = function (account) {
 
 
 
-export const setHistoryStates = function (res, address) {
+export const setHistoryStates = function (res) {
     this.setState({
         modal_show: true,
         modal_receive: false,
@@ -259,7 +351,7 @@ export const setHistoryStates = function (res, address) {
         modal_footer: <div> <Button variant="primary" onClick={resetHistoryModal.bind(this)}>{this.props.t("close_button")}</Button></div>,
         modal_content: <div className="text-center">
             <p>{res.length === 0 ? this.props.t("no_transactions") : `${this.props.t("yes_transactions")} ${res.length}`}</p>
-            {res.map((x) => { return <p>{JSON.stringify(x)}</p> })}
+            {res.map((x, i) => { return <History tx={x} key={`history-${i}`} /> })}
         </div>,
         modal_heading: this.props.t("history")
     });
@@ -272,8 +364,13 @@ export const handleChange = function (event) {
         // val = parseFloat(event.target.value).toFixed(8);
     }
     this.setState({ [event.target.name]: val });
+    console.log(event.target.name, val);
     if (event.target.name == "amount") { this.setState({ dollar_amount: (parseFloat(val) * this.state.btc_value).toFixed(8) }); }
     if (event.target.name == "dollar_amount") { this.setState({ amount: (parseFloat(val) / this.state.btc_value).toFixed(8) }); }
+    if (event.target.name == "fee") { calculateFee.bind(this)(generateTransactions, val); }
+    if (event.target.name == "dollar_fee") { calculateFee.bind(this)(generateTransactions, (parseFloat(val) / this.state.btc_value).toFixed(8)); }
+
+
 }
 
 export const copyAddressToClipboard = function (value) {
@@ -333,28 +430,30 @@ export const changeBTCDollar = function () {
 
 }
 
-export const calculateFee = function (set_state = false, callback = generateTransactions) {
+export const calculateFee = function (callback = generateTransactions, override_fee = false) {
     this.setState({ txs: null });
-    lordOfTheFetch(getFee, [], adjustFee.bind(this), [set_state, callback], { dispatch: this.props.dispatch });
+    lordOfTheFetch(getFee, [], adjustFee.bind(this), [callback, override_fee], { dispatch: this.props.dispatch });
 }
-export const adjustFee = function (fee, set_state, callback) {
-    if (set_state) this.setState({ fee: fee });
-    if (this.state.account && !set_state)
-        lordOfTheFetch(getTransactions, [this.state.account.address], callback.bind(this), [fee], { dispatch: this.props.dispatch });
+export const adjustFee = function (fee, callback, override_fee) {
+    if (this.state.account)
+        lordOfTheFetch(getTransactions, [this.state.account.address], callback.bind(this), [fee, override_fee], { dispatch: this.props.dispatch });
 
 }
 
-export function generateTransactions(utxos, feedec) {
+export function generateTransactions(utxos, feedec, override_fee_dec) {
     let destination = this.state.address;
     let amountdec = this.state.amount;
-    let amount = parseInt(amountdec * 100000000);
-    let fee = parseInt(feedec * 100000000);
+    let amount = Math.abs(parseInt(amountdec * 100000000));
+    let fee = Math.abs(parseInt(feedec * 100000000));
+    let override_fee = override_fee_dec !== false ? Math.abs(parseInt(parseFloat(override_fee_dec) * 100000000)) : false;
+    console.log("OVERRIDE FEE, ", override_fee);
     let wif = this.state.account.private_key;
     let key = bitcoin.ECPair.fromWIF(wif);
     let running_total = 0;
     let tx = new bitcoin.TransactionBuilder();
     let inputs_num = 0;
     let fee_adj;
+    let txs = null;
 
     if (amount < this.state.btc_bal) {
         utxos.forEach(txn => {
@@ -365,7 +464,8 @@ export function generateTransactions(utxos, feedec) {
         });
         fee_adj = (inputs_num * 180) + 100;
 
-        fee = Math.trunc(fee * (fee_adj / 1000));
+        fee = override_fee !== false ? override_fee : Math.trunc(fee * (fee_adj / 1000));
+        console.log("FEE, ", fee);
         inputs_num = 0;
         running_total = 0;
         utxos.forEach(txn => {
@@ -385,18 +485,17 @@ export function generateTransactions(utxos, feedec) {
 
 
         const left_overs = running_total - (amount + fee);
-        console.log("leftovers  = " + left_overs)
-        console.log("running_total  = " + running_total)
-        console.log("amount  = " + amount)
         if (left_overs > 0) {
             tx.addOutput(address, left_overs);
         }
 
-        for (var i = 0; i < inputs_num; i++) {
-            tx.sign(i, key);
+        if (left_overs > 0 || destination) {
+            for (var i = 0; i < inputs_num; i++) {
+                tx.sign(i, key);
+            }
+            txs = tx.build().toHex();
         }
-        let json = { txs: tx.build().toHex(), fee: parseFloat(fee * 1.0 / 100000000).toFixed(8) };
-        console.log(json);
+        let json = { txs: txs, fee: parseFloat(fee * 1.0 / 100000000).toFixed(8), dollar_fee: parseFloat((fee * 1.0 / 100000000) * this.state.btc_value).toFixed(8) };
         this.setState(json);
     }
     else { alert("Not enought money"); }
@@ -457,9 +556,10 @@ export const callbackForGetSFTBTCPrice = function (res) {
     }
 }
 
-export const calculateAll = function (utxos, feedec) {
+export const calculateAll = function (utxos, feedec, override_fee_dec) {
     let destination = this.state.address;
-    let fee = parseInt(feedec * 100000000);
+    let fee = Math.abs(parseInt(feedec * 100000000));
+    let override_fee = override_fee_dec !== false ? Math.abs(parseInt(override_fee_dec * 100000000)) : false;
     let btc_bal = this.state.btc_bal;
     let wif = this.state.account.private_key;
     let key = bitcoin.ECPair.fromWIF(wif);
@@ -467,7 +567,7 @@ export const calculateAll = function (utxos, feedec) {
     let running_total = 0;
     let fee_adj = (utxos.length * 180) + 100;
 
-    fee = Math.trunc(fee * (fee_adj / 1000));
+    fee = override_fee !== false ? override_fee : Math.trunc(fee * (fee_adj / 1000));
     let tx = new bitcoin.TransactionBuilder();
     let txs = null; //placeholder for signed and build txs
 
@@ -495,6 +595,6 @@ export const calculateAll = function (utxos, feedec) {
         }
         txs = tx.build().toHex();
     }
-    let json = { txs: txs, fee: parseFloat(fee * 1.0 / 100000000).toFixed(8), amount: parseFloat((btc_bal - fee) * 1.0 / 100000000).toFixed(8), dollar_amount: (parseFloat((btc_bal - fee) * 1.0 / 100000000) * this.state.btc_value).toFixed(8) };
+    let json = { txs: txs, fee: parseFloat(fee * 1.0 / 100000000).toFixed(8), dollar_fee: parseFloat((fee * 1.0 / 100000000) * this.state.btc_value).toFixed(8), amount: parseFloat((btc_bal - fee) * 1.0 / 100000000).toFixed(8), dollar_amount: (parseFloat((btc_bal - fee) * 1.0 / 100000000) * this.state.btc_value).toFixed(8) };
     this.setState(json);
 }
