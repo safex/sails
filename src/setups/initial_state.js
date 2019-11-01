@@ -26,7 +26,7 @@ let initial_state = {
         }, errors: {}, touched: {}
     },
     legacy_accounts: {},
-    home_modals: { modal_seeds: false, modal_keys: false, modal_edit: false, modal_file: false, modal_new: false },
+    home_modals: { modal_seeds: false, modal_keys: false, modal_edit: false, modal_file: false, modal_new: false, modal_export: false },
     account_labels: {},
     daemon: { host: '127.0.0.1', port: 38001 },
     active_tab: "home",

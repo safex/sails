@@ -20,15 +20,20 @@ ipcRenderer.once('receive-port', ((event, arg) => {
 ipcRenderer.send('react-is-ready-to-receive-port');
 
 ipcRenderer.on('rpc-restored', ((event) => {
-    console.log("RPC RESTORED");
     if (localStorage.getItem("path") && localStorage.getItem("pwd")) {
         let port = localStorage.getItem("port");
         let daemon = localStorage.getItem("daemon") ? JSON.parse(localStorage.getItem("daemon")) : {};
+        let pwd = localStorage.getItem("pwd");
+        let path = localStorage.getItem("path");
         localStorage.clear();
         if (port) localStorage.setItem('port', port);
-        if (JSON.stringify(daemon) !== "{}") localStorage.setItem("daemon", JSON.stringify(daemon));
+        if (daemon) localStorage.setItem("daemon", JSON.stringify(daemon));
+        localStorage.setItem("path", path);
+        localStorage.setItem("pwd", pwd);
         localStorage.setItem("daemon_status", "connected");
-        open(store.dispatch, { filepath: localStorage.getItem('path'), password: localStorage.getItem("pwd") }, ["filepath", "password"], daemon);
+        console.log("TRY TO REOPEN");
+        setTimeout(() => { open(store.dispatch, history, { filepath: path.trim(), password: pwd.trim() }, ["filepath", "password"], daemon); }, 2000);
+
     }
     else {
         let port = localStorage.getItem("port");
@@ -38,6 +43,14 @@ ipcRenderer.on('rpc-restored', ((event) => {
         history.push('/');
     }
 
+}));
+
+ipcRenderer.on('rpc-not-restored', ((event) => {
+    console.log("RPC NOT RESTORED");
+}));
+ipcRenderer.on('rpc-not-crashed', ((event) => {
+    console.log("RPC NOT CRASHED");
+    localStorage.setItem("daemon_status", "connected");
 }));
 ReactDOM.render(<I18nextProvider i18n={i18n}><Provider store={store}><div><App /></div></Provider></I18nextProvider>, document.getElementById('root'));
 

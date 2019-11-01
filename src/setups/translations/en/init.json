@@ -60,5 +60,10 @@
     "setting": "Blockchain Node Setting",
     "daemon_host": "Blockchain host",
     "daemon_port": "Blockchain port",
-    "default": "Default"
+    "default": "Default",
+    "pdf_title": "Wallet INFO",
+    "view_keys": "View keys",
+    "spend_keys": "Spend keys",
+    "public": "Public",
+    "private": "Secret"
 }

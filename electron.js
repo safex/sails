@@ -26,9 +26,11 @@ const password = crypto.randomBytes(20).toString('hex');
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
 let childWindow;
-let json_prc_process;
+let json_prc_process = null;
 let react_process;
 let parameters;
+
+let json_prc_process_clossed = false;
 
 const startUrl = (process.env.NODE_ENV != "development" ? url.format({
   pathname: path.join(__dirname, "/build/index.html"),
@@ -71,8 +73,22 @@ function createWindow() {
       parameters = ["-port=" + port, '-password=' + password];
 
       try {
-        let json_prc_process = child.execFile(executablePath, parameters, { shell: true });
+        let command = executablePath + " -port=" + port + " -password=" + password;
+        json_prc_process = child.spawn(executablePath, parameters);
+        //json_prc_process.unref();
+
         if (json_prc_process) {
+          json_prc_process.on('closed', (code) => {
+            console.log("CLOSED JSON_RPC");
+            console.log("CODE", code);
+            json_prc_process_clossed = true;
+          });
+
+          json_prc_process.on('exit', (code) => {
+            console.log("EXITED JSON_RPC");
+            console.log("CODE", code);
+            json_prc_process_clossed = true;
+          });
           if (process.env.NODE_ENV != "development") {
             mainWindow.loadURL(startUrl);
           }
@@ -145,18 +161,29 @@ electron.ipcMain.on('app-maximize', () => {
 });
 
 electron.ipcMain.on('rpc-crashed', (event) => {
-  console.log("ELECTRON RECEIVED RPC CRASHED");
-  if (json_prc_process) json_prc_process.kill();
-  try {
-    let json_prc_process = child.execFile(executablePath, parameters, { shell: true });
-    if (json_prc_process) {
-      event.reply('rpc-restored');
-    }
-    else {
+
+  if (json_prc_process_clossed) {
+    console.log("ELECTRON RECEIVED RPC CRASHED");
+    if (json_prc_process) json_prc_process.kill();
+    try {
+      let command = executablePath + " -port=" + port + " -password=" + password;
+      json_prc_process = child.spawn(executablePath, parameters);
+      // json_prc_process.unref();
+      if (json_prc_process) {
+        console.log("JOSN_PROCESS");
+        console.log(json_prc_process);
+        json_prc_process_clossed = false;
+        event.reply('rpc-restored');
+      }
+      else {
+        event.reply('rpc-not-restored');
+      }
+    } catch (error) {
       event.reply('rpc-not-restored');
     }
-  } catch (error) {
-    event.reply('rpc-not-restored');
+  }
+  else {
+    event.reply('rpc-not-closed');
   }
 
 });

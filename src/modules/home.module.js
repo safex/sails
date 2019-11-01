@@ -8,10 +8,12 @@ import { addError } from '../actions/error.action';
 import { addHomeModal } from '../actions/home_modals.action';
 import { addAccountLabels } from '../actions/account_labels.action';
 import { lordOfTheFetch } from '../libs/one_fetch_to_rule_them_all';
-
+import { encryptContent, decryptContent, readFilePromise } from '../libs/legacy_wallet';
 import crypto from 'crypto';
 
 let { dialog } = window.require("electron").remote;
+let fs = window.require('fs');
+let archiver = require('archiver');
 //const bitcoin = window.require('bitcoinjs-lib');
 
 let getAccounts = function (dispatch, fromwallet = false, rescan = false) {
@@ -75,22 +77,61 @@ let addNewAccount = function (dispatch, label, labels) {
     lordOfTheFetch(accountsApi.createAccountApi, [name], callbackForAddNewAccount, [dispatch, name, label, labels, false], { dispatch: dispatch });
 }
 
-let addSeedsAccount = function (dispatch, seeds, label, labels) {
-    let name = crypto.randomBytes(10).toString('hex') + "S" + crypto.randomBytes(10).toString('hex');
-    lordOfTheFetch(accountsApi.recoverAccountSeedsApi, [seeds.trim(), name], callbackForAddNewAccount, [dispatch, name, label, labels, true], { dispatch: dispatch });
+let addSeedsAccount = function (dispatch, seeds, label, accounts, labels) {
+    let exists = Object.values(accounts).filter(account => { return account.mnemonic === seeds.trim() });
+    if (exists.length !== 0) {
+        dispatch(addError("ACCOUNT_EXISTS"));
+    }
+    else {
+        let name = crypto.randomBytes(10).toString('hex') + "S" + crypto.randomBytes(10).toString('hex');
+        lordOfTheFetch(accountsApi.recoverAccountSeedsApi, [seeds.trim(), name], callbackForAddNewAccount, [dispatch, name, label, labels, true], { dispatch: dispatch });
+    }
+
 
 
 }
 
-let addKeysAccount = function (dispatch, address, view, spend, label, labels) {
-    let name = crypto.randomBytes(10).toString('hex') + "K" + crypto.randomBytes(10).toString('hex');
-    lordOfTheFetch(accountsApi.recoverAccountKeysApi, [address.trim(), spend.trim(), view.trim(), name], callbackForAddNewAccount, [dispatch, name, label, labels, true], { dispatch: dispatch });
+let addKeysAccount = function (dispatch, address, view, spend, label, accounts, labels) {
+    let exists = Object.values(accounts).filter(account => { return (account.address === address.trim()) && (account.viewkey.secret === view.trim()) && (account.spendkey.secret === spend.trim()); });
+    if (exists.length !== 0) {
+        dispatch(addError("ACCOUNT_EXISTS"));
+    }
+    else {
+        let name = crypto.randomBytes(10).toString('hex') + "K" + crypto.randomBytes(10).toString('hex');
+        lordOfTheFetch(accountsApi.recoverAccountKeysApi, [address.trim(), spend.trim(), view.trim(), name], callbackForAddNewAccount, [dispatch, name, label, labels, true], { dispatch: dispatch });
+    }
+
 }
 
 
-let addFileAccount = function (dispatch, filepath, password, label, labels) {
+let addFileAccount = function (dispatch, filepath, password, label, type, accounts, labels) {
     let name = crypto.randomBytes(10).toString('hex') + "F" + crypto.randomBytes(10).toString('hex');
-    lordOfTheFetch(accountsApi.recoverAccountFileApi, [filepath.trim(), password.trim(), name], callbackForAddNewAccount, [dispatch, name, label, labels, true], { dispatch: dispatch });
+    if (type === "old") {
+        lordOfTheFetch(accountsApi.recoverAccountFileApi, [filepath.trim(), password.trim(), name], callbackForAddNewAccount, [dispatch, name, label, labels, true], { dispatch: dispatch });
+    }
+    else {
+        readFilePromise(filepath)
+            .then((data) => { return decryptContent(data.toString(), password) })
+            .then((x) => {
+                if (x.address && x.spendkey && x.viewkey) {
+                    let exists = Object.values(accounts).filter(account => { return (account.address === x.address.trim()) && (account.viewkey.secret === x.viewkey.secret.trim()) && (account.spendkey.secret === x.spendkey.secret.trim()); });
+                    if (exists.length !== 0) {
+                        dispatch(addError("ACCOUNT_EXISTS"));
+                    }
+                    else {
+                        let l = x.label || label;
+                        if (x.account_name === "primary") { x.account_name = name; }
+                        lordOfTheFetch(accountsApi.recoverAccountKeysApi, [x.address.trim(), x.spendkey.secret.trim(), x.viewkey.secret.trim(), x.account_name], callbackForAddNewAccount, [dispatch, x.account_name, l, labels, true], { dispatch: dispatch });
+                    }
+
+                }
+                else {
+                    dispatch(addError("INVALID_FILE_FORMAT"));
+                }
+            })
+            .catch(err => dispatch(addError(err)));
+    }
+
 }
 
 let saveLabels = function (dispatch, labels, rescan = false) {
@@ -254,6 +295,86 @@ let openFile = function (id, title) {
         }
     });
 }
+
+let saveFile = function (id, title) {
+    dialog.showSaveDialog({
+        title: title
+    },
+        (path) => {
+            document.getElementById(id).value = path;
+        }
+    );
+}
+
+let exportKeys = function (dispatch, active_account, accounts, type, scope, pwd, path) {
+    if (path === "") { dispatch(addError("NO_EXPORT_PATH")); }
+    else {
+        if (scope === "all") {
+            var output = fs.createWriteStream(path + '.zip');
+            var archive = archiver('zip', {
+                zlib: { level: 9 }
+            });
+            archive.on('error', (err) => {
+                dispatch(addError(err));
+            });
+            archive.pipe(output);
+            Promise.all(
+                Object.values(accounts).map((x) => {
+                    return new Promise(resolve => {
+                        let filepath = x.address;
+                        let data = JSON.stringify(x, null, 2);
+                        if (type === "raw") {
+                            filepath += ".json";
+                        }
+                        else {
+                            filepath += '.keys';
+                            data = encryptContent(data, pwd);
+                        }
+                        archive.append(data, { name: filepath });
+                        resolve();
+                    });
+
+                })).then(() => {
+                    archive.finalize();
+                });
+        }
+        else {
+            let fun = null;
+            if (type === "raw") {
+                fun = exportKeysJSON(active_account, path)
+
+            }
+            else {
+                fun = exportKeysEncrypted(active_account, pwd, path)
+            }
+
+            if (fun)
+                fun
+                    .then(created => { })
+                    .catch(err => dispatch(addError(err)));
+        }
+    }
+}
+
+let exportKeysJSON = function (account, path) {
+    return new Promise((resolve, reject) => {
+        fs.writeFile(path + '.json', JSON.stringify(account, null, 2), (err) => {
+            if (err) reject("EXPORT_JSON");
+            else resolve(path + '.json');
+        });
+    });
+}
+
+let exportKeysEncrypted = function (account, pwd, path) {
+    let data = encryptContent(JSON.stringify(account, null, 2).trim(), pwd);
+    return new Promise((resolve, reject) => {
+        fs.writeFile(path + '.keys', data, (err) => {
+            if (err) reject(err);
+            else resolve(path + '.keys');
+        });
+    });
+
+}
 export {
     setActiveAccount,
     // getActiveAccount,
@@ -265,5 +386,7 @@ export {
     addSeedsAccount,
     addKeysAccount,
     addFileAccount,
-    openFile
+    openFile,
+    saveFile,
+    exportKeys
 }

@@ -12,6 +12,7 @@ import '../components/bitcoin/bitcoin.css';
 import { Col, Form, Button } from 'react-bootstrap';
 import History from '../components/bitcoin/History';
 import React from 'react';
+import crypto from 'crypto';
 
 
 
@@ -65,7 +66,7 @@ export const toArchive = function (account_name) {
 export const addAccount = function () {
     let accounts = { ...this.props.legacy_accounts };
     try {
-        let name = "wallet_legacy_" + Object.keys(this.props.legacy_accounts).length;
+        let name = crypto.randomBytes(10).toString('hex') + "L" + crypto.randomBytes(10).toString('hex');
         var key_pair = bitcoin.ECPair.fromWIF(this.state.address.trim());
         const { address } = bitcoin.payments.p2pkh({ pubkey: key_pair.publicKey });
         if (!Object.values(this.props.legacy_accounts).some(account => {
@@ -74,8 +75,6 @@ export const addAccount = function () {
             accounts[name] = { public_key: address, safex_bal: 0, btc_bal: 0, pending_safex_bal: 0, pending_btc_bal: 0, archived: false, address: address, account_name: name };
             accounts[name].private_key = this.state.address.trim();
             accounts[name].label = this.state.new_label || "Enter your label here";
-
-
         }
         else {
             this.props.dispatch(addError("ACCOUNT_EXISTS"));
@@ -446,7 +445,6 @@ export function generateTransactions(utxos, feedec, override_fee_dec) {
     let amount = Math.abs(parseInt(amountdec * 100000000));
     let fee = Math.abs(parseInt(feedec * 100000000));
     let override_fee = override_fee_dec !== false ? Math.abs(parseInt(parseFloat(override_fee_dec) * 100000000)) : false;
-    console.log("OVERRIDE FEE, ", override_fee);
     let wif = this.state.account.private_key;
     let key = bitcoin.ECPair.fromWIF(wif);
     let running_total = 0;
@@ -455,7 +453,7 @@ export function generateTransactions(utxos, feedec, override_fee_dec) {
     let fee_adj;
     let txs = null;
 
-    if (amount < this.state.btc_bal) {
+    if ((amount < this.state.btc_bal) || (override_fee !== false && ((amount + override_fee) <= this.state.btc_bal))) {
         utxos.forEach(txn => {
             if (running_total < (fee + amount)) {
                 running_total += txn.satoshis;
@@ -465,31 +463,32 @@ export function generateTransactions(utxos, feedec, override_fee_dec) {
         fee_adj = (inputs_num * 180) + 100;
 
         fee = override_fee !== false ? override_fee : Math.trunc(fee * (fee_adj / 1000));
-        console.log("FEE, ", fee);
         inputs_num = 0;
         running_total = 0;
         utxos.forEach(txn => {
             if (running_total < (fee + amount)) {
                 running_total += txn.satoshis;
-                tx.addInput(txn.txid, txn.vout);
-                inputs_num += 1;
+                //do not add inputs if destination is not set
+                if (destination !== "") {
+                    tx.addInput(txn.txid, txn.vout);
+                    inputs_num += 1;
+                }
             }
         });
 
         const { address } = bitcoin.payments.p2pkh({ pubkey: key.publicKey })
-        //problem is right here when adding a Output
         if (destination) {
             tx.addOutput(destination, Math.trunc(amount));
         }
 
 
 
-        const left_overs = running_total - (amount + fee);
-        if (left_overs > 0) {
+        const left_overs = running_total - amount - fee;
+        if (destination && (left_overs > 0)) {
             tx.addOutput(address, left_overs);
         }
 
-        if (left_overs > 0 || destination) {
+        if (destination) {
             for (var i = 0; i < inputs_num; i++) {
                 tx.sign(i, key);
             }
@@ -575,8 +574,11 @@ export const calculateAll = function (utxos, feedec, override_fee_dec) {
     utxos.forEach(txn => {
         if (running_total < (btc_bal - fee)) {
             running_total += txn.satoshis;
-            tx.addInput(txn.txid, txn.vout);
-            inputs_num += 1;
+            if (destination !== "") {
+                tx.addInput(txn.txid, txn.vout);
+                inputs_num += 1;
+            }
+
         }
     });
 
@@ -586,10 +588,10 @@ export const calculateAll = function (utxos, feedec, override_fee_dec) {
         tx.addOutput(destination, Math.trunc(btc_bal - fee));
     }
     const left_overs = running_total - btc_bal + fee;
-    if (left_overs > 0) {
+    if (destination && (left_overs > 0)) {
         tx.addOutput(address, left_overs);
     }
-    if (left_overs > 0 || destination) {
+    if (destination) {
         for (var i = 0; i < inputs_num; i++) {
             tx.sign(i, key);
         }

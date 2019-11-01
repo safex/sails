@@ -161,7 +161,7 @@ class SFT extends Component {
         </Row>
         <Row>
           <Col>
-            <Modal show={this.state.contacts_modal} onHide={() => { this.setState({ contacts_modal: false }) }} animation={false}>
+            <Modal show={this.state.contacts_modal} onHide={() => { this.setState({ contacts_modal: false }) }} >
               <Modal.Header closeButton>
                 <Modal.Title>{this.props.t('contacts')}</Modal.Title>
               </Modal.Header>

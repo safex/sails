@@ -11,7 +11,7 @@ let lordOfTheFetch = function (func, func_data = [], callback = null, callback_d
         .then((res) => {
             if (res.hasOwnProperty("status")) {
                 if (res.status !== 0) {
-                    if (res.result.msg === "Wallet is syncing") { setTimeout(lordOfTheFetch(func, func_data, callback, callback_data, additional), 6000); localStorage.setItem("sync_status", "sync"); }
+                    if (res.result && res.result.msg === "Wallet is syncing") { setTimeout(lordOfTheFetch(func, func_data, callback, callback_data, additional), 8000); localStorage.setItem("sync_status", "sync"); }
                     else setTimeout((secondTry)(func, func_data, callback, callback_data, additional), 2000);
                 }
                 else if (callback) {
@@ -26,8 +26,11 @@ let lordOfTheFetch = function (func, func_data = [], callback = null, callback_d
             }
         })
         .catch((error) => {
+            console.log(error);
+            console.log(error.message);
             if (error.message === "Failed to fetch") {
-                if (localStorage.getItem("daemon_status") === "connected") {
+                console.log("failed to fetch")
+                if (!localStorage.getItem("daemon_status") || localStorage.getItem("daemon_status") === "connected") {
                     ipcRenderer.send('rpc-crashed');
                     localStorage.setItem("daemon_status", "disconnected");
                 }
@@ -63,7 +66,7 @@ let secondTry = function (func, func_data, callback, callback_data, additional) 
         })
         .catch((error) => {
             if (error.message === "Failed to fetch") {
-                if (localStorage.getItem("daemon_status") === "connected") {
+                if (!localStorage.getItem("daemon_status") || localStorage.getItem("daemon_status") === "connected") {
                     ipcRenderer.send('rpc-crashed');
                     localStorage.setItem("daemon_status", "disconnected");
                 }

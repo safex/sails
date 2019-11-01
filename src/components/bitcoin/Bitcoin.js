@@ -123,9 +123,8 @@ class Bitcoin extends Component {
   }
 
   componentDidMount() {
-
-    getLegacyAccounts(this.props.dispatch);
-    calculateFee.bind(this)();
+    if (!this.props.legacy_accounts) { getLegacyAccounts(this.props.dispatch); }
+    //calculateFee.bind(this)();
     getBTCDollarValue.bind(this)(true);
     getSAFEXDollarValue.bind(this)(true);
     this.props.dispatch(addActiveTab("bitcoin"));
@@ -156,6 +155,12 @@ class Bitcoin extends Component {
     return (
       <div >
         <Row className="justify-content-end" style={{ margin: "4px" }}>
+          <Col xs={6} md={3}>
+            <Button variant="outline-info" style={{ cursor: "default" }} block>{`SAFEX $${this.state.safex_value}`}</Button>
+          </Col>
+          <Col xs={6} md={3}>
+            <Button variant="outline-info" style={{ cursor: "default" }} block>{`BITCOIN $${this.state.btc_value}`}</Button>
+          </Col>
           <Col xs={12} md={3}>
             <Button variant="info" onClick={enableAddAccountModal.bind(this)} block>{this.props.t("add_account").toUpperCase()}</Button>
           </Col>

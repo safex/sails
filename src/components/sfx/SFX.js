@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
-import { getBalance, getContactsFromWallet } from '../../modules/sfx.module';
+import { getBalance, getContactsFromWallet, getTxsHash, commitTxs, resetStates } from '../../modules/sfx.module';
 import { Row, Col, Form, Modal, Button, Table } from 'react-bootstrap';
 import { addActiveTab } from '../../actions/active_tab.action';
 
@@ -18,7 +18,7 @@ const TableCell = function (props) {
 class SFX extends Component {
   constructor(props) {
     super(props);
-    this.state = { sfx_modal: false, contacts_modal: false, address: '', amount: "0.0000000000", pid: '', note: '', balance_locked: 0.0000000000, balance_unlocked: 0.0000000000, ring_size: 1, fee: 0.0000000000 };
+    this.state = { sfx_modal: false, contacts_modal: false, address: '', amount: "0.0000000000", pid: '', note: '', balance_locked: 0.0000000000, balance_unlocked: 0.0000000000, ring_size: 1, fee: 0.0000000000, txs: null };
     this.initialState = this.state;
   }
   componentDidMount() {
@@ -32,30 +32,6 @@ class SFX extends Component {
 
   }
   render() {
-    // console.log(this.props.contacts);
-    // if (this.props.active_account.type == 1) {
-    //   return (
-    //     <Row>
-    //       <Col>
-    //         <Modal.Dialog>
-    //           <Modal.Header closeButton onClick={() => { this.props.history.push('/w/home') }}>
-    //             <Modal.Title>{this.props.t("sorry")}</Modal.Title>
-    //           </Modal.Header>
-
-    //           <Modal.Body>
-    //             <p>{this.props.t("cant_access")}</p>
-    //           </Modal.Body>
-
-    //           <Modal.Footer>
-    //             <Button variant="secondary" onClick={() => { this.props.history.push('/w/home') }}>{this.props.t("button_close")}  </Button>
-    //           </Modal.Footer>
-    //         </Modal.Dialog>
-    //       </Col>
-    //     </Row>
-    //   );
-
-    // }
-    // else {
     return (
       <>
         <Row>
@@ -151,10 +127,10 @@ class SFX extends Component {
               </Modal.Header>
               <Modal.Body>{this.props.t("transaction_info")}</Modal.Body>
               <Modal.Footer>
-                <Button variant="secondary" onClick={(e) => { this.setState({ sfx_modal: false }) }}>
+                <Button variant="secondary" onClick={(e) => { resetStates.bind(this)(); }}>
                   {this.props.t("button_close")}
                 </Button>
-                <Button variant="primary" onClick={() => { this.setState(this.initialState) }}>
+                <Button variant="primary" onClick={() => { commitTxs.bind(this)(); }}>
                   {this.props.t("button_confirm")}
                 </Button>
               </Modal.Footer>
@@ -163,7 +139,7 @@ class SFX extends Component {
         </Row>
         <Row>
           <Col>
-            <Modal show={this.state.contacts_modal} onHide={() => { this.setState({ contacts_modal: false }) }} animation={false}>
+            <Modal show={this.state.contacts_modal} onHide={() => { this.setState({ contacts_modal: false }) }} >
               <Modal.Header closeButton>
                 <Modal.Title>{this.props.t('contacts')}</Modal.Title>
               </Modal.Header>
