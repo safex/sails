@@ -20,7 +20,10 @@ let getContactsFromWallet = function () {
 let callbackForGetBalance = function (res, that) {
     if (res.status != 0) that.props.dispatch(addError(res.status));
     else {
-        that.setState({ balance_unlocked: parseFloat(res.result.balance.TokenUnlocked !== 0 ? (res.result.balance.TokenUnlocked / 10000000000) : 0).toFixed(0), balance_locked: parseFloat(res.result.balance.TokenLocked !== 0 ? (res.result.balance.TokenLocked / 10000000000) : 0).toFixed(0), sfx_unlocked: parseFloat(res.result.balance.CashUnlocked !== 0 ? (res.result.balance.CashUnlocked * 1.0 / 10000000000) : 0).toFixed(10) });
+        if (res.result.balance !== null) {
+            that.setState({ balance_unlocked: parseFloat(res.result.balance.TokenUnlocked !== 0 ? (res.result.balance.TokenUnlocked / 10000000000) : 0).toFixed(0), balance_locked: parseFloat(res.result.balance.TokenLocked !== 0 ? (res.result.balance.TokenLocked / 10000000000) : 0).toFixed(0), sfx_unlocked: parseFloat(res.result.balance.CashUnlocked !== 0 ? (res.result.balance.CashUnlocked * 1.0 / 10000000000) : 0).toFixed(10) });
+        }
+
     }
 
 }

@@ -5,6 +5,7 @@ import { Container, Row, Col } from 'react-bootstrap';
 import AddContact from './AddContact';
 import Contact from './Contact';
 import { getContactsCounterFromWallet, getContactsFromWallet } from '../../modules/contacts.module';
+import { addActiveTab } from '../../actions/active_tab.action';
 const mapStateToProps = (state) => {
   return {
     contacts: state.contacts
@@ -17,6 +18,7 @@ class Contacts extends Component {
   componentDidMount() {
     getContactsFromWallet(this.props.dispatch);
     getContactsCounterFromWallet(this.props.dispatch);
+    this.props.dispatch(addActiveTab("contacts"));
   }
 
 

@@ -24,5 +24,6 @@
     "history_button": "History",
     "show_private_button": "Show Private",
     "save_button": "Save",
-    "close_button": "Close"
+    "close_button": "Close",
+    "small_fee":"There is a risk of sending transaction with small or no fee at all!!!"
 }

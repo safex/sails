@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import { withRouter } from "react-router";
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import { setWalletExistsStatus } from '../../modules/init.module';
@@ -29,7 +30,9 @@ class Legacy extends Component {
                     <ButtonToolbar className="justify-content-center">
                       <Button variant="primary" onClick={() => { setWalletExistsStatus(this.props.dispatch, false) }}>{this.props.t("escape_button")}</Button>
                       &nbsp;
-                      <Button variant="primary">{this.props.t("proceed_button")}</Button>
+                      {/* <Link to="/legacy/default" > */}
+                      <Button variant="primary" onClick={() => { this.props.history.push("/legacy/default"); }}>{this.props.t("proceed_button")}</Button>
+                      {/* </Link> */}
                     </ButtonToolbar>
                   </Col>
                 </Row>
@@ -42,4 +45,4 @@ class Legacy extends Component {
     );
   }
 }
-export default withTranslation('init')(connect()(Legacy));
+export default withTranslation('init')(withRouter(connect()(Legacy)));

@@ -204,18 +204,19 @@ let copyAddress = function (value) {
 let connectToDaemon = function () {
 
     let daemon = this.props.hasOwnProperty("daemon") ? this.props.daemon : { daemon_host: false, daemon_port: false };
-    console.log("DAEMON");
-    console.log(daemon);
     lordOfTheFetch(connectToDaemonApi,
         [daemon],
         callbackForConnectToDaemon.bind(this),
-        [],
+        [daemon],
         { "dispatch": this.props.dispatch });
 }
 
-let callbackForConnectToDaemon = function (res) {
+let callbackForConnectToDaemon = function (res, daemon) {
     toggleDaemonModal.bind(this)(false);
     if (res.status !== 0) { this.props.dispatch(addError(res.status)); }
+    else {
+        localStorage.setItem('daemon', JSON.stringify(daemon));
+    }
 
 }
 

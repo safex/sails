@@ -20,8 +20,10 @@ import {
   changeBTCDollar,
   getBTCDollarValue,
   calculateAll,
+  generateTransactions,
   getSAFEXDollarValue
 } from '../../modules/bitcoin.module';
+import { addActiveTab } from '../../actions/active_tab.action';
 import QRCode from 'qrcode.react';
 
 class LegacyCard extends Component {
@@ -31,7 +33,6 @@ class LegacyCard extends Component {
 
   }
   render() {
-    console.log(this.props.account);
 
     return (
       <Row style={{ height: "200px", minHeight: "200px" }}>
@@ -77,7 +78,7 @@ class LegacyCard extends Component {
                 </Col>
                 <Col xs={12} md={6} >
                   <p className="align-middle text-info bg-light w-100">
-                    <span className="ml-3">{this.props.account.safex_bal}</span><span className="ml-1 ml-1">SAFEX</span> <span className="ml-0 mr-3">${parseFloat(parseFloat(this.props.account.safex_bal) * this.props.safex_value).toFixed(2)}{console.log("SAFEX $ ", this.props.safex_value)}</span>
+                    <span className="ml-3">{this.props.account.safex_bal}</span><span className="ml-1 ml-1">SAFEX</span> <span className="ml-0 mr-3">${parseFloat(parseFloat(this.props.account.safex_bal) * this.props.safex_value).toFixed(2)}</span>
                     <span className="ml-3">{this.props.account.btc_bal !== 0 ? parseFloat(this.props.account.btc_bal * 1.0 / 100000000).toFixed(8) : parseFloat(0).toFixed(8)}</span><span className="ml-1 ml-1">BITCOIN</span> <span className="ml-0 mr-3">${parseFloat(parseFloat(this.props.account.btc_bal / 100000000) * this.props.btc_value).toFixed(2)}</span>
                   </p>
                 </Col>
@@ -107,9 +108,10 @@ class Bitcoin extends Component {
       account: null,
       new_label: "",
       address: '',
-      amount: '0.00000001',
+      amount: '0.00000546',
       dollar_amount: "0.00",
-      fee: 0,
+      fee: 0.00000500,
+      dollar_fee: 0.00000000,
       btc_dollar: true,
       txs: null,
       history: []
@@ -121,11 +123,11 @@ class Bitcoin extends Component {
   }
 
   componentDidMount() {
-
-    getLegacyAccounts(this.props.dispatch);
-    calculateFee.bind(this)(true);
+    if (!this.props.legacy_accounts) { getLegacyAccounts(this.props.dispatch); }
+    //calculateFee.bind(this)();
     getBTCDollarValue.bind(this)(true);
     getSAFEXDollarValue.bind(this)(true);
+    this.props.dispatch(addActiveTab("bitcoin"));
   }
 
   render() {
@@ -153,6 +155,12 @@ class Bitcoin extends Component {
     return (
       <div >
         <Row className="justify-content-end" style={{ margin: "4px" }}>
+          <Col xs={6} md={3}>
+            <Button variant="outline-info" style={{ cursor: "default" }} block>{`SAFEX $${this.state.safex_value}`}</Button>
+          </Col>
+          <Col xs={6} md={3}>
+            <Button variant="outline-info" style={{ cursor: "default" }} block>{`BITCOIN $${this.state.btc_value}`}</Button>
+          </Col>
           <Col xs={12} md={3}>
             <Button variant="info" onClick={enableAddAccountModal.bind(this)} block>{this.props.t("add_account").toUpperCase()}</Button>
           </Col>
@@ -211,7 +219,7 @@ class Bitcoin extends Component {
                       <Form.Label>{this.props.t("amount")}</Form.Label>
                       <Form.Control
                         type="number"
-                        min="0"
+                        min="0.00000546"
                         value={this.state.amount}
                         name="amount"
                         data-amount="receive"
@@ -253,37 +261,44 @@ class Bitcoin extends Component {
               <Form.Group as={Row} controlId="to">
                 <Form.Label column xs={2}>{this.props.t("to")}</Form.Label>
                 <Col xs={10}>
-                  <Form.Control type="text" placeholder={this.props.t("address_only")} onChange={(e)=>{handleChange.bind(this)(e); calculateFee.bind(this)(false);}} name="address" />
+                  <Form.Control type="text" placeholder={this.props.t("address_only")} onChange={(e) => { handleChange.bind(this)(e); calculateFee.bind(this)(); }} name="address" />
                 </Col>
               </Form.Group>
               {this.state.btc_dollar ?
                 <Form.Group as={Row} controlId="amount">
                   <Form.Label column xs={2}>{this.props.t("amount")} (<span id="amount_currency">BTC</span>)</Form.Label>
                   <Col xs={10}>
-                    <Form.Control type="text" name="amount" value={this.state.amount} onChange={(e) => { handleChange.bind(this)(e); calculateFee.bind(this)(false); }} />
+                    <Form.Control type="text" name="amount" min="0.00000546" value={this.state.amount} onChange={(e) => { handleChange.bind(this)(e); calculateFee.bind(this)(); }} />
                   </Col>
                 </Form.Group>
                 :
                 <Form.Group as={Row} controlId="dollar_amount">
                   <Form.Label column xs={2}>{this.props.t("amount")} (<span id="amount_currency">$</span>)</Form.Label>
                   <Col xs={10}>
-                    <Form.Control type="text" name="dollar_amount" value={this.state.dollar_amount} onChange={(e) => { handleChange.bind(this)(e); calculateFee.bind(this)(false); }} />
+                    <Form.Control type="text" name="dollar_amount" value={this.state.dollar_amount} onChange={(e) => { handleChange.bind(this)(e); calculateFee.bind(this)(); }} />
                   </Col>
                 </Form.Group>
               }
               <Form.Group as={Row} controlId="fee">
                 <Form.Label column xs={2}>{this.props.t("fee")} (<span id="fee_currency">BTC</span>)</Form.Label>
                 <Col xs={6}>
-                  <Form.Control type="text" readOnly name="fee" value={this.state.btc_dollar ? this.state.fee : parseFloat(parseFloat(this.state.fee) * this.state.btc_value).toFixed(8)} />
+                  {this.state.btc_dollar ?
+                    <Form.Control type="text" name="fee" onChange={handleChange.bind(this)} value={this.state.fee} />
+                    :
+                    <Form.Control type="text" name="dollar_fee" onChange={handleChange.bind(this)} value={this.state.dollar_fee} />
+                  }
                 </Col>
                 <Col xs={4}>
-                  <Button variant="outline-primary" onClick={() => { calculateFee.bind(this)(false, calculateAll) }}>{this.props.t("all").toUpperCase()}</Button>
+                  <Button variant="outline-primary" onClick={() => { calculateFee.bind(this)(calculateAll) }}>{this.props.t("all").toUpperCase()}</Button>
                 </Col>
               </Form.Group>
+              <Row className={this.state.fee < 0.00000500 ? "font-weight-bolder text-danger visible" : "invisible"}>
+                <Col xs={12}> <p>*{this.props.t("small_fee")}</p> </Col>
+              </Row>
               <Form.Group as={Row} controlId="total">
                 <Form.Label column xs={2}>{this.props.t("total")} (<span id="total_currency">BTC</span>)</Form.Label>
                 <Col xs={6}>
-                  <Form.Control type="text" readOnly value={this.state.btc_dollar ? parseFloat((this.state.amount * 100000000 + this.state.fee * 100000000) / 100000000).toFixed(8) : parseFloat(parseFloat(this.state.dollar_amount) + (this.state.fee * this.state.btc_value)).toFixed(8)} name="total" />
+                  <Form.Control type="text" readOnly value={this.state.btc_dollar ? parseFloat((this.state.amount * 100000000 + this.state.fee * 100000000) / 100000000).toFixed(8) : parseFloat((this.state.dollar_amount * 100000000 + this.state.dollar_fee * 100000000) / 100000000).toFixed(8)} name="total" />
                 </Col>
                 <Col xs={4}>
                   <Button id="btc_dollar" onClick={() => { changeBTCDollar.bind(this)() }}>{this.props.t("btc_to_dollar")}</Button>

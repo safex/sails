@@ -8,7 +8,7 @@ import { addActiveAccount } from '../actions/active_account.action';
 import { addError } from '../actions/error.action';
 
 //libs
-import { checkFileForFlags, readFilePromise, decryptContent } from "../libs/legacy_wallet";
+import { checkFileForFlags, readFilePromise, decryptWallet } from "../libs/legacy_wallet";
 import { processResponse, jsonResponse } from '../libs/response';
 import { lordOfTheFetch } from '../libs/one_fetch_to_rule_them_all';
 
@@ -18,6 +18,12 @@ import { initApi, accountsApi, activeAccountApi, legacyAccountsApi } from "../ap
 
 //v7 api
 import { balancesApi } from "../api/legacy";
+
+import crypto from 'crypto';
+
+import pdfMake from "pdfmake/build/pdfmake";
+import pdfFonts from "pdfmake/build/vfs_fonts";
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 
 //setups
@@ -46,9 +52,9 @@ let create = function (dispatch, form, names = ['filepath', 'password'], daemon,
     let daemon_host = daemon.daemon_host || DAEMON_HOST;
     let daemon_port = daemon.daemon_port || DAEMON_PORT;
     lordOfTheFetch(initApi.createApi,
-        [{ path: form[names[0]], password: form[names[1]], nettype: NET_TYPE, daemon_host: daemon_host, daemon_port: daemon_port }],
+        [{ path: form[names[0]].trim(), password: form[names[1]].trim(), nettype: NET_TYPE, daemon_host: daemon_host, daemon_port: daemon_port }],
         callbackForCreate,
-        [dispatch, legacy],
+        [dispatch, legacy, form[names[0]].trim(), form[names[1]].trim()],
         { "dispatch": dispatch });
 }
 
@@ -91,14 +97,14 @@ let open = function (dispatch, history, form, names = ["filepath", "password"], 
     lordOfTheFetch(initApi.openApi,
         [{ path: form[names[0]].trim(), password: form[names[1]].trim(), nettype: NET_TYPE, daemon_host: daemon_host, daemon_port: daemon_port }],
         callbackForOpen,
-        [dispatch, history],
+        [dispatch, history, form[names[0]].trim(), form[names[1]].trim()],
         { "dispatch": dispatch });
 
 }
 
 let openLegacy = function (dispatch, form, names = ["legacy_filepath", "legacy_password"]) {
     readFilePromise(form[names[0]].trim())
-        .then((data) => { return decryptContent(data, form[names[1]].trim()) })
+        .then((data) => { return decryptWallet(data, form[names[1]].trim()) })
         .then((content) => { //
             dispatch(addAccounts(Object.assign({}, content.safex_keys)));
             dispatch(addLegacyWallet(content));
@@ -154,7 +160,7 @@ let restore = function (dispatch, form, names, daemon) {
     lordOfTheFetch(func,
         [args],
         callbackForCreate,
-        [dispatch, null],
+        [dispatch, null, form[names[0]].trim(), form[names[1]].trim()],
         { "dispatch": dispatch });
 
 
@@ -177,9 +183,11 @@ let restoreFromKeys = function (dispatch, address, spendkey, viewkey, name) {
 
 //create
 
-let callbackForCreate = function (res, dispatch, legacy) {
+let callbackForCreate = function (res, dispatch, legacy, path, pwd) {
     if (res.status !== 0) dispatch(addError(res.status));
     else {
+        localStorage.setItem("path", path);
+        localStorage.setItem("pwd", pwd);
         openAccount(dispatch, legacy);
     }
 }
@@ -201,7 +209,8 @@ let callbackForSetActiveAccount = function (res, dispatch, data, legacy) {
         if (legacy && legacy.hasOwnProperty("safex_keys") && legacy.safex_keys.length > 0) {
             legacy.safex_keys.forEach((e, i) => {
                 if ((e.public_addr !== undefined) && (e.spend !== undefined) && (e.view !== undefined)) {
-                    restoreFromKeys(dispatch, e.public_addr, e.spend.sec, e.view.sec, "wallet " + i);
+                    let name = crypto.randomBytes(10).toString('hex') + "LK" + crypto.randomBytes(10).toString('hex');
+                    restoreFromKeys(dispatch, e.public_addr, e.spend.sec, e.view.sec, name);
                 }
                 else console.log("FROM INIT => UNDEFINED ", e);
             })
@@ -209,9 +218,10 @@ let callbackForSetActiveAccount = function (res, dispatch, data, legacy) {
         if (legacy && legacy.hasOwnProperty("keys") && legacy.keys.length > 0) {
             let legacies = {};
             legacy.keys.forEach((e, i) => {
-                legacies["wallet_legacy" + i] = legacy.keys[i];
-                legacies["wallet_legacy" + i]["address"] = e.public_key;
-                legacies["wallet_legacy" + i]["account_name"] = "wallet_legacy" + i;
+                let name = crypto.randomBytes(10).toString('hex') + "L" + crypto.randomBytes(10).toString('hex');
+                legacies[name] = legacy.keys[i];
+                legacies[name]["address"] = e.public_key;
+                legacies[name]["account_name"] = name;
             });
             addLegacyAccountsToWallet(dispatch, legacies);
 
@@ -220,9 +230,12 @@ let callbackForSetActiveAccount = function (res, dispatch, data, legacy) {
 }
 
 //open
-let callbackForOpen = function (res, dispatch, history) {
+let callbackForOpen = function (res, dispatch, history, path, pwd) {
     if (res.status !== 0) dispatch(addError(res.status));
     else {
+        console.log("OPPENED WALLEt");
+        localStorage.setItem("path", path);
+        localStorage.setItem("pwd", pwd);
         history.push('/w/home');
     }
 }
@@ -375,6 +388,112 @@ let initLegacyWallet = function (dispatch) {
     dispatch(addLegacyAccounts([]));
 }
 
+let breakword = function (address) {
+    return address.substring(0, (address.length / 2)) + "\n" + address.substring((address.length / 2));
+}
+
+
+let makePDF = function () {
+
+    let title = this.props.t("pdf_title");
+    var docDefinition = {
+        content: [
+            { text: title, style: 'header' },
+
+            {
+                style: 'tableExample',
+                table: {
+                    widths: ['auto', "*"],
+                    body: [
+                        [{ text: `${this.props.t("password")}`, noWrap: true }, `${this.props.wizard.data.create_password}`],
+                    ]
+                }
+            },
+            {
+                style: 'tableExample',
+                color: '#444',
+                table: {
+                    headerRows: 1,
+                    widths: ['*'],
+                    body: [
+                        [{ text: `${this.props.t("address")}`, style: 'tableHeader', alignment: 'center' }],
+                        [{ text: breakword(this.props.active_account.address), alignment: 'center' }],
+                    ]
+                }
+            },
+            {
+                style: 'tableExample',
+                color: '#444',
+                table: {
+                    widths: ['auto', '*'],
+                    headerRows: 1,
+                    body: [
+                        [{ text: `${this.props.t("spend_keys")}`, style: 'tableHeader', colSpan: 2, alignment: 'center' }, {}],
+                        [{ text: `${this.props.t("private")}`, style: 'tableHeader' }, `${this.props.active_account.spendkey.secret}`],
+                        [{ text: `${this.props.t("public")}`, style: 'tableHeader' }, `${this.props.active_account.spendkey.public}`]
+                    ]
+                }
+            },
+            {
+                style: 'tableExample',
+                color: '#444',
+                table: {
+                    widths: ['auto', '*'],
+                    headerRows: 1,
+                    body: [
+                        [{ text: `${this.props.t("view_keys")}`, style: 'tableHeader', colSpan: 2, alignment: 'center' }, {}],
+                        [{ text: `${this.props.t("private")}`, style: 'tableHeader' }, `${this.props.active_account.viewkey.secret}`],
+                        [{ text: `${this.props.t("public")}`, style: 'tableHeader' }, `${this.props.active_account.viewkey.public}`]
+                    ]
+                }
+            },
+            {
+                style: 'tableExample',
+                color: '#444',
+                table: {
+                    headerRows: 1,
+                    body: [
+                        [{ text: `${this.props.t("mnemonic")}`, style: 'tableHeader', alignment: 'center' }],
+                        [`${this.props.active_account.mnemonic}`],
+                    ]
+                }
+            },
+
+
+        ],
+        styles: {
+            header: {
+                fontSize: 18,
+                bold: true,
+                margin: [0, 0, 0, 10]
+            },
+            subheader: {
+                fontSize: 16,
+                bold: true,
+                margin: [0, 10, 0, 5]
+            },
+            tableExample: {
+                margin: [0, 5, 0, 15]
+            },
+            tableHeader: {
+                bold: true,
+                fontSize: 13,
+                color: 'black'
+            },
+            addressStyle: {
+                wordBreak: "break-all"
+            }
+        },
+        defaultStyle: {
+            // alignment: 'justify'
+        }
+    };
+
+    let pdf = pdfMake.createPdf(docDefinition).download();
+    // pdfDoc.pipe(fs.createWriteStream('./pdfs/tables.pdf'));
+    //pdf.end();
+}
+
 
 
 
@@ -404,7 +523,8 @@ export {
     addWizardTouched,
     removeWizardData,
     wizardBack,
-    wizardNext
+    wizardNext,
+    makePDF
 
 
 

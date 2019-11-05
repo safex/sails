@@ -1,7 +1,15 @@
 export let getHistoryApi = function (address) {
-    return fetch('http://bitcoin.safex.io:3001/insight-api/addr/' + address + '/utxo');
+    return fetch("http://bitcoin.safex.io:3001/insight-api/txs/?address=" + address);
 }
 
+export let getHistoryOmniApi = function (address) {
+    let formData = new FormData();
+    formData.append('addr', address);
+    return fetch('https://api.omniexplorer.info/v1/transaction/address/0', {
+        method: "POST",
+        body: formData
+    });
+}
 export let getTransactions = function (address) {
     return fetch('http://bitcoin.safex.io:3001/insight-api/addr/' + address + '/utxo');
 }

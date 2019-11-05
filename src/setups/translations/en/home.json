@@ -27,5 +27,14 @@
     "note_text": "For SAFEX account fill out just private view key (private key)",
     "button_add": "Add",
     "button_close": "Close",
-    "button_browse": "Browse"
+    "button_browse": "Browse",
+    "export_body": "Set up preferences for exporting the keys",
+    "export_type": "Export type",
+    "label_encrypted": "Encrypted",
+    "label_raw": "Raw",
+    "export_scope": "Choose the scope of export",
+    "all": "All",
+    "current": "Current active",
+    "new": "New",
+    "old": "Old"
 }

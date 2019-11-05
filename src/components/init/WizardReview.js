@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
-import { wizardNext, addWizardData } from '../../modules/init.module';
+import { wizardNext, addWizardData, makePDF } from '../../modules/init.module';
 
 import { Row, Col, Card, Button } from 'react-bootstrap';
 
@@ -77,7 +77,7 @@ class WizardReview extends Component {
                         <br />
                         <Row>
                             <Col>
-                                <Button variant="primary" onClick={() => { alert("not available") }} >{this.props.t('print_backup_button')}</Button>
+                                <Button variant="primary" onClick={() => { makePDF.bind(this)(); }} >{this.props.t('print_backup_button')}</Button>
                             </Col>
                         </Row>
                         <br />

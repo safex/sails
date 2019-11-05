@@ -5,6 +5,10 @@ let syncAccountsApi = function () {
     let port = localStorage.getItem("port") || RPC_PORT;
     return fetch('http://' + RPC_HOST + ':' + port + '/begin-updating', { method: 'POST', body: JSON.stringify({}) });
 }
+let rescanAccountsApi = function () {
+    let port = localStorage.getItem("port") || RPC_PORT;
+    return fetch('http://' + RPC_HOST + ':' + port + '/account/rescan', { method: 'POST', body: JSON.stringify({}) });
+}
 let openAccountsApi = function (name) {
     let port = localStorage.getItem("port") || RPC_PORT;
     return fetch('http://' + RPC_HOST + ':' + port + '/account/open', { method: 'POST', body: JSON.stringify({ name: name }) });
@@ -52,6 +56,7 @@ export {
     recoverAccountSeedsApi,
     // statusAccountApi,
     syncAccountsApi,
-    recoverAccountFileApi
+    recoverAccountFileApi,
+    rescanAccountsApi
 
 }

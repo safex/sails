@@ -7,6 +7,7 @@ import { faTrashAlt, faPenAlt } from '@fortawesome/free-solid-svg-icons';
 
 import { getAccounts } from '../../modules/home.module';
 import { changeLabel, resetModalLabelStates, inputOnChange, resetModalDeleteStates, deleteAccount } from '../../modules/settings.module';
+import { addActiveTab } from '../../actions/active_tab.action';
 
 class AccountInfoCard extends Component {
   render() {
@@ -50,6 +51,7 @@ class Settings extends Component {
 
   componentDidMount() {
     getAccounts(this.props.dispatch, true);
+    this.props.dispatch(addActiveTab("settings"));
   }
 
   setModalLabelState(account_name, current_label) {

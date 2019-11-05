@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import { getBalance, getContactsFromWallet } from '../../modules/sft.module';
 import { Row, Col, Form, Modal, Button, Table } from 'react-bootstrap';
+import { addActiveTab } from '../../actions/active_tab.action';
 
 const mapStateToProps = (state) => {
   return {
@@ -26,6 +27,7 @@ class SFT extends Component {
     }
     getBalance.bind(this)();
     getContactsFromWallet.bind(this)();
+    this.props.dispatch(addActiveTab("sft"));
 
   }
   render() {
@@ -159,7 +161,7 @@ class SFT extends Component {
         </Row>
         <Row>
           <Col>
-            <Modal show={this.state.contacts_modal} onHide={() => { this.setState({ contacts_modal: false }) }} animation={false}>
+            <Modal show={this.state.contacts_modal} onHide={() => { this.setState({ contacts_modal: false }) }} >
               <Modal.Header closeButton>
                 <Modal.Title>{this.props.t('contacts')}</Modal.Title>
               </Modal.Header>
