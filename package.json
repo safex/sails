@@ -104,7 +104,7 @@
   "devDependencies": {
     "concurrently": "^4.1.0",
     "debug": "^4.1.1",
-    "electron": "^5.0.1",
+    "electron": "^9.1.0",
     "electron-builder": "^20.40.2",
     "electron-context-menu": "^0.12.1",
     "electron-packager": "^13.1.1",
